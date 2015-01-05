@@ -33,12 +33,12 @@ SuccssDataCommon.test = function(capture, count) {
 
   casper.test.assertEquals(expectedCapturePath, capture.filePath, '"' + capture.page.name + '" path is ' + expectedCapturePath);
 
-  if (fs.exists(referenceScreenshot)) {
-    casper.test.assertEquals(fs.size(referenceScreenshot), fs.size(expectedCapturePath), 'The captured image is correct.');
-  }
+  casper.test.assertEquals(fs.size(referenceScreenshot), fs.size(expectedCapturePath), 'The captured image is correct.');
+}
 
-  if (!count.remaining && options.exitOnError != false) {
-    casper.test.assertTruthy(count.planned, 'All tests passed.');
+SuccssDataCommon.assertSuiteSuccess = function(count) {
+  if (!count.remaining) {
+    casper.test.assertTruthy(count.planned, 'Success! All tests passed.');
   }
   else {
     casper.test.assertTruthy(count.remaining, 'Capture n°' + (count.planned-count.remaining) + ' done.');

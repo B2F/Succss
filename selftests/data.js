@@ -28,7 +28,7 @@ Succss.webpages = {
         'selector':'aside#colors',
         'before': function() {
             this.click('#logo-image');
-            console.log('Waiting for color squares reinitialization');
+            console.log('... Waiting for color squares reinitialization');
             this.wait(900);
         }
       },
@@ -97,9 +97,8 @@ Succss.viewports = {
  */
 Succss.callback = function (capture, countSuccss) {
 
-  if (capture.action == 'add') {
-
+  if (capture.action == 'add') 
     SuccssDataCommon.test.call(this, capture, countSuccss);
 
-  }
+  SuccssDataCommon.assertSuiteSuccess(countSuccss);
 };

@@ -46,4 +46,6 @@ Succss.callback = function (capture, countSuccss) {
         break;
     }
   }
+
+  SuccssDataCommon.assertSuiteSuccess(countSuccss);
 }
