@@ -16,6 +16,7 @@ Succss.setFileName = function(captureState) {
 SuccssCount = {
   planned:0,
   remaining:0,
+  failures:0,
 };
 
 function Succss(options) {
@@ -259,6 +260,7 @@ function Succss(options) {
 
   self.takeScreenshot = function(casper, captureState) {
 
+    // Before capture:
     casper.then(function() {
       casper.waitForSelector(captureState.selector, function() {
         if (captureState.before) {
@@ -280,9 +282,21 @@ function Succss(options) {
     };
 
     casper.then(function() {
+
       casper.captureSelector(captureState.filePath, captureState.selector, imgOptions);
+
+      // After capture:
       if (captureState.after != undefined) {
-        captureState.after.call(self, captureState, SuccssCount);
+        try {
+          captureState.after.call(self, captureState, SuccssCount);
+        }
+        catch (err) {
+          casper.test.error(err);
+          SuccssCount.failures++;
+        }
+      }
+      if (SuccssCount.remaining == 0 && SuccssCount.failures) {
+        casper.test.error('Your tests failed with ' + SuccssCount.failures + ' errors.');
       }
     });
   }
