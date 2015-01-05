@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+script=`realpath "$0"`
+scriptDir="$(dirname $script)"
+command=$1
+userFile=$2
+shift
+shift
+casperjs test $scriptDir/../casper-bridge.js --do="$command" --dataFile="$PWD/$userFile" $@
+
+realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
