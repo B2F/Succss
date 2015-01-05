@@ -9,10 +9,6 @@
 
 exports.Succss = Succss;
 
-Succss.setFileName = function(captureState) {
-  return captureState.name + '--' + captureState.viewport.name + '-viewport.png';
-};
-
 SuccssCount = {
   planned:0,
   remaining:0,
@@ -49,8 +45,9 @@ function Succss(options) {
   };
   var viewports = Object.keys(viewportsData);
 
-  if(!self.setFileName) self.setFileName = Succss.setFileName;
-  var setFileName = Succss.prototype.setFileName;
+  if(!self.setFileName) self.setFileName = function(captureState) {
+    return captureState.name + '--' + captureState.viewport.name + '-viewport.png';
+  };
 
   if (options.pages != undefined) {
     pages = options.pages.split(',');
