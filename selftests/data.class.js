@@ -37,10 +37,9 @@ SuccssDataCommon.test = function(capture, count) {
 }
 
 SuccssDataCommon.assertSuiteSuccess = function(count) {
+  var currentCapture = count.planned - count.remaining;
+  casper.test.assertTruthy(currentCapture, 'Capture n°' + currentCapture + ' done.');
   if (!count.remaining) {
     casper.test.assertTruthy(count.planned, 'Success! All tests passed.');
-  }
-  else {
-    casper.test.assertTruthy(count.remaining, 'Capture n°' + (count.planned-count.remaining) + ' done.');
   }
 }
