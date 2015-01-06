@@ -97,8 +97,8 @@ Succss.viewports = {
  */
 Succss.callback = function (capture, countSuccss) {
 
-  if (capture.action == 'add') 
+  if (capture.action == 'add') {
     SuccssDataCommon.test.call(this, capture, countSuccss);
-
-  SuccssDataCommon.assertSuiteSuccess(countSuccss);
+    SuccssDataCommon.assertSuiteSuccess(countSuccss);
+  }
 };

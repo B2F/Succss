@@ -200,58 +200,46 @@ function Succss(options) {
 
     casperInstance.start('about:blank', function() {
 
-//      casperInstance.each(pages, function(casperInstance, k) {
-//
-//        casperInstance.each(data[k].sections, function(casperInstance, c) {
-//
-//          var section = data[k][c];
-//
-//          casperInstance.each(Object.keys(section.selectors), function(casperInstance, sel) {
-//
-//            casperInstance.each(Object.keys(data[k].viewports), function(casperInstance, v) {
-//
-//              var dir = section.screenDir + '/' + section.selectors[sel].name + '--' + v + '-viewport';
-//              var checkDest = section.screenDir + '/tmp/' + section.selectors[sel].name + '--' + v + '-viewport';
-//
-//              casperInstance.thenOpen(section.targetPath, function(){
-//
-//                casperInstance.viewport(data[k].viewportsData[v].width, data[k].viewportsData[v].height);
-//
-//                if (casperInstance.currentHTTPStatus != 200) {
-//                  throw "[SucCSS] Can't access " + section.targetPath + ". Check the website url and your internet connexion.";
-//                }
-//
-//                Succss.takeScreenshot(casperInstance, checkDest, sel, section.selectors[sel].callback, afterCapture);
-//
-//                var imgLoadCount = 0;
-//                imgBase = new Image();
-//                imgBase.src = fs.absolute(dir);
-//                imgCheck = new Image();
-//                imgCheck.src = fs.absolute(checkDest);
-//
-//                imgBase.onload = imgCheck.onload = function() {
-//                  imgLoadCount++;
-//                  if (imgLoadCount == 2) {
-//                    imgDiff = imagediff.diff(imgBase, imgCheck);
-//                    console.log(imagediff.equal(imgBase, imgCheck));
-//                    var canvas = imagediff.createCanvas();
-//                    canvas.width = imgBase.width * 3;
-//                    canvas.height = imgBase.height;
-//                    var ctx = canvas.getContext('2d');
-//                    ctx.putImageData(imgDiff, 0, 0);
-//                    ctx.drawImage(imgBase, imgBase.width, 0);
-//                    ctx.drawImage(imgCheck, imgBase.width*2, 0);
-//                    var imgDiff = canvas.toDataURL("image/png").split(",")[1];
-//                    var imgDiffPath = section.screenDir + '/imagediff' + 
-//                    fs.write("file.png",atob(imgDiff),'wb');
-//                  }
-//                }
-//
-//              });
-//            });
-//          });
-//        });
-//      });
+      casperInstance.each(pages, function(casperInstance, p) {
+
+        SuccssCount.planned += data[p].captureKeys.length*viewports.length;
+        SuccssCount.remaining = SuccssCount.planned;
+
+        casperInstance.each(data[p].captureKeys, function(casperInstance, c) {
+
+          casperInstance.each(viewports, function(casperInstance, v) {
+
+            casperInstance.thenOpen(data[p].url, function(){
+
+              SuccssCount.remaining--;
+
+              var capture = createCaptureState(p, c, v, 'check');
+
+              casperInstance.viewport(capture.viewport.width, capture.viewport.height);
+
+              if (casperInstance.currentHTTPStatus != 200) {
+                switch (casperInstance.currentHTTPStatus) {
+                  case null:
+                    throw "[SucCSS] Can't access " + capture.page.url + ". Check the website url and your internet connexion.";
+                    break;
+                  default:
+                    throw "[SucCSS] Response code for " + capture.page.url + " was " + casperInstance.currentHTTPStatus;
+                }
+              }
+
+              var baseCapturePath = capture.filePath;
+              capture.filePath = './succss-tmp/'+capture.page.directory+'/'+capture.file;
+              self.takeScreenshot(casperInstance, capture);
+              casperInstance.then(function() {
+                self.diff.call(capture, baseCapturePath);
+                if (!SuccssCount.remaining) {
+                  fs.removeTree('./succss-tmp');
+                }
+              });
+            });
+          });
+        });
+      });
     }).run();
   }
 
@@ -298,8 +286,33 @@ function Succss(options) {
     });
   }
 
-  self.diff = function(img1, img2) {
-    
+  self.diff = function(basePath) {
+
+    var imgLoadCount = 0;
+    var capture = this;
+    imgBase = new Image();
+    imgBase.src = fs.absolute(this.filePath);
+    imgCheck = new Image();
+    imgCheck.src = fs.absolute(basePath);
+
+    imgBase.onload = imgCheck.onload = function() {
+      imgLoadCount++;
+      if (imgLoadCount == 2) {
+        imgDiff = imagediff.diff(imgBase, imgCheck);
+        casper.test.assertTrue(imagediff.equal(imgBase, imgCheck), 'Capture ' + capture.name + ' matches base screenshot.');
+        var canvas = imagediff.createCanvas();
+        canvas.width = imgBase.width * 3;
+        canvas.height = imgBase.height;
+        var ctx = canvas.getContext('2d');
+        ctx.putImageData(imgDiff, 0, 0);
+        ctx.drawImage(imgBase, imgBase.width, 0);
+        ctx.drawImage(imgCheck, imgBase.width*2, 0);
+        var imgDiff = canvas.toDataURL("image/png").split(",")[1];
+        var date = new Date();
+        var imgDiffPath = './imagediff/' + date.getTime().toString() + '/' + capture.filePath;
+        fs.write(imgDiffPath, atob(imgDiff),'wb');
+      }
+    }
   }
 
   return self;

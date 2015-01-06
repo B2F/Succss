@@ -5,6 +5,8 @@
  */
 var fs = require('fs');
 
+phantom.injectJs('lib/imagediff.js');
+
 var Succss = {};
 var options = casper.cli.options;
 
@@ -14,8 +16,6 @@ if (fs.exists(options.dataFile)) {
 else {
   throw "[Succss] File " + options.dataFile + " not found. Please enter a valid relative path.";
 }
-
-//phantom.injectJs('lib/imagediff.js');
 
 try {
   if (options.do == 'help') {
