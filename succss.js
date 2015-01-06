@@ -144,13 +144,40 @@ function Succss(options) {
     return captureState;
   }
 
-  self.add = function() {
+  self.add = function(capture) {
+
+    var command = function(capture) {
+
+      console.log('> ... Saving ' + capture.name + ' screenshot under ' + capture.filePath);
+      self.takeScreenshot(casperInstance, capture);
+    }
+    self.parseData(command, 'add');
+  }
+
+  self.check = function(capture) {
+
+    var command = function(capture) {
+
+      var baseCapturePath = capture.filePath;
+      capture.filePath = './succss-tmp/'+capture.page.directory+'/'+capture.file;
+      self.takeScreenshot(casperInstance, capture);
+      casperInstance.then(function() {
+        self.diff.call(capture, baseCapturePath);
+        if (!SuccssCount.remaining) {
+          fs.removeTree('./succss-tmp');
+        }
+      });
+    }
+    self.parseData(command, 'check');
+  }
+
+  self.parseData = function(command, action) {
 
     casperInstance.start('about:blank', function() {
 
       casperInstance.each(pages, function(casperInstance, p) {
 
-        if (options.rmtree == true && fs.isDirectory(data[p].directory)) {
+        if (action == 'add' && options.rmtree == true && fs.isDirectory(data[p].directory)) {
           console.log('\nWarning! ' + data[p].directory + " directory tree erased.");
           fs.removeTree(data[p].directory);
         }
@@ -168,7 +195,7 @@ function Succss(options) {
 
               SuccssCount.remaining--;
 
-              var capture = createCaptureState(p, c, v);
+              var capture = createCaptureState(p, c, v, action);
 
               console.log('\nCapturing "' + capture.page.name + '" ' + capture.name + ' screenshot with ' + v + ' viewport:');
               console.log('\nSelector is: "' + capture.selector);
@@ -186,56 +213,8 @@ function Succss(options) {
                 }
               }
 
-              console.log('> ... Saving ' + capture.name + ' screenshot under ' + capture.filePath);
-              self.takeScreenshot(casperInstance, capture);
+              command(capture);
 
-            });
-          });
-        });
-      });
-    }).run();
-  }
-
-  self.check = function() {
-
-    casperInstance.start('about:blank', function() {
-
-      casperInstance.each(pages, function(casperInstance, p) {
-
-        SuccssCount.planned += data[p].captureKeys.length*viewports.length;
-        SuccssCount.remaining = SuccssCount.planned;
-
-        casperInstance.each(data[p].captureKeys, function(casperInstance, c) {
-
-          casperInstance.each(viewports, function(casperInstance, v) {
-
-            casperInstance.thenOpen(data[p].url, function(){
-
-              SuccssCount.remaining--;
-
-              var capture = createCaptureState(p, c, v, 'check');
-
-              casperInstance.viewport(capture.viewport.width, capture.viewport.height);
-
-              if (casperInstance.currentHTTPStatus != 200) {
-                switch (casperInstance.currentHTTPStatus) {
-                  case null:
-                    throw "[SucCSS] Can't access " + capture.page.url + ". Check the website url and your internet connexion.";
-                    break;
-                  default:
-                    throw "[SucCSS] Response code for " + capture.page.url + " was " + casperInstance.currentHTTPStatus;
-                }
-              }
-
-              var baseCapturePath = capture.filePath;
-              capture.filePath = './succss-tmp/'+capture.page.directory+'/'+capture.file;
-              self.takeScreenshot(casperInstance, capture);
-              casperInstance.then(function() {
-                self.diff.call(capture, baseCapturePath);
-                if (!SuccssCount.remaining) {
-                  fs.removeTree('./succss-tmp');
-                }
-              });
             });
           });
         });
