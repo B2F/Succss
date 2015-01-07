@@ -45,7 +45,28 @@ function Succss(options) {
   };
   var viewports = Object.keys(viewportsData);
 
-  if(!self.setFileName) self.setFileName = function(captureState) {
+  var createCaptureState = function(pageName, captureIndex, viewportName, action) {
+    // Available in setFileName:
+    captureState = data[pageName].captures[captureIndex];
+    captureState.page = data[pageName];
+    captureState.viewport = viewportsData[viewportName];
+    captureState.options = options;
+    // Available in after capture callback:
+    captureState.file = self.setFileName(captureState);
+    captureState.filePath = captureState.page.directory + '/' + captureState.file;
+    captureState.action = action || 'add';
+    return captureState;
+  }
+
+  var catchErrors = function(err) {
+    casper.test.error(err);
+    SuccssCount.failures++;
+    if (SuccssCount.remaining == 0 && SuccssCount.failures) {
+      casper.test.error('Tests failed with ' + SuccssCount.failures + ' errors.');
+    }
+  }
+
+  if (!self.setFileName) self.setFileName = function(captureState) {
     return captureState.name + '--' + captureState.viewport.name + '-viewport.png';
   };
 
@@ -131,25 +152,17 @@ function Succss(options) {
     throw "[SucCSS] No captures selector " + viewports[v] + " found. Check your Succss.webpages configuration.";
   }
 
-  var createCaptureState = function(pageName, captureIndex, viewportName, action) {
-    // Available in setFileName:
-    captureState = data[pageName].captures[captureIndex];
-    captureState.page = data[pageName];
-    captureState.viewport = viewportsData[viewportName];
-    captureState.options = options;
-    // Available in after capture callback:
-    captureState.file = self.setFileName(captureState);
-    captureState.filePath = captureState.page.directory + '/' + captureState.file;
-    captureState.action = action || 'add';
-    return captureState;
-  }
-
   self.add = function(capture) {
 
     var command = function(capture) {
 
-      console.log('> ... Saving ' + capture.name + ' screenshot under ' + capture.filePath);
-      self.takeScreenshot(casperInstance, capture);
+      try {
+        console.log('> ... Saving ' + capture.name + ' screenshot under ' + capture.filePath);
+        self.takeScreenshot(casperInstance, capture);
+      }
+      catch (err) {
+        catchErrors(err);
+      }
     }
     self.parseData(command, 'add');
   }
@@ -158,13 +171,32 @@ function Succss(options) {
 
     var command = function(capture) {
 
+      var tmpDir = './succss-tmp';
       var baseCapturePath = capture.filePath;
-      capture.filePath = './succss-tmp/'+capture.page.directory+'/'+capture.file;
+      capture.filePath = tmpDir+'/'+capture.page.directory+'/'+capture.file;
       self.takeScreenshot(casperInstance, capture);
+
       casperInstance.then(function() {
-        self.diff.call(capture, baseCapturePath);
-        if (!SuccssCount.remaining) {
-          fs.removeTree('./succss-tmp');
+
+        var imgLoadCount = 0;
+        imgBase = new Image();
+        imgBase.src = fs.absolute(capture.filePath);
+        imgCheck = new Image();
+        imgCheck.src = fs.absolute(baseCapturePath);
+
+        imgBase.onload = imgCheck.onload = function() {
+          try {
+            imgLoadCount++;
+            if (imgLoadCount == 2) {
+              self.diff.call(capture, imgBase, imgCheck);
+            }
+          }
+          catch (e) {
+            catchErrors(e);
+            if (!SuccssCount.remaining) {
+              fs.removeTree(tmpDir);
+            }
+          }
         }
       });
     }
@@ -198,7 +230,7 @@ function Succss(options) {
               var capture = createCaptureState(p, c, v, action);
 
               console.log('\nCapturing "' + capture.page.name + '" ' + capture.name + ' screenshot with ' + v + ' viewport:');
-              console.log('\nSelector is: "' + capture.selector);
+              console.log('Selector is: "' + capture.selector);
               console.log('> Opening ' + capture.page.url);
 
               casperInstance.viewport(capture.viewport.width, capture.viewport.height);
@@ -251,49 +283,30 @@ function Succss(options) {
 
       // After capture:
       if (captureState.after != undefined) {
-        try {
           captureState.after.call(self, captureState, SuccssCount);
-        }
-        catch (err) {
-          casper.test.error(err);
-          SuccssCount.failures++;
-        }
-      }
-      if (SuccssCount.remaining == 0 && SuccssCount.failures) {
-        casper.test.error('Your tests failed with ' + SuccssCount.failures + ' errors.');
       }
     });
   }
 
-  self.diff = function(basePath) {
+  if (!self.diff) self.diff = function(imgBase, imgCheck) {
 
-    var imgLoadCount = 0;
-    var capture = this;
-    imgBase = new Image();
-    imgBase.src = fs.absolute(this.filePath);
-    imgCheck = new Image();
-    imgCheck.src = fs.absolute(basePath);
-
-    imgBase.onload = imgCheck.onload = function() {
-      imgLoadCount++;
-      if (imgLoadCount == 2) {
         imgDiff = imagediff.diff(imgBase, imgCheck);
-        casper.test.assertTrue(imagediff.equal(imgBase, imgCheck), 'Capture ' + capture.name + ' matches base screenshot.');
-        var canvas = imagediff.createCanvas();
-        canvas.width = imgBase.width * 3;
-        canvas.height = imgBase.height;
-        var ctx = canvas.getContext('2d');
-        ctx.putImageData(imgDiff, 0, 0);
-        ctx.drawImage(imgBase, imgBase.width, 0);
-        ctx.drawImage(imgCheck, imgBase.width*2, 0);
-        var imgDiff = canvas.toDataURL("image/png").split(",")[1];
-        var date = new Date();
-        var imgDiffPath = './imagediff/' + date.getTime().toString() + '/' + capture.filePath;
-        fs.write(imgDiffPath, atob(imgDiff),'wb');
-      }
-    }
+        var imagesMatch = imagediff.equal(imgBase, imgCheck);
+        if (!imagesMatch) {
+          var canvas = imagediff.createCanvas();
+          canvas.width = imgBase.width * 3;
+          canvas.height = imgBase.height;
+          var ctx = canvas.getContext('2d');
+          ctx.putImageData(imgDiff, 0, 0);
+          ctx.drawImage(imgBase, imgBase.width, 0);
+          ctx.drawImage(imgCheck, imgBase.width*2, 0);
+          var imgDiff = canvas.toDataURL("image/jpeg", 0.8).split(",")[1];
+          var date = new Date();
+          var imgDiffPath = './imagediff/' + date.getTime().toString() + '/' + this.filePath;
+          fs.write(imgDiffPath.replace('png', 'jpeg'), atob(imgDiff),'wb');
+        }
+        casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot.');
   }
 
   return self;
-
 }
