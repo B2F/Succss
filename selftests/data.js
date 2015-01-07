@@ -1,7 +1,7 @@
 
 phantom.injectJs(fs.workingDirectory + '/selftests/data.class.js');
 
-Succss.webpages = {
+Succss.pages = {
   // url parameter + directory suffix.
   'installation': {
     'url': SuccssDataCommon.url+'?page=installation&variation=0',

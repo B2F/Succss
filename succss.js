@@ -15,7 +15,7 @@ SuccssCount = {
   failures:0,
 };
 
-function Succss(options) {
+function Succss(cmdOptions) {
 
   var self = this;
 
@@ -24,11 +24,24 @@ function Succss(options) {
   }
   var casperInstance = self.casper;
 
-  if (!self.webpages) {
-    throw "[SucCSS] Succss.webpages instance missing.";
+  if (!self.pages) {
+    throw "[SucCSS] Succss.pages instance missing.";
   }
-  var data = self.webpages;
-  var options = options || {};
+  var data = self.pages;
+
+  var options = cmdOptions || {};
+  var additionalOptions = self.options || {
+    userAgent:'',
+    imgType:'png',
+    imgQuality:'80',
+    tmpDir:'./succss-tmp',
+    diffQuality:'80',
+    tolerancePixels:'0',
+  };
+  for (var opt in additionalOptions) {
+    options[opt] = additionalOptions[opt];
+  }
+
   // After capture callback.
   var acallback = self.callback;
 
@@ -171,9 +184,8 @@ function Succss(options) {
 
     var command = function(capture) {
 
-      var tmpDir = './succss-tmp';
       var baseCapturePath = capture.filePath;
-      capture.filePath = tmpDir+'/'+capture.page.directory+'/'+capture.file;
+      capture.filePath = options.tmpDir+'/'+capture.page.directory+'/'+capture.file;
       self.takeScreenshot(casperInstance, capture);
 
       casperInstance.then(function() {
@@ -193,13 +205,10 @@ function Succss(options) {
           }
           catch (e) {
             catchErrors(e);
-            if (!SuccssCount.remaining) {
-              fs.removeTree(tmpDir);
-            }
           }
         }
       });
-    }
+   }
     self.parseData(command, 'check');
   }
 
@@ -273,8 +282,8 @@ function Succss(options) {
     });
 
     var imgOptions = {
-      format: 'png',
-      quality: 80
+      format: options.imgType,
+      quality: options.imgQuality
     };
 
     casper.then(function() {
@@ -290,22 +299,26 @@ function Succss(options) {
 
   if (!self.diff) self.diff = function(imgBase, imgCheck) {
 
-        imgDiff = imagediff.diff(imgBase, imgCheck);
-        var imagesMatch = imagediff.equal(imgBase, imgCheck);
-        if (!imagesMatch) {
-          var canvas = imagediff.createCanvas();
-          canvas.width = imgBase.width * 3;
-          canvas.height = imgBase.height;
-          var ctx = canvas.getContext('2d');
-          ctx.putImageData(imgDiff, 0, 0);
-          ctx.drawImage(imgBase, imgBase.width, 0);
-          ctx.drawImage(imgCheck, imgBase.width*2, 0);
-          var imgDiff = canvas.toDataURL("image/jpeg", 0.8).split(",")[1];
-          var date = new Date();
-          var imgDiffPath = './imagediff/' + date.getTime().toString() + '/' + this.filePath;
-          fs.write(imgDiffPath.replace('png', 'jpeg'), atob(imgDiff),'wb');
-        }
-        casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot.');
+    imgDiff = imagediff.diff(imgBase, imgCheck);
+    var imagesMatch = imagediff.equal(imgBase, imgCheck, options.tolerancePixels);
+    if (!imagesMatch) {
+      var canvas = imagediff.createCanvas();
+      canvas.width = imgBase.width * 3;
+      canvas.height = imgBase.height;
+      var ctx = canvas.getContext('2d');
+      ctx.putImageData(imgDiff, 0, 0);
+      ctx.drawImage(imgBase, imgBase.width, 0);
+      ctx.drawImage(imgCheck, imgBase.width*2, 0);
+      var imgDiff = canvas.toDataURL("image/jpeg", options.diffQuality/100).split(",")[1];
+      var date = new Date();
+      var imgDiffPath = './imagediff/' + date.getTime().toString() + '/' + this.filePath;
+      fs.write(imgDiffPath.replace('png', 'jpeg'), atob(imgDiff),'wb');
+    }
+    casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot.');
+
+    if (!SuccssCount.remaining) {
+      fs.removeTree(options.tmpDir);
+    }
   }
 
   return self;
