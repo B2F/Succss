@@ -1,7 +1,7 @@
 
 phantom.injectJs(fs.workingDirectory + '/selftests/data.class.js');
 
-Succss.webpages = {
+Succss.pages = {
   'defaults': {
     url:SuccssDataCommon.url,
     // directory:'screenshots',
