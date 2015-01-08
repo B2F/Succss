@@ -7,7 +7,7 @@ SuccssDataCommon.url = 'succss.ifzenelse.net';
 // Base screenshots path can be absolute or relative like below:
 SuccssDataCommon.baseDirectory = './screenshots';
 
-SuccssDataCommon.versionedPrefix = './self-';
+SuccssDataCommon.versionedPrefix = './selftests/self-';
 
 SuccssDataCommon.previousCaptureFile = '';
 

@@ -61,7 +61,7 @@ Succss.diff = function(imgBase, imgCheck) {
       ctx.drawImage(imgCheck, imgBase.width*2, 0);
       var imgDiff = canvas.toDataURL("image/jpeg", 0.8).split(",")[1];
       var date = new Date();
-      var imgDiffPath = this.filePath.replace('.succss-tmp/', './self-screenshots/data-diff/');
+      var imgDiffPath = this.filePath.replace('.succss-tmp/', './selftests/diff-screenshots/');
       fs.write(imgDiffPath.replace('png', 'jpeg'), atob(imgDiff),'wb');
     }
     casper.test.assertFalse(imagesMatch, 'Capture is different to base screenshot (imagediff).');
