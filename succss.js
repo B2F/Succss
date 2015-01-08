@@ -183,7 +183,12 @@ function Succss() {
 
         var imgLoadCount = 0;
         imgBase = new Image();
-        imgBase.src = fs.absolute(capture.filePath);
+        if (fs.exists(capture.basePath)) {
+          imgBase.src = fs.absolute(capture.basePath);
+        }
+        else {
+          throw "[SucCSS] Base screenshot not found (" + capture.basePath + "). Did you forget to add it ?";
+        }
         imgCheck = new Image();
         imgCheck.src = fs.absolute(capture.filePath);
 
