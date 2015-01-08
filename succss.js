@@ -32,7 +32,7 @@ function Succss() {
   var options = self.allOptions;
 
   // After capture callback.
-  var acallback = self.callback;
+  var after = self.callback;
 
   var pages = Object.keys(data);
 
@@ -145,7 +145,7 @@ function Succss() {
           }
         }
         data[page].captures[c].name = c;
-        data[page].captures[c].after = acallback;
+        data[page].captures[c].after = after;
       }
     }
   }
