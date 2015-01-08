@@ -5,8 +5,6 @@
  */
 var fs = require('fs');
 
-phantom.injectJs('lib/imagediff.js');
-
 var Succss = {};
 var cliOptions = casper.cli.options;
 
@@ -22,6 +20,7 @@ Succss.allOptions = {
   imgType:'png',
   imgQuality:'80',
   tmpDir:'.succss-tmp',
+  imagediff:true,
   diffDir:'./imagediff',
   diffQuality:'80',
   tolerancePixels:'0',

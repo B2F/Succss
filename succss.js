@@ -191,7 +191,11 @@ function Succss() {
           try {
             imgLoadCount++;
             if (imgLoadCount == 2) {
-              self.diff.call(capture, imgBase, imgCheck);
+              if (options.imagediff)
+                self.imagediff.call(capture, imgBase, imgCheck);
+              if (self.diff) {
+                self.diff.call(capture, imgBase, imgCheck);
+              }
             }
           }
           catch (e) {
@@ -293,7 +297,9 @@ function Succss() {
     });
   }
 
-  if (!self.diff) self.diff = function(imgBase, imgCheck) {
+  self.imagediff = function(imgBase, imgCheck) {
+
+    phantom.injectJs('lib/imagediff.js');
 
     imgDiff = imagediff.diff(imgBase, imgCheck);
     var imagesMatch = imagediff.equal(imgBase, imgCheck, options.tolerancePixels);
