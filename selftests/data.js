@@ -102,3 +102,7 @@ Succss.callback = function (capture, countSuccss) {
     SuccssDataCommon.assertSuiteSuccess(countSuccss);
   }
 };
+
+Succss.options = {
+  exitOnError:false,
+}

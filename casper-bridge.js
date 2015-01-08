@@ -8,17 +8,33 @@ var fs = require('fs');
 phantom.injectJs('lib/imagediff.js');
 
 var Succss = {};
-var options = casper.cli.options;
+var cliOptions = casper.cli.options;
 
-if (fs.exists(options.dataFile)) {
-  phantom.injectJs(options.dataFile);
+if (fs.exists(cliOptions.dataFile)) {
+  phantom.injectJs(cliOptions.dataFile);
 }
 else {
-  throw "[Succss] File " + options.dataFile + " not found. Please enter a valid relative path.";
+  throw "[Succss] File " + cliOptions.dataFile + " not found. Please enter a valid relative path.";
+}
+
+Succss.allOptions = {
+  userAgent:'',
+  imgType:'png',
+  imgQuality:'80',
+  tmpDir:'.succss-tmp',
+  diffDir:'./imagediff',
+  diffQuality:'80',
+  tolerancePixels:'0',
+};
+for (var opt in Succss.options) {
+  Succss.allOptions[opt] = Succss.options[opt];
+}
+for (var opt in cliOptions) {
+  Succss.allOptions[opt] = cliOptions[opt];
 }
 
 try {
-  if (options.do == 'help') {
+  if (cliOptions.do == 'help') {
     console.log('Capture base screenshots of successful CSS designs.');
     console.log('succss add FILE.js [--sets=a[,b,c...]] [--sections=d[,e,f...]] [--rmtree]');
     console.log('--sets: filter captures by datasets.');
@@ -32,17 +48,17 @@ try {
   }
   else {
 
-    Succss.casper = new casper.constructor(options);
+    Succss.casper = new casper.constructor(Succss.allOptions);
     var mouse = require("mouse").create(Succss.casper);
     var colorizer = require('colorizer').create('Colorizer');
     var utils = require('utils');
 
-    var succss = require('succss.js').Succss.call(Succss, options);
+    var succss = require('succss.js').Succss.call(Succss);
 
-    if (options.do == 'add') {
+    if (cliOptions.do == 'add') {
       succss.add();
     }
-    else if (options.do == 'check') {
+    else if (cliOptions.do == 'check') {
       succss.check();
     }
     else {
