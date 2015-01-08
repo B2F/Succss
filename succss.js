@@ -162,13 +162,8 @@ function Succss() {
 
     var command = function(capture) {
 
-      try {
-        console.log('> ... Saving ' + capture.name + ' screenshot under ' + capture.filePath);
-        self.takeScreenshot(casperInstance, capture);
-      }
-      catch (err) {
-        catchErrors(err);
-      }
+      console.log('> ... Saving ' + capture.name + ' screenshot under ' + capture.filePath);
+      self.takeScreenshot(casperInstance, capture);
     }
     self.parseData(command, 'add');
   }
@@ -288,7 +283,12 @@ function Succss() {
 
       // After capture:
       if (captureState.after != undefined) {
+        try {
           captureState.after.call(self, captureState, SuccssCount);
+        }
+        catch (err) {
+          catchErrors(err);
+        }
       }
     });
   }
