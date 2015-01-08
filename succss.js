@@ -53,6 +53,7 @@ function Succss() {
     captureState.page = data[pageName];
     captureState.viewport = viewportsData[viewportName];
     captureState.options = options;
+    captureState.count = SuccssCount;
     // Available in after capture callback:
     captureState.file = self.setFileName(captureState);
     captureState.basePath = captureState.page.directory + '/' + captureState.file;
@@ -288,7 +289,7 @@ function Succss() {
       // After capture:
       if (captureState.after != undefined) {
         try {
-          captureState.after.call(self, captureState, SuccssCount);
+          captureState.after.call(self, captureState);
         }
         catch (err) {
           catchErrors(err);

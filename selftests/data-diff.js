@@ -26,13 +26,12 @@ for (var selector in Succss.pages['advanced-selectors'].captures) {
   Succss.pages['advanced-selectors'].captures[selector].before = undefined;
 }
 
-Succss.callback = function(capture, countSuccss) {
+Succss.callback = function(capture) {
 
   if (capture.action == 'check') {
 
     casper.test.assertNotEquals(capture.filePath, capture.basePath, 'The updated capture was taken.');
     casper.test.assertNotEquals(fs.size(capture.filePath), fs.size(capture.basePath), 'Base and update are different in size.');
-    SuccssDataCommon.assertSuiteSuccess.call(this, countSuccss);
   }
 }
 
@@ -66,4 +65,5 @@ Succss.diff = function(imgBase, imgCheck) {
       fs.write(imgDiffPath.replace('png', 'jpeg'), atob(imgDiff),'wb');
     }
     casper.test.assertFalse(imagesMatch, 'Capture is different to base screenshot (imagediff).');
+    SuccssDataCommon.assertSuiteSuccess(this.count);
 }

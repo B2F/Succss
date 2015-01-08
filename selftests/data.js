@@ -95,11 +95,11 @@ Succss.viewports = {
  * @see selftests/data.class.js pratical example.
  *
  */
-Succss.callback = function (capture, countSuccss) {
+Succss.callback = function (capture) {
 
   if (capture.action == 'add') {
-    SuccssDataCommon.test.call(this, capture, countSuccss);
-    SuccssDataCommon.assertSuiteSuccess(countSuccss);
+    SuccssDataCommon.test.call(this, capture);
+    SuccssDataCommon.assertSuiteSuccess(capture.count);
   }
 };
 

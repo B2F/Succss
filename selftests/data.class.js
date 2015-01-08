@@ -11,7 +11,7 @@ SuccssDataCommon.versionedPrefix = './self-';
 
 SuccssDataCommon.previousCaptureFile = '';
 
-SuccssDataCommon.test = function(capture, count) {
+SuccssDataCommon.test = function(capture) {
 
   // The callback has access to an object representing the capture after it's done.
   var page = capture.page;

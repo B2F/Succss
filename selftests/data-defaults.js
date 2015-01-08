@@ -25,11 +25,9 @@ Succss.pages = {
  * Optional:
  * You can use a callback function after each capture is done.
  */
-Succss.callback = function (capture, countSuccss) {
+Succss.callback = function (capture) {
 
   if (capture.action == 'add') {
-
-    SuccssDataCommon.test.call(this, capture, countSuccss);
 
     switch (capture.page.name) {
 
@@ -46,6 +44,6 @@ Succss.callback = function (capture, countSuccss) {
         break;
     }
 
-    SuccssDataCommon.assertSuiteSuccess(countSuccss);
+    SuccssDataCommon.assertSuiteSuccess(capture.count);
   }
 }
