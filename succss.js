@@ -55,11 +55,15 @@ function Succss() {
     captureState.options = options;
     // Available in after capture callback:
     captureState.file = self.setFileName(captureState);
-    captureState.filePath = captureState.page.directory + '/' + captureState.file;
-    captureState.action = action || 'add';
+    captureState.basePath = captureState.page.directory + '/' + captureState.file;
+    captureState.filePath = captureState.basePath;
+    if (action == 'check') {
+      captureState.filePath = options.tmpDir+'/'+captureState.page.directory+'/'+captureState.file;
+    }
+    captureState.action = action;
     return captureState;
   }
-
+ 
   var catchErrors = function(err) {
     casper.test.error(err);
     SuccssCount.failures++;
@@ -173,8 +177,6 @@ function Succss() {
 
     var command = function(capture) {
 
-      var baseCapturePath = capture.filePath;
-      capture.filePath = options.tmpDir+'/'+capture.page.directory+'/'+capture.file;
       self.takeScreenshot(casperInstance, capture);
 
       casperInstance.then(function() {
@@ -183,7 +185,7 @@ function Succss() {
         imgBase = new Image();
         imgBase.src = fs.absolute(capture.filePath);
         imgCheck = new Image();
-        imgCheck.src = fs.absolute(baseCapturePath);
+        imgCheck.src = fs.absolute(capture.filePath);
 
         imgBase.onload = imgCheck.onload = function() {
           try {
