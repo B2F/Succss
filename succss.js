@@ -15,7 +15,7 @@ SuccssCount = {
   failures:0,
 };
 
-function Succss(cmdOptions) {
+function Succss() {
 
   var self = this;
 
@@ -29,18 +29,7 @@ function Succss(cmdOptions) {
   }
   var data = self.pages;
 
-  var options = cmdOptions || {};
-  var additionalOptions = self.options || {
-    userAgent:'',
-    imgType:'png',
-    imgQuality:'80',
-    tmpDir:'./succss-tmp',
-    diffQuality:'80',
-    tolerancePixels:'0',
-  };
-  for (var opt in additionalOptions) {
-    options[opt] = additionalOptions[opt];
-  }
+  var options = self.allOptions;
 
   // After capture callback.
   var acallback = self.callback;
@@ -311,13 +300,15 @@ function Succss(cmdOptions) {
       ctx.drawImage(imgCheck, imgBase.width*2, 0);
       var imgDiff = canvas.toDataURL("image/jpeg", options.diffQuality/100).split(",")[1];
       var date = new Date();
-      var imgDiffPath = './imagediff/' + date.getTime().toString() + '/' + this.filePath;
+      var imgDiffPath = options.diffDir + date.getTime().toString() + '/' + this.filePath;
       fs.write(imgDiffPath.replace('png', 'jpeg'), atob(imgDiff),'wb');
     }
     casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot.');
 
     if (!SuccssCount.remaining) {
-      fs.removeTree(options.tmpDir);
+      if (['.','./','/',undefined].indexOf(options.tmpDir) == -1) {
+        fs.removeTree(options.tmpDir);
+      }
     }
   }
 
