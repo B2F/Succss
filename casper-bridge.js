@@ -16,7 +16,6 @@ else {
 }
 
 Succss.allOptions = {
-  userAgent:'',
   imgType:'png',
   imgQuality:'80',
   tmpDir:'.succss-tmp',
