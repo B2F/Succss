@@ -18,146 +18,156 @@ SuccssCount = {
 
 function Succss() {
 
-  var self = this;
+  try {
 
-  if (!self.casper) {
-    throw "[SucCSS] Succss.casper instance missing.";
-  }
-  var casperInstance = self.casper;
+    var self = this;
 
-  if (!self.pages) {
-    throw "[SucCSS] Succss.pages instance missing.";
-  }
-  var data = self.pages;
-
-  var options = self.allOptions;
-
-  // After capture callback.
-  var after = self.callback;
-
-  var pages = Object.keys(data);
-
-  var capturesFound = false;
-  var captureFilters = false;
-
-  var viewportsData = self.viewports || { 
-    'default': {
-      'width':1366,
-      'height':768
+    if (!self.casper) {
+      throw "[SucCSS] Succss.casper instance missing.";
     }
-  };
-  var viewports = Object.keys(viewportsData);
+    var casperInstance = self.casper;
 
-  var createCaptureState = function(pageName, captureIndex, viewportName, action) {
-    // Available in setFileName:
-    captureState = data[pageName].captures[captureIndex];
-    captureState.page = data[pageName];
-    captureState.viewport = viewportsData[viewportName];
-    captureState.options = options;
-    captureState.count = SuccssCount;
-    // Available in after capture callback:
-    captureState.file = self.setFileName(captureState);
-    captureState.basePath = captureState.page.directory + '/' + captureState.file;
-    captureState.filePath = captureState.basePath;
-    if (action == 'check') {
-      captureState.filePath = options.tmpDir+'/'+captureState.page.directory+'/'+captureState.file;
+    if (!self.pages) {
+      throw "[SucCSS] Succss.pages instance missing.";
     }
-    captureState.action = action;
-    return captureState;
-  }
- 
-  var catchErrors = function(err) {
-    casper.test.error(err);
-    SuccssCount.failures++;
-    if (SuccssCount.remaining == 0 && SuccssCount.failures) {
-      casper.test.error('Tests failed with ' + SuccssCount.failures + ' errors.');
+    var data = self.pages;
+
+    var options = self.allOptions;
+
+    // After capture callback.
+    var after = self.callback;
+
+    var pages = Object.keys(data);
+
+    var capturesFound = false;
+    var captureFilters = false;
+
+    var viewportsData = self.viewports || { 
+      'default': {
+        'width':1366,
+        'height':768
+      }
+    };
+    var viewports = Object.keys(viewportsData);
+
+    var createCaptureState = function(pageName, captureIndex, viewportName, action) {
+      // Available in setFileName:
+      captureState = data[pageName].captures[captureIndex];
+      captureState.page = data[pageName];
+      captureState.viewport = viewportsData[viewportName];
+      captureState.options = options;
+      captureState.count = SuccssCount;
+      // Available in after capture callback:
+      captureState.file = self.setFileName(captureState);
+      captureState.basePath = captureState.page.directory + '/' + captureState.file;
+      captureState.filePath = captureState.basePath;
+      if (action == 'check') {
+        captureState.filePath = options.tmpDir+'/'+captureState.page.directory+'/'+captureState.file;
+      }
+      captureState.action = action;
+      return captureState;
     }
-  }
 
-  if (!self.setFileName) self.setFileName = function(captureState) {
-    return captureState.name + '--' + captureState.viewport.name + '-viewport.png';
-  };
+    var catchErrors = function(err) {
+      casper.test.error(err);
+      SuccssCount.failures++;
+      if (SuccssCount.remaining == 0 && SuccssCount.failures) {
+        casper.test.error('Tests failed with ' + SuccssCount.failures + ' errors.');
+      }
+    }
 
-  if (options.pages != undefined) {
-    pages = options.pages.split(',');
-    console.log ('Warning! --pages option found, captures will only run for: ' + options.pages);
+    if (!self.setFileName) self.setFileName = function(captureState) {
+      return captureState.name + '--' + captureState.viewport.name + '-viewport.png';
+    };
+
+    if (options.pages != undefined) {
+      pages = options.pages.split(',');
+      console.log ('Warning! --pages option found, captures will only run for: ' + options.pages);
+      for (var p in pages) {
+        if(data[pages[p]] == undefined) {
+          throw "[SucCSS] The page configuration " + pages[p] + '" was not found.';
+        }
+      }
+    }
+
+    if (options.captures != undefined) {
+      captureFilters = options.captures.split(',');
+      console.log ('Warning! --captures option found, captures will only run for: ' + options.captures);
+    }
+    if (options.viewports != undefined) {
+      viewports = options.viewports.split(',');
+      console.log ('Warning! --viewports option found, captures will only run with: ' + options.viewports + ' viewport.');
+      for (var v in viewports) {
+        if(viewportsData[viewports[v]] == undefined) {
+          throw "[SucCSS] The viewport " + viewports[v] + " was not found.";
+        }
+      }
+    }
+
+    for (var v in viewportsData) {
+      viewportsData[v].name = v;
+      if (typeof viewportsData[v].height != 'number' || 
+          typeof viewportsData[v].width != 'number') {
+        throw "[SucCSS] The viewport height and width must be set with numbers.";
+      }
+    }
+
     for (var p in pages) {
-      if(data[pages[p]] == undefined) {
-        throw "[SucCSS] The page configuration " + pages[p] + '" was not found.';
+
+      var page = pages[p];
+      data[page].name = page;
+
+      if (data[page].url == undefined) {
+        throw "[SucCSS] Each configuration page requires an url, see ./regrecss/demo.js";
       }
-    }
-  }
-
-  if (options.captures != undefined) {
-    captureFilters = options.captures.split(',');
-    console.log ('Warning! --captures option found, captures will only run for: ' + options.captures);
-  }
-  if (options.viewports != undefined) {
-    viewports = options.viewports.split(',');
-    console.log ('Warning! --viewports option found, captures will only run with: ' + options.viewports + ' viewport.');
-    for (var v in viewports) {
-      if(viewportsData[viewports[v]] == undefined) {
-        throw "[SucCSS] The viewport " + viewports[v] + " was not found.";
+      if (data[page].url.indexOf('http') != 0) {
+        data[page].url = 'http://' + data[page].url;
       }
-    }
-  }
 
-  for (var v in viewportsData) {
-    viewportsData[v].name = v;
-    // @TODO check viewports correctness.
-  }
+      if (!data[page].directory) data[page].directory = './screenshots';
 
-  for (var p in pages) {
-
-    var page = pages[p];
-    data[page].name = page;
-
-    if (data[page].url == undefined) {
-      throw "[SucCSS] Each configuration page requires an url, see ./regrecss/demo.js";
-    }
-    if (data[page].url.indexOf('http') != 0) {
-      data[page].url = 'http://' + data[page].url;
-    }
-
-    if (!data[page].directory) data[page].directory = './screenshots';
-
-    if (data[page].captures == undefined || !Object.keys(data[page].captures).length) {
-      data[page].captures = {
-        'body':''
-      }
-    }
-
-    var captures = data[page].captures;
-    data[page].captureKeys = Array();
-
-    for (var c in captures) {
-
-      if (captureFilters == false || captureFilters.indexOf(c) != -1) {
-
-        data[page].captureKeys.push(c);
-        if (!captureFilters || captureFilters.indexOf(c) != -1) {
-          capturesFound = true;
+      if (data[page].captures == undefined || !Object.keys(data[page].captures).length) {
+        data[page].captures = {
+          'body':''
         }
+      }
 
-        if (data[page].captures[c] instanceof Object) {
-          data[page].captures[c] = {
-            selector:captures[c].selector || c,
-            before:captures[c].before || false
-          };
-        }
-        else {
-          data[page].captures[c] = {
-            selector:captures[c] || c
+      var captures = data[page].captures;
+      data[page].captureKeys = Array();
+
+      for (var c in captures) {
+
+        if (captureFilters == false || captureFilters.indexOf(c) != -1) {
+
+          data[page].captureKeys.push(c);
+          if (!captureFilters || captureFilters.indexOf(c) != -1) {
+            capturesFound = true;
           }
+
+          if (data[page].captures[c] instanceof Object) {
+            data[page].captures[c] = {
+              selector:captures[c].selector || c,
+              before:captures[c].before || false
+            };
+          }
+          else {
+            data[page].captures[c] = {
+              selector:captures[c] || c
+            }
+          }
+          data[page].captures[c].name = c;
+          data[page].captures[c].after = after;
         }
-        data[page].captures[c].name = c;
-        data[page].captures[c].after = after;
       }
     }
-  }
 
-  if (!capturesFound) {
-    throw "[SucCSS] No captures selector " + viewports[v] + " found. Check your Succss.webpages configuration.";
+    if (!capturesFound) {
+      throw "[SucCSS] No captures selector " + viewports[v] + " found. Check your Succss.webpages configuration.";
+    }
+  }
+  catch (e) {
+    console.log(e);
+    casperInstance.exit();
   }
 
   self.add = function() {
