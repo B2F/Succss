@@ -40,7 +40,10 @@ Succss.options = {
   'imagediff':false,
   'resemble':true,
   'exitOnError':false,
-  'pages':'advanced-selectors'
+  'pages':'advanced-selectors',
+  'pageSettings': {
+    loadImages:  false,
+  }
 }
 
 /*
