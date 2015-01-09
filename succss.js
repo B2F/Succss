@@ -13,6 +13,7 @@ SuccssCount = {
   planned:0,
   remaining:0,
   failures:0,
+  startTime:0,
 };
 
 function Succss() {
@@ -212,6 +213,9 @@ function Succss() {
 
     casperInstance.start('about:blank', function() {
 
+      var date = new Date();
+      SuccssCount.startTime = date.getTime();
+
       casperInstance.each(pages, function(casperInstance, p) {
 
         if (action == 'add' && options.rmtree == true && fs.isDirectory(data[p].directory)) {
@@ -314,7 +318,7 @@ function Succss() {
       ctx.drawImage(imgCheck, imgBase.width*2, 0);
       var imgDiff = canvas.toDataURL("image/jpeg", options.diffQuality/100).split(",")[1];
       var date = new Date();
-      var imgDiffPath = options.diffDir + date.getTime().toString() + '/' + this.filePath;
+      var imgDiffPath = './imagediff/' + SuccssCount.startTime + '/' + this.basePath.replace(/^\.?\//, '');
       fs.write(imgDiffPath.replace('png', 'jpeg'), atob(imgDiff),'wb');
     }
     casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot.');
