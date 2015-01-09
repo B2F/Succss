@@ -8,6 +8,10 @@ var fs = require('fs');
 var Succss = {};
 var cliOptions = casper.cli.options;
 
+if (['add', 'check', 'help'].indexOf(cliOptions.do) == -1) {
+  throw new Error('succss {{add | check} FILE.js} | help }');
+}
+
 if (fs.exists(cliOptions.dataFile)) {
   phantom.injectJs(cliOptions.dataFile);
 }
@@ -58,9 +62,6 @@ try {
     }
     else if (cliOptions.do == 'check') {
       succss.check();
-    }
-    else {
-      throw new Error('Add, check or help');
     }
   }
 }

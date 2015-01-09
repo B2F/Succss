@@ -32,7 +32,7 @@ function Succss() {
     var casperInstance = self.casper;
 
     if (!self.pages) {
-      throw "[SucCSS] Succss.pages instance missing.";
+      throw "[SucCSS] Succss.pages instance missing. See succss.ifzenelse.net";
     }
     var data = self.pages;
 
@@ -89,7 +89,7 @@ function Succss() {
       console.log ('Warning! --pages option found, captures will only run for: ' + options.pages);
       for (var p in pages) {
         if(data[pages[p]] == undefined) {
-          throw "[SucCSS] The page configuration " + pages[p] + '" was not found.';
+          throw "[SucCSS] The page configuration " + pages[p] + ' was not found.';
         }
       }
     }
@@ -108,21 +108,13 @@ function Succss() {
       }
     }
 
-    for (var v in viewportsData) {
-      viewportsData[v].name = v;
-      if (typeof viewportsData[v].height != 'number' || 
-          typeof viewportsData[v].width != 'number') {
-        throw "[SucCSS] The viewport height and width must be set with numbers.";
-      }
-    }
-
     for (var p in pages) {
 
       var page = pages[p];
       data[page].name = page;
 
       if (data[page].url == undefined) {
-        throw "[SucCSS] Each configuration page requires an url, see succss.ifzenelse.net";
+        throw "[SucCSS] Each configuration page requires an url, see succss.ifzenelse.net example.";
       }
       if (data[page].url.indexOf('http') != 0) {
         data[page].url = 'http://' + data[page].url;
@@ -166,7 +158,15 @@ function Succss() {
     }
 
     if (!capturesFound) {
-      throw "[SucCSS] No captures selector " + viewports[v] + " found. Check your Succss.webpages configuration.";
+      throw "[SucCSS] No captures selector found. Check your Succss.pages configuration and filters.";
+    }
+
+    for (var v in viewportsData) {
+      viewportsData[v].name = v;
+      if (typeof viewportsData[v].height != 'number' || 
+          typeof viewportsData[v].width != 'number') {
+        throw "[SucCSS] The viewport height and width must be set with numbers.";
+      }
     }
   }
   catch (e) {

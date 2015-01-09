@@ -2,10 +2,12 @@
 script=`realpath "$0"`
 scriptDir="$(dirname $script)"
 command=$1
-userFile=$2
+if [ -n "$2" ]; then
+  userFile=$PWD/$2
+fi
 shift
 shift
-casperjs test $scriptDir/../casper-bridge.js --do="$command" --dataFile="$PWD/$userFile" $@
+casperjs test $scriptDir/../casper-bridge.js --do="$command" --dataFile="$userFile" $@
 
 realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
