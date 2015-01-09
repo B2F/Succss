@@ -38,6 +38,7 @@ Succss.callback = function(capture) {
 Succss.options = {
   // Disabling default imagediff behavior (inverting the casper test).
   'imagediff':false,
+  'resemble':true,
   'exitOnError':false,
   'pages':'advanced-selectors'
 }

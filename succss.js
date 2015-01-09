@@ -190,18 +190,28 @@ function Succss() {
         imgCheck.src = fs.absolute(capture.filePath);
 
         imgBase.onload = imgCheck.onload = function() {
-          try {
-            imgLoadCount++;
-            if (imgLoadCount == 2) {
-              if (options.imagediff)
-                self.imagediff.call(capture, imgBase, imgCheck);
-              if (self.diff) {
+          imgLoadCount++;
+          if (imgLoadCount == 2) {
+            // Pre-defined diff functions:
+            ['imagediff', 'resemble'].forEach(function(diff) {
+              try {
+                if (options[diff] == true) {
+                  self[diff].call(capture, imgBase, imgCheck);
+                }
+              }
+              catch (e) {
+                catchErrors(e);
+              }
+            });
+            // User defined diff:
+            if (self.diff) {
+              try {
                 self.diff.call(capture, imgBase, imgCheck);
               }
+              catch (e) {
+                catchErrors(e);
+              }
             }
-          }
-          catch (e) {
-            catchErrors(e);
           }
         }
       });
@@ -328,6 +338,17 @@ function Succss() {
         fs.removeTree(options.tmpDir);
       }
     }
+  }
+
+  self.resemble = function(imgBase, imgCheck) {
+
+    phantom.injectJs('lib/resemble.js');
+    imgDiffPath = './resemble/' + SuccssCount.startTime + '/' + this.basePath.replace(/^\.?\//, '');
+
+    var diff = resemble(imgBase.src).compareTo(imgCheck.src).onComplete(function(data){
+      var imgDiff = data.getImageDataUrl().split(",")[1];
+      fs.write(imgDiffPath.replace('png', 'jpeg'), atob(imgDiff),'wb');
+    });
   }
 
   return self;

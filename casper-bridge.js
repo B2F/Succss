@@ -21,7 +21,7 @@ Succss.allOptions = {
   imgQuality:'80',
   tmpDir:'.succss-tmp',
   imagediff:true,
-  diffDir:'./imagediff',
+  resemble:false,
   diffQuality:'80',
   tolerancePixels:'0',
 };
