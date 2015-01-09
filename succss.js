@@ -86,7 +86,7 @@ function Succss() {
 
     if (options.pages != undefined) {
       pages = options.pages.split(',');
-      console.log ('Warning! --pages option found, captures will only run for: ' + options.pages);
+      console.log(colorizer.colorize('\n--pages option found, captures will only run for: ' + options.pages, 'WARNING'));
       for (var p in pages) {
         if(data[pages[p]] == undefined) {
           throw "[SucCSS] The page configuration " + pages[p] + ' was not found.';
@@ -96,11 +96,11 @@ function Succss() {
 
     if (options.captures != undefined) {
       captureFilters = options.captures.split(',');
-      console.log ('Warning! --captures option found, captures will only run for: ' + options.captures);
+      console.log(colorizer.colorize('\n--captures option found, captures will only run for: ' + options.captures, 'WARNING'));
     }
     if (options.viewports != undefined) {
       viewports = options.viewports.split(',');
-      console.log ('Warning! --viewports option found, captures will only run with: ' + options.viewports + ' viewport.');
+      console.log(colorizer.colorize('\n--viewports option found, captures will only run with: ' + options.viewports + ' viewport.', 'WARNING'));
       for (var v in viewports) {
         if(viewportsData[viewports[v]] == undefined) {
           throw "[SucCSS] The viewport " + viewports[v] + " was not found.";
@@ -170,7 +170,7 @@ function Succss() {
     }
   }
   catch (e) {
-    console.log(e);
+    console.log(colorizer.colorize(e, 'ERROR') + '\n');
     casperInstance.exit();
   }
 
@@ -178,7 +178,7 @@ function Succss() {
 
     var command = function(capture) {
 
-      console.log('> ... Saving ' + capture.name + ' screenshot under ' + capture.filePath);
+      console.log(colorizer.colorize('> ... Saving ' + capture.name + ' screenshot under ' + capture.filePath, 'PARAMETER'));
       self.takeScreenshot(casperInstance, capture);
     }
     self.parseData(command, 'add');
@@ -240,7 +240,7 @@ function Succss() {
           fs.removeTree(data[p].directory);
         }
 
-        console.log('\nFound "' + p + '" page configuration.');
+        console.log(colorizer.colorize('\nFound "' + p + '" page configuration.', 'INFO'));
 
         SuccssCount.planned += data[p].captureKeys.length*viewports.length;
         SuccssCount.remaining = SuccssCount.planned;
@@ -255,9 +255,9 @@ function Succss() {
 
               var capture = createCaptureState(p, c, v, action);
 
-              console.log('\nCapturing "' + capture.page.name + '" ' + capture.name + ' screenshot with ' + v + ' viewport:');
-              console.log('Selector is: "' + capture.selector);
-              console.log('> Opening ' + capture.page.url);
+              console.log(colorizer.colorize('\nCapturing "' + capture.page.name + '" ' + capture.name + ' screenshot with ' + v + ' viewport:', 'INFO'));
+              console.log(colorizer.colorize('Selector is: "' + capture.selector + '"', 'PARAMETER'));
+              console.log(colorizer.colorize('> Opening ' + capture.page.url, 'PARAMETER'));
 
               casperInstance.viewport(capture.viewport.width, capture.viewport.height);
 
