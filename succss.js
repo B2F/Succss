@@ -1,9 +1,13 @@
 /**
  * 
- * @file
- * 
- * @see demo.js
- * practical use case
+ * Succss module.
+ *
+ * The MIT License (MIT)
+ * Copyright (c) 2015 ifzenelse.net
+ *
+ * @Author B2F
+ *
+ * @see succss.ifzenelse.net
  *
  */
 
@@ -118,7 +122,7 @@ function Succss() {
       data[page].name = page;
 
       if (data[page].url == undefined) {
-        throw "[SucCSS] Each configuration page requires an url, see ./regrecss/demo.js";
+        throw "[SucCSS] Each configuration page requires an url, see succss.ifzenelse.net";
       }
       if (data[page].url.indexOf('http') != 0) {
         data[page].url = 'http://' + data[page].url;

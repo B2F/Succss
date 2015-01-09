@@ -66,7 +66,7 @@ try {
 }
 catch(e) {
   console.log(e);
-  console.log('See http://... for more infos.');
+  console.log('See succss.ifzenelse.net for more infos.');
   throw 'Wrong succss arguments. Type succss help for help.';
   casper.exit();
 }
