@@ -206,11 +206,16 @@ function Succss() {
             // User defined diff:
             if (self.diff) {
               try {
-                self.diff.call(capture, imgBase, imgCheck);
+                self.diff.call(self, imgBase, imgCheck, capture);
               }
               catch (e) {
                 catchErrors(e);
               }
+            }
+          }
+          if (!SuccssCount.remaining) {
+            if (['.','./','/',undefined].indexOf(capture.options.tmpDir) == -1) {
+              fs.removeTree(capture.options.tmpDir);
             }
           }
         }
@@ -312,43 +317,52 @@ function Succss() {
     });
   }
 
-  self.imagediff = function(imgBase, imgCheck) {
+  self.imagediff = function(imgBase, imgCheck, capture) {
 
     phantom.injectJs('lib/imagediff.js');
 
     imgDiff = imagediff.diff(imgBase, imgCheck);
-    var imagesMatch = imagediff.equal(imgBase, imgCheck, options.tolerancePixels);
+    var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
     if (!imagesMatch) {
-      var canvas = imagediff.createCanvas();
-      canvas.width = imgBase.width * 3;
-      canvas.height = imgBase.height;
-      var ctx = canvas.getContext('2d');
-      ctx.putImageData(imgDiff, 0, 0);
-      ctx.drawImage(imgBase, imgBase.width, 0);
-      ctx.drawImage(imgCheck, imgBase.width*2, 0);
-      var imgDiff = canvas.toDataURL("image/jpeg", options.diffQuality/100).split(",")[1];
-      var date = new Date();
-      var imgDiffPath = './imagediff/' + SuccssCount.startTime + '/' + this.basePath.replace(/^\.?\//, '');
-      fs.write(imgDiffPath.replace('png', 'jpeg'), atob(imgDiff),'wb');
+      var filePath = './imagediff/' + SuccssCount.startTime + '/' + capture.basePath.replace(/^\.?\//, '');
+      self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
     }
     casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot.');
-
-    if (!SuccssCount.remaining) {
-      if (['.','./','/',undefined].indexOf(options.tmpDir) == -1) {
-        fs.removeTree(options.tmpDir);
-      }
-    }
   }
 
-  self.resemble = function(imgBase, imgCheck) {
+  self.resemble = function(imgBase, imgCheck, capture) {
 
     phantom.injectJs('lib/resemble.js');
-    imgDiffPath = './resemble/' + SuccssCount.startTime + '/' + this.basePath.replace(/^\.?\//, '');
 
     var diff = resemble(imgBase.src).compareTo(imgCheck.src).onComplete(function(data){
-      var imgDiff = data.getImageDataUrl().split(",")[1];
-      fs.write(imgDiffPath.replace('png', 'jpeg'), atob(imgDiff),'wb');
+      var imgDiff = new Image();
+      imgDiff.src = data.getImageDataUrl();
+      imgDiff.onload = function() {
+        var filePath = './resemble/' + SuccssCount.startTime + '/' + capture.basePath.replace(/^\.?\//, '');
+        self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
+      }
     });
+  }
+
+  self.writeImgDiff = function(imgDiff, imgBase, imgCheck, filePath) {
+    var canvas = document.createElement('canvas');
+    canvas.width = imgBase.width * 3;
+    canvas.height = imgBase.height;
+    var ctx = canvas.getContext('2d');
+    var imgDiffType = imgDiff.toString();
+    if (imgDiffType == '[object ImageData]') {
+      ctx.putImageData(imgDiff, 0, 0);
+    }
+    else if (imgDiffType == '[object HTMLImageElement]') {
+      ctx.drawImage(imgDiff, 0, 0);
+    }
+    else {
+      throw 'Unable to write image diff file, unknwown diff image type (' + imgDiffType + ')';
+    }
+    ctx.drawImage(imgBase, imgBase.width, 0);
+    ctx.drawImage(imgCheck, imgBase.width*2, 0);
+    var data = canvas.toDataURL("image/jpeg", options.diffQuality/100).split(",")[1];
+    fs.write(filePath.replace('png', 'jpeg'), atob(data),'wb');
   }
 
   return self;
