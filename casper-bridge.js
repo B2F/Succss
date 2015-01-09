@@ -23,6 +23,7 @@ Succss.allOptions = {
   imgType:'png',
   imgQuality:'80',
   tmpDir:'.succss-tmp',
+  diff:true,
   imagediff:true,
   resemble:false,
   diffQuality:'80',

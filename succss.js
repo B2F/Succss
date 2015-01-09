@@ -206,10 +206,9 @@ function Succss() {
         imgBase.onload = imgCheck.onload = function() {
           imgLoadCount++;
           if (imgLoadCount == 2) {
-            // Pre-defined diff functions:
-            ['imagediff', 'resemble'].forEach(function(diff) {
+            ['imagediff', 'resemble', 'diff'].forEach(function(diff) {
               try {
-                if (capture.options[diff] == true) {
+                if (self[diff] && capture.options[diff] == true) {
                   self[diff].call(self, imgBase, imgCheck, capture);
                 }
               }
@@ -217,20 +216,9 @@ function Succss() {
                 catchErrors(e);
               }
             });
-            // User defined diff:
-            if (self.diff) {
-              try {
-                self.diff.call(self, imgBase, imgCheck, capture);
-              }
-              catch (e) {
-                catchErrors(e);
-              }
-            }
           }
-          if (!SuccssCount.remaining) {
-            if (['.','./','/',undefined].indexOf(capture.options.tmpDir) == -1) {
+          if (!SuccssCount.remaining && ['.','./','/',undefined].indexOf(capture.options.tmpDir) == -1) {
               fs.removeTree(capture.options.tmpDir);
-            }
           }
         }
       });
