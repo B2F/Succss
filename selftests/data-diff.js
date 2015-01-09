@@ -46,12 +46,13 @@ Succss.options = {
 /*
  * Overrides the default imagediff function, changing imgDiffPath and assertion.
  */
-Succss.diff = function(imgBase, imgCheck) {
+Succss.diff = function(imgBase, imgCheck, capture) {
 
     phantom.injectJs('lib/imagediff.js');
 
     imgDiff = imagediff.diff(imgBase, imgCheck);
-    var imagesMatch = imagediff.equal(imgBase, imgCheck, 0);
+    var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
+
     if (!imagesMatch) {
       var canvas = imagediff.createCanvas();
       canvas.width = imgBase.width * 3;
@@ -65,6 +66,7 @@ Succss.diff = function(imgBase, imgCheck) {
       var imgDiffPath = this.filePath.replace('.succss-tmp/', './selftests/diff-screenshots/');
       fs.write(imgDiffPath.replace('png', 'jpeg'), atob(imgDiff),'wb');
     }
+
     casper.test.assertFalse(imagesMatch, 'Capture is different to base screenshot (imagediff).');
-    SuccssDataCommon.assertSuiteSuccess(this.count);
+    SuccssDataCommon.assertSuiteSuccess(capture.count);
 }

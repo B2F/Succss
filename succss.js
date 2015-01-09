@@ -160,7 +160,7 @@ function Succss() {
     throw "[SucCSS] No captures selector " + viewports[v] + " found. Check your Succss.webpages configuration.";
   }
 
-  self.add = function(capture) {
+  self.add = function() {
 
     var command = function(capture) {
 
@@ -170,7 +170,7 @@ function Succss() {
     self.parseData(command, 'add');
   }
 
-  self.check = function(capture) {
+  self.check = function() {
 
     var command = function(capture) {
 
@@ -195,8 +195,8 @@ function Succss() {
             // Pre-defined diff functions:
             ['imagediff', 'resemble'].forEach(function(diff) {
               try {
-                if (options[diff] == true) {
-                  self[diff].call(capture, imgBase, imgCheck);
+                if (capture.options[diff] == true) {
+                  self[diff].call(self, imgBase, imgCheck, capture);
                 }
               }
               catch (e) {
@@ -292,8 +292,8 @@ function Succss() {
     });
 
     var imgOptions = {
-      format: options.imgType,
-      quality: options.imgQuality
+      format: captureState.options.imgType,
+      quality: captureState.options.imgQuality
     };
 
     casper.then(function() {
