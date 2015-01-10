@@ -67,6 +67,7 @@ function Succss() {
       captureState.filePath = captureState.basePath;
       if (action == 'check') {
         captureState.filePath = options.tmpDir+'/'+captureState.page.directory+'/'+captureState.file;
+        captureState.filePath = captureState.filePath.replace(/\.\//, '');
       }
       captureState.action = action;
       return captureState;
@@ -86,7 +87,7 @@ function Succss() {
 
     if (options.pages != undefined) {
       pages = options.pages.split(',');
-      console.log(colorizer.colorize('\n--pages option found, captures will only run for: ' + options.pages, 'WARNING'));
+      console.log(colorizer.colorize('\n--pages option found, captures will only run for <' + options.pages + '> pages.', 'WARNING'));
       for (var p in pages) {
         if(data[pages[p]] == undefined) {
           throw "[SucCSS] The page configuration " + pages[p] + ' was not found.';
@@ -96,11 +97,11 @@ function Succss() {
 
     if (options.captures != undefined) {
       captureFilters = options.captures.split(',');
-      console.log(colorizer.colorize('\n--captures option found, captures will only run for: ' + options.captures, 'WARNING'));
+      console.log(colorizer.colorize('\n--captures option found, captures will only run for <' + options.captures + '>', 'WARNING'));
     }
     if (options.viewports != undefined) {
       viewports = options.viewports.split(',');
-      console.log(colorizer.colorize('\n--viewports option found, captures will only run with: ' + options.viewports + ' viewport.', 'WARNING'));
+      console.log(colorizer.colorize('\n--viewports option found, captures will only run with <' + options.viewports + '> viewport.', 'WARNING'));
       for (var v in viewports) {
         if(viewportsData[viewports[v]] == undefined) {
           throw "[SucCSS] The viewport " + viewports[v] + " was not found.";
@@ -204,6 +205,7 @@ function Succss() {
         imgCheck.src = fs.absolute(capture.filePath);
 
         imgBase.onload = imgCheck.onload = function() {
+
           imgLoadCount++;
           if (imgLoadCount == 2) {
             ['imagediff', 'resemble', 'diff'].forEach(function(diff) {
@@ -218,7 +220,7 @@ function Succss() {
             });
           }
           if (!SuccssCount.remaining && ['.','./','/',undefined].indexOf(capture.options.tmpDir) == -1) {
-              fs.removeTree(capture.options.tmpDir);
+            fs.removeTree(capture.options.tmpDir);
           }
         }
       });
@@ -236,7 +238,7 @@ function Succss() {
       casperInstance.each(pages, function(casperInstance, p) {
 
         if (action == 'add' && options.rmtree == true && fs.isDirectory(data[p].directory)) {
-          console.log('\nWarning! ' + data[p].directory + " directory tree erased.");
+          console.log(colorizer.colorize('\nWarning! ' + data[p].directory + " directory tree erased.", 'WARNING'));
           fs.removeTree(data[p].directory);
         }
 
@@ -329,7 +331,7 @@ function Succss() {
       var filePath = './imagediff/' + SuccssCount.startTime + '/' + capture.basePath.replace(/^\.?\//, '');
       self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
     }
-    casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot.');
+    casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot (imagediff).');
   }
 
   self.resemble = function(imgBase, imgCheck, capture) {
