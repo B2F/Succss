@@ -348,21 +348,47 @@ function Succss() {
 
   self.writeImgDiff = function(imgDiff, imgBase, imgCheck, filePath) {
     var canvas = document.createElement('canvas');
+    var headerHeight = 50;
+    var borderWidth = 1;
+    if (imgBase.width < 150) {
+      imgBase.width = 150;
+    }
     canvas.width = imgBase.width * 3;
-    canvas.height = imgBase.height;
+    canvas.height = imgBase.height + headerHeight;
     var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.moveTo(imgBase.width, 0);
+    ctx.lineTo(imgBase.width, headerHeight);
+    ctx.lineTo(imgBase.width+borderWidth, headerHeight);
+    ctx.lineTo(imgBase.width+borderWidth, 0);
+    ctx.lineTo(imgBase.width, 0);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(imgBase.width*2, 0);
+    ctx.lineTo(imgBase.width*2, headerHeight);
+    ctx.lineTo(imgBase.width*2+borderWidth, headerHeight);
+    ctx.lineTo(imgBase.width*2+borderWidth, 0);
+    ctx.lineTo(imgBase.width*2, 0);
+    ctx.fill();
     var imgDiffType = imgDiff.toString();
     if (imgDiffType == '[object ImageData]') {
-      ctx.putImageData(imgDiff, 0, 0);
+      ctx.putImageData(imgDiff, 0, headerHeight);
     }
     else if (imgDiffType == '[object HTMLImageElement]') {
-      ctx.drawImage(imgDiff, 0, 0);
+      ctx.drawImage(imgDiff, 0, headerHeight);
     }
     else {
       throw 'Unable to write image diff file, unknwown diff image type (' + imgDiffType + ')';
     }
-    ctx.drawImage(imgBase, imgBase.width, 0);
-    ctx.drawImage(imgCheck, imgBase.width*2, 0);
+    ctx.drawImage(imgBase, imgBase.width+borderWidth, headerHeight);
+    ctx.drawImage(imgCheck, (imgBase.width+borderWidth)*2, headerHeight);
+    ctx.font = "bold 35px Arial";
+    ctx.fillText("Diff", 10, headerHeight/1.4);
+    ctx.fillText("Base", imgBase.width + 10, headerHeight/1.4);
+    ctx.fillText("Update", imgBase.width*2 + 10, headerHeight/1.4);
     var data = canvas.toDataURL("image/jpeg", options.diffQuality/100).split(",")[1];
     fs.write(filePath.replace('png', 'jpeg'), atob(data),'wb');
   }
