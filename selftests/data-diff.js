@@ -1,10 +1,9 @@
-
 /**
  * @file
- * 
- * This file, once ran with the 'succss check' command, will creates diff files 
- * against base screenshots from data.js and put them in the directory 
- * ./self-screenshots/data-diff/.
+ *
+ * This file, once ran with the 'succss check' command, will creates diff files
+ * against base screenshots from "succss add selftests/data.js" and put them in
+ * the directory "./selftests/diff-screenshots/".
  *
  * Diff types:
  *
@@ -12,7 +11,7 @@
  * - Image (#click-here)
  * - Color (body bgColor)
  * - Movement (aside#colors)
- * 
+ *
  */
 
 phantom.injectJs(fs.workingDirectory + '/selftests/data.js');
@@ -25,12 +24,13 @@ Succss.pages['advanced-selectors'].url += '&headline=4';
 for (var selector in Succss.pages['advanced-selectors'].captures) {
   Succss.pages['advanced-selectors'].captures[selector].before = undefined;
 }
+Succss.pages['diffCanvas'].captures['logoImg'].before = undefined;
 
 Succss.callback = function(capture) {
 
   if (capture.action == 'check') {
 
-    casper.test.assertNotEquals(capture.filePath, capture.basePath, 'The updated capture was taken.');
+    casper.test.assertTruthy(fs.exists(capture.filePath), 'The updated capture was taken (' + capture.filePath + ' missing).');
     casper.test.assertNotEquals(fs.size(capture.filePath), fs.size(capture.basePath), 'Base and update are different in size.');
   }
 }
@@ -38,7 +38,7 @@ Succss.callback = function(capture) {
 Succss.options = {
   // Disabling default imagediff behavior (inverting the casper test).
   'imagediff':false,
-  'resemble':true,
+  'diffQuality':100,
   'exitOnError':false,
   'pages':'advanced-selectors',
   'pageSettings': {

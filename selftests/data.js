@@ -57,6 +57,19 @@ Succss.pages = {
           });
         }
       },
+    },
+  },
+  // 4. Showing minimum diff image width with a small capture (@see data-diff.js):
+  'diffCanvas': {
+    'url':SuccssDataCommon.url + '?&variation=10&bgColor=080',
+    'directory':SuccssDataCommon.baseDirectory+'/diff-canvas',
+    'captures': {
+      'logoImg':{
+        'selector': '#logo-image',
+        before: function() {
+          this.click('div.color-square#orange');
+        }
+      }
     }
   }
 };
