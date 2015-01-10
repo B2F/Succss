@@ -154,10 +154,11 @@ function Succss() {
       throw "[SucCSS] No captures selector found. Check your Succss.pages configuration and filters.";
     }
 
-    for (var v in viewportsData) {
-      viewportsData[v].name = v;
-      if (typeof viewportsData[v].height != 'number' || 
-          typeof viewportsData[v].width != 'number') {
+    for (var v in viewports) {
+      var viewportName = viewports[v];
+      viewportsData[viewportName].name = viewportName;
+      if (typeof viewportsData[viewportName].height != 'number' ||
+          typeof viewportsData[viewportName].width != 'number') {
         throw "[SucCSS] The viewport height and width must be set with numbers.";
       }
     }
@@ -290,7 +291,7 @@ function Succss() {
           captureState.before.call(casper, siblings);
         }
       }, function() {
-        console.log(colorizer.colorize('Selector "' + captureState.selector + '" was not found.', 'ERROR'));
+        console.log(colorizer.colorize('Selector "' + captureState.selector + '" was not found anywhere on the page.', 'ERROR'));
       });
     });
 

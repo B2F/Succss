@@ -23,3 +23,17 @@ succss add selftests/data-errors.js --pages=badPage
 echo
 echo "wrong viewports filter":
 succss add selftests/data-errors.js --viewports=badViewport
+echo
+echo "bad viewport values"
+succss add selftests/data-errors.js --pages=goodPage --viewports=brokenViewportWrongValueType
+succss add selftests/data-errors.js --pages=goodPage --viewports=brokenViewportMissingProp
+echo
+echo "missing base screenshot"
+succss check selftests/data-errors.js --pages=goodPage --viewports=goodViewport
+echo
+echo "bad url value"
+succss add selftests/data-errors.js --pages=badUrl --viewports=goodViewport
+echo
+echo "bad selector"
+succss add selftests/data-errors.js --pages=badSelector --viewports=goodViewport
+
