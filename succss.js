@@ -73,14 +73,6 @@ function Succss() {
       return captureState;
     }
 
-    var catchErrors = function(err) {
-      casper.test.error(err);
-      SuccssCount.failures++;
-      if (SuccssCount.remaining == 0 && SuccssCount.failures) {
-        casper.test.error('Tests failed with ' + SuccssCount.failures + ' errors.');
-      }
-    }
-
     if (!self.setFileName) self.setFileName = function(captureState) {
       return captureState.name + '--' + captureState.viewport.name + '-viewport.png';
     };
@@ -215,7 +207,7 @@ function Succss() {
                 }
               }
               catch (e) {
-                catchErrors(e);
+                self.catchErrors(e);
               }
             });
           }
@@ -315,7 +307,7 @@ function Succss() {
           captureState.after.call(self, captureState);
         }
         catch (err) {
-          catchErrors(err);
+          self.catchErrors(err);
         }
       }
     });
@@ -393,6 +385,14 @@ function Succss() {
     ctx.fillText("Update", imgBase.width*2 + 10, headerHeight/1.4);
     var data = canvas.toDataURL("image/jpeg", options.diffQuality/100).split(",")[1];
     fs.write(filePath.replace('png', 'jpeg'), atob(data),'wb');
+  }
+
+  self.catchErrors = function(err) {
+    casper.test.error(err);
+    SuccssCount.failures++;
+    if (SuccssCount.remaining == 0 && SuccssCount.failures) {
+      casper.test.error('Tests failed with ' + SuccssCount.failures + ' errors.');
+    }
   }
 
   return self;
