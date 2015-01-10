@@ -332,12 +332,21 @@ function Succss() {
 
     phantom.injectJs('lib/resemble.js');
 
-    var diff = resemble(imgBase.src).compareTo(imgCheck.src).onComplete(function(data){
+    resemble(imgBase.src).compareTo(imgCheck.src).onComplete(function(data){
       var imgDiff = new Image();
       imgDiff.src = data.getImageDataUrl();
       imgDiff.onload = function() {
-        var filePath = './resemble/' + SuccssCount.startTime + '/' + capture.basePath.replace(/^\.?\//, '');
-        self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
+        try {
+          var imagesMatch = !Math.round(data.misMatchPercentage);
+          if (!imagesMatch) {
+            var filePath = './resemble/' + SuccssCount.startTime + '/' + capture.basePath.replace(/^\.?\//, '');
+            self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
+          }
+          casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot (resemble).');
+        }
+        catch (e) {
+          self.catchErrors(e);
+        }
       }
     });
   }
