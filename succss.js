@@ -289,6 +289,8 @@ function Succss() {
           }
           captureState.before.call(casper, siblings);
         }
+      }, function() {
+        console.log(colorizer.colorize('Selector "' + captureState.selector + '" was not found.', 'ERROR'));
       });
     });
 
