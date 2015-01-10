@@ -36,7 +36,12 @@ function Succss() {
     }
     var data = self.pages;
 
+    var fs = self.fs;
+
     var options = self.allOptions;
+    var utils = self.utils;
+    var mouse = self.mouse;
+    var colorizer = self.colorizer;
 
     // After capture callback.
     var after = self.callback;
@@ -132,8 +137,7 @@ function Succss() {
           if (!captureFilters || captureFilters.indexOf(c) != -1) {
             capturesFound = true;
           }
-
-          if (data[page].captures[c] instanceof Object) {
+          if (typeof(data[page].captures[c]) == 'object') {
             data[page].captures[c] = {
               selector:captures[c].selector || c,
               before:captures[c].before || false

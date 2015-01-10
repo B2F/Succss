@@ -22,18 +22,23 @@ SuccssDataCommon.test = function(capture) {
   var referenceScreenshot = expectedCapturePath.replace('./', SuccssDataCommon.versionedPrefix);
 
   casper.test.assertTruthy(capture.name, '- Captured "' + capture.file + '" file for ' + capture.selector + " selector");
-  casper.test.assert(fs.exists(expectedCapturePath), '- On page "' + page.name + '" ' + page.url + ', in ' + page.directory + ' directory.');
+  casper.test.assert(this.fs.exists(expectedCapturePath), '- On page "' + page.name + '" ' + page.url + ', in ' + page.directory + ' directory.');
   casper.test.assertTruthy(viewport, '- With viewport "' + viewport.name + '" having ' + viewport.width + " width and " + viewport.height + " height.");
 
-  if(fs.size(capture.filePath) < 500) {
-    casper.test.error('The size of the generated image is less than 500 octets.');
-  }
   casper.test.assertNotEquals(capture.filePath, SuccssDataCommon.previousCaptureFile, 'The capture file path is different from previous capture.');
   SuccssDataCommon.previousCaptureFile = capture.filePath;
 
   casper.test.assertEquals(expectedCapturePath, capture.filePath, '"' + capture.page.name + '" path is ' + expectedCapturePath);
 
-  casper.test.assertEquals(fs.size(referenceScreenshot), fs.size(expectedCapturePath), 'The captured image is correct.');
+  // slimerjs does not seem to support fs.size, at least on some browsers versions.
+  if (this.allOptions.engine != 'slimerjs') {
+
+    casper.test.assertEquals(this.fs.size(referenceScreenshot), this.fs.size(expectedCapturePath), 'The captured image is correct.');
+
+    if(fs.size(capture.filePath) < 500) {
+      casper.test.error('The size of the generated image is less than 500 octets.');
+    }
+  }
 }
 
 SuccssDataCommon.assertSuiteSuccess = function(count) {

@@ -6,22 +6,21 @@
  */
 try {
 
-  var fs = require('fs');
-
   var Succss = {};
-  var colorizer = require('colorizer').create('Colorizer');
-  var utils = require('utils');
-  var cliOptions = casper.cli.options;
+  Succss.fs = require('fs');
+  Succss.colorizer = require('colorizer').create('Colorizer');
+  Succss.utils = require('utils');
+  Succss.cliOptions = casper.cli.options;
 
-  if (['add', 'check', 'help'].indexOf(cliOptions.do) == -1) {
+  if (['add', 'check', 'help'].indexOf(Succss.cliOptions.do) == -1) {
     throw new Error('succss {{add | check} FILE.js} | help }');
   }
 
-  if (fs.exists(cliOptions.dataFile)) {
-    phantom.injectJs(cliOptions.dataFile);
+  if (Succss.fs.exists(Succss.cliOptions.dataFile)) {
+    phantom.injectJs(Succss.cliOptions.dataFile);
   }
   else {
-    throw '[Succss] File "' + cliOptions.dataFile + '" not found. Please enter a valid relative path.';
+    throw '[Succss] File "' + Succss.cliOptions.dataFile + '" not found. Please enter a valid relative path.';
   }
 
   Succss.allOptions = {
@@ -37,11 +36,11 @@ try {
   for (var opt in Succss.options) {
     Succss.allOptions[opt] = Succss.options[opt];
   }
-  for (var opt in cliOptions) {
-    Succss.allOptions[opt] = cliOptions[opt];
+  for (var opt in Succss.cliOptions) {
+    Succss.allOptions[opt] = Succss.cliOptions[opt];
   }
 
-  if (cliOptions.do == 'help') {
+  if (Succss.cliOptions.do == 'help') {
     console.log('Capture base screenshots of successful CSS designs.');
     console.log('succss add FILE.js [--sets=a[,b,c...]] [--sections=d[,e,f...]] [--rmtree]');
     console.log('--sets: filter captures by datasets.');
@@ -56,20 +55,20 @@ try {
   else {
 
     Succss.casper = new casper.constructor(Succss.allOptions);
-    var mouse = require("mouse").create(Succss.casper);
+    Succss.mouse = require("mouse").create(Succss.casper);
 
     var succss = require('succss.js').Succss.call(Succss);
 
-    if (cliOptions.do == 'add') {
+    if (Succss.cliOptions.do == 'add') {
       succss.add();
     }
-    else if (cliOptions.do == 'check') {
+    else if (Succss.cliOptions.do == 'check') {
       succss.check();
     }
   }
 }
 catch(e) {
-  console.log(colorizer.colorize(e, 'COMMENT'));
+  console.log(Succss.colorizer.colorize(e, 'COMMENT'));
   console.log('See succss.ifzenelse.net for more infos.');
   console.log('Wrong succss arguments. Type succss help for help.');
   casper.exit();
