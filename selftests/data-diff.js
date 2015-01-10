@@ -41,9 +41,6 @@ Succss.options = {
   'diffQuality':100,
   'exitOnError':false,
   'pages':'advanced-selectors',
-  'pageSettings': {
-    loadImages:  false,
-  }
 }
 
 /*
