@@ -77,8 +77,8 @@ try {
   }
 }
 catch(e) {
-  console.log(Succss.colorizer.colorize(e, 'COMMENT'));
-  console.log('See succss.ifzenelse.net for more infos.');
-  console.log('Wrong succss arguments. Type succss help for help.');
+  Succss.echo(e, 'COMMENT');
+  Succss.echo('See succss.ifzenelse.net for more infos.');
+  Succss.echo('Wrong succss arguments. Type succss help for help.');
   casper.exit();
 }
