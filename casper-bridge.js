@@ -63,7 +63,14 @@ try {
       succss.add();
     }
     else if (Succss.cliOptions.do == 'check') {
-      succss.check();
+      try {
+        slimer;
+        console.log(Succss.colorizer.colorize('[Succss] succss does not currently support the check command with slimerjs engine."', 'ERROR'));
+        casper.exit();
+      }
+      catch(e) {
+        succss.check();
+      }
     }
   }
 }
