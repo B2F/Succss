@@ -12,6 +12,10 @@ try {
   Succss.utils = require('utils');
   Succss.cliOptions = casper.cli.options;
 
+  Succss.echo = function(msg, type) {
+    console.log(Succss.colorizer.colorize(msg, type));
+  }
+
   if (['add', 'check', 'help'].indexOf(Succss.cliOptions.do) == -1) {
     throw new Error('succss {{add | check} FILE.js} | help }');
   }
@@ -19,7 +23,7 @@ try {
   if (Succss.fs.exists(Succss.cliOptions.dataFile)) {
     phantom.injectJs(Succss.cliOptions.dataFile);
   }
-  else {
+  else if (Succss.cliOptions.do != 'help') {
     throw '[Succss] File "' + Succss.cliOptions.dataFile + '" not found. Please enter a valid relative path.';
   }
 
@@ -41,15 +45,13 @@ try {
   }
 
   if (Succss.cliOptions.do == 'help') {
-    console.log('Capture base screenshots of successful CSS designs.');
-    console.log('succss add FILE.js [--sets=a[,b,c...]] [--sections=d[,e,f...]] [--rmtree]');
-    console.log('--sets: filter captures by datasets.');
-    console.log('--sections: filter captures by sections (require at least one dataset).');
-    console.log('--rmtree: erase the base directory recusively before capture.');
-    console.log('\nCheck and report if the current CSS is successful or failing.')
-    console.log('succss check FILE.js [--sets=a[,b,c...]] [--sections=d[,e,f...]]');
-    console.log('--sets: filter captures by datasets.');
-    console.log('--sections: filter captures by sections (require at least one dataset).');
+    Succss.echo('Capture base screenshots of successful CSS designs.', 'INFO');
+    Succss.echo('succss {{add | check} FILE.js} | help } [--pages=p1,p2,p3...] [--captures=c1,c2,c3...] [--viewports=v1,v2,v3...] [--rmtree]', 'COMMENT');
+    Succss.echo('--pages: filter captures by pages.', 'PARAMETER');
+    Succss.echo('--captures: filter captures by selectors.', 'PARAMETER');
+    Succss.echo('--viewports: filter captures by viewports.', 'PARAMETER');
+    Succss.echo('--rmtree: erase the base directory recusively before capture.', 'PARAMETER');
+    Succss.echo('@see http://succss.ifzenelse.net', 'INFO_BAR');
     casper.exit();
   }
   else {
