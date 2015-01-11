@@ -172,6 +172,16 @@ function Succss() {
     casperInstance.exit();
   }
 
+  casperInstance.on('remote.callback', function(data) {
+
+    if (data.dump) {
+      utils.dump(data.dump);
+    }
+    else {
+      console.log(data);
+    }
+  });
+
   self.add = function() {
 
     var command = function(capture) {
