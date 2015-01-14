@@ -234,8 +234,16 @@ function Succss() {
                 self.catchErrors(e);
               }
             });
-            if (!options.skipUpdates && !SuccssCount.remaining && ['.','./','/',undefined].indexOf(capture.options.diffDir) == -1) {
-              fs.removeTree(capture.options.diffDir);
+            if (!SuccssCount.remaining) {
+              if (!options.skipUpdates && !SuccssCount.remaining && ['.','./','/',undefined].indexOf(capture.options.diffDir) == -1) {
+                fs.removeTree(capture.options.diffDir);
+              }
+              if (SuccssCount.failures) {
+                casper.test.error('Tests failed with ' + SuccssCount.failures + ' errors.');
+              }
+              else {
+                self.echo('[SUCCSS] All captures (' + SuccssCount.planned + ') tests pass!', 'GREEN_BAR');
+              }
             }
           }
         }
@@ -425,9 +433,6 @@ function Succss() {
   self.catchErrors = function(err) {
     casper.test.error(err);
     SuccssCount.failures++;
-    if (SuccssCount.remaining == 0 && SuccssCount.failures) {
-      casper.test.error('Tests failed with ' + SuccssCount.failures + ' errors.');
-    }
   }
 
   return self;
