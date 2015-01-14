@@ -26,6 +26,14 @@ function Succss() {
 
     var self = this;
 
+    var fs = self.fs;
+    var options = self.allOptions;
+    var utils = self.utils;
+    var mouse = self.mouse;
+    var colorizer = self.colorizer;
+
+    this.echo('|-> ' + options.do + ' file: ' + options.dataFile, 'INFO_BAR');
+
     if (!self.casper) {
       throw "[SucCSS] Succss.casper instance missing.";
     }
@@ -35,13 +43,6 @@ function Succss() {
       throw "[SucCSS] Succss.pages instance missing. See succss.ifzenelse.net";
     }
     var data = self.pages;
-
-    var fs = self.fs;
-
-    var options = self.allOptions;
-    var utils = self.utils;
-    var mouse = self.mouse;
-    var colorizer = self.colorizer;
 
     // After capture callback.
     var after = self.callback;
