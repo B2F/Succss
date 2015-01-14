@@ -7,7 +7,7 @@ if [ -n "$2" ]; then
 fi
 shift
 shift
-casperjs test $scriptDir/../casper-bridge.js --do="$command" --dataFile="$userFile" $@
+casperjs test $scriptDir/../succss-bridge.js --do="$command" --dataFile="$userFile" $@
 
 realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
