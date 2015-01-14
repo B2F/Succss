@@ -72,7 +72,7 @@ function Succss() {
       captureState.basePath = captureState.page.directory + '/' + captureState.file;
       captureState.filePath = captureState.basePath;
       if (action == 'check') {
-        captureState.filePath = options.tmpDir+'/'+captureState.page.directory+'/'+captureState.file;
+        captureState.filePath = cleanPreprendPath(options.diffDir, captureState.page.directory+'/'+captureState.file);
         captureState.filePath = captureState.filePath.replace(/\.\//, '');
       }
       captureState.action = action;
@@ -120,6 +120,7 @@ function Succss() {
       }
 
       if (!data[page].directory) data[page].directory = './screenshots';
+      if (options.rootDir) data[page].directory = cleanPreprendPath(options.rootDir, data[page].directory);
 
       if (data[page].captures == undefined || !Object.keys(data[page].captures).length) {
         data[page].captures = {
@@ -197,7 +198,9 @@ function Succss() {
 
     var command = function(capture) {
 
-      self.takeScreenshot(casperInstance, capture);
+      if (!options.skipUpdates) {
+        self.takeScreenshot(casperInstance, capture);
+      }
 
       casperInstance.then(function() {
 
@@ -226,9 +229,9 @@ function Succss() {
                 self.catchErrors(e);
               }
             });
-          }
-          if (!SuccssCount.remaining && ['.','./','/',undefined].indexOf(capture.options.tmpDir) == -1) {
-            fs.removeTree(capture.options.tmpDir);
+            if (!options.skipUpdates && !SuccssCount.remaining && ['.','./','/',undefined].indexOf(capture.options.diffDir) == -1) {
+              fs.removeTree(capture.options.diffDir);
+            }
           }
         }
       });
@@ -423,4 +426,8 @@ function Succss() {
   }
 
   return self;
+}
+
+function cleanPreprendPath(path, dir) {
+  return path.replace(/\/$/, '') + '/' + dir.replace(/^(\.\/|\/)/, '');
 }
