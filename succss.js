@@ -205,15 +205,20 @@ function Succss() {
       casperInstance.then(function() {
 
         var imgLoadCount = 0;
-        imgBase = new Image();
         if (fs.exists(capture.basePath)) {
+          imgBase = new Image();
           imgBase.src = fs.absolute(capture.basePath);
         }
         else {
           throw "[SucCSS] Base screenshot not found (" + capture.basePath + "). Did you forget to add it ?";
         }
-        imgCheck = new Image();
-        imgCheck.src = fs.absolute(capture.filePath);
+        if (fs.exists(capture.filePath)) {
+          imgCheck = new Image();
+          imgCheck.src = fs.absolute(capture.filePath);
+        }
+        else {
+          throw "[SucCSS] Update screenshots not found (" + capture.filePath + "). Check your --rootDir, --diffDir and --skipUpdates options.";
+        }
 
         imgBase.onload = imgCheck.onload = function() {
 
@@ -338,10 +343,10 @@ function Succss() {
 
     phantom.injectJs('lib/imagediff.js');
 
-    imgDiff = imagediff.diff(imgBase, imgCheck);
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
     if (!imagesMatch) {
       var filePath = './imagediff/' + SuccssCount.startTime + '/' + capture.basePath.replace(/^\.?\//, '');
+      var imgDiff = imagediff.diff(imgBase, imgCheck);
       self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
     }
     casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot (imagediff).');
