@@ -12,9 +12,6 @@ echo
 echo "check with a filter, imagediff (default) and resemble (optional)"
 succss check selftests/data.js --pages=advanced-selectors --resemble=true
 echo
-echo "writing diff images"
-succss check selftests/data-diff.js --pages=advanced-selectors
-echo
 echo "Writing small diff images with minimum width"
 succss add selftests/data.js --pages=diffCanvas
 succss check selftests/data-diff.js --pages=diffCanvas
