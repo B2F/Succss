@@ -4,7 +4,7 @@
   "description": "Easy to install, easy to use CSS regression testing tool.",
   "author": "B2F <d4rb2f@gmail.com>",
   "bin": {
-    "succss": "./bin/succss"
+    "succss": "./bin/succss.py"
   },
   "scripts": {
     "test": "./selftests/run.sh"
