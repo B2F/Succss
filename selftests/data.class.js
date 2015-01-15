@@ -33,10 +33,8 @@ SuccssDataCommon.test = function(capture) {
   // slimerjs does not seem to support fs.size, at least on some browsers versions.
   if (this.allOptions.engine != 'slimerjs') {
 
-    casper.test.assertEquals(this.fs.size(referenceScreenshot), this.fs.size(expectedCapturePath), 'The captured image is correct.');
-
     if(fs.size(capture.filePath) < 500) {
-      casper.test.error('The size of the generated image is less than 500 octets.');
+      this.echo('The size of the generated image is less than 500 octets.', 'WARNING');
     }
   }
 }
