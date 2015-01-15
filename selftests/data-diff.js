@@ -31,7 +31,12 @@ Succss.callback = function(capture) {
   if (capture.action == 'check') {
 
     casper.test.assertTruthy(fs.exists(capture.filePath), 'The updated capture was taken (' + capture.filePath + ').');
-    casper.test.assertNotEquals(fs.size(capture.filePath), fs.size(capture.basePath), 'Base and update are different in size.');
+    if (capture.options.good) {
+      casper.test.assertEquals(fs.size(capture.filePath), fs.size(capture.basePath), 'Base and update match.');
+    }
+    else {
+      casper.test.assertNotEquals(fs.size(capture.filePath), fs.size(capture.basePath), 'Base and update are different in size.');
+    }
   }
 }
 
