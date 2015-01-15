@@ -30,6 +30,7 @@ try {
 
   switch (Succss.cliOptions.do) {
 
+    case undefined:
     case 'help':
 
       Succss.echo('Capture base screenshots of successful CSS designs.', 'INFO');
@@ -86,6 +87,6 @@ try {
 catch(e) {
   Succss.echo(e, 'COMMENT');
   Succss.echo('See succss.ifzenelse.net for more infos.');
-  Succss.echo('Wrong succss arguments. Type succss help for help.');
+  Succss.echo('Wrong succss arguments. Type succss help for infos.');
   casper.exit();
 }
