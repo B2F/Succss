@@ -32,7 +32,7 @@ function Succss() {
     var mouse = self.mouse;
     var colorizer = self.colorizer;
 
-    this.echo('|-> ' + options.do + ' file: ' + options.dataFile, 'INFO_BAR');
+    self.echo('|-> ' + options.do + ' from file: ' + options.dataFile, 'INFO_BAR');
 
     if (!self.casper) {
       throw "[SucCSS] Succss.casper instance missing.";
@@ -430,6 +430,7 @@ function Succss() {
     ctx.fillText("Update", imgBase.width*2 + 10, headerHeight/1.4);
     var data = canvas.toDataURL("image/jpeg", options.diffQuality/100).split(",")[1];
     fs.write(filePath.replace('png', 'jpeg'), atob(data),'wb');
+    self.echo('The diff image has been written in : ' + filePath, 'INFO');
   }
 
   self.catchErrors = function(err) {
