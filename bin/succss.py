@@ -45,9 +45,8 @@ if slimerjsCheck:
   print 'Done'
   # preparing to check with default engine:
   allArgs.pop(engineArgPos)
-  allArgs.append('--skipUpdates=true')
   allArgs.pop(allArgs.index('--rootDir=.slimerjs-base'))
-  allArgs.append('--diffDir=.slimerjs-base')
+  allArgs.append('--checkDir=.slimerjs-base')
   allArgs.pop(allArgs.index('--do=add'))
   allArgs.append('--do=check')
   call(allArgs)

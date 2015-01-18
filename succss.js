@@ -72,7 +72,7 @@ function Succss() {
       captureState.basePath = captureState.page.directory + '/' + captureState.file;
       captureState.filePath = captureState.basePath;
       if (action == 'check') {
-        captureState.filePath = cleanPreprendPath(options.diffDir, captureState.page.directory+'/'+captureState.file);
+        captureState.filePath = cleanPreprendPath(checkDir, captureState.page.directory+'/'+captureState.file);
         captureState.filePath = captureState.filePath.replace(/\.\//, '');
       }
       captureState.action = action;
@@ -82,6 +82,8 @@ function Succss() {
     if (!self.setFileName) self.setFileName = function(captureState) {
       return captureState.name + '--' + captureState.viewport.name + '-viewport.png';
     };
+
+    var checkDir = options.checkDir || '.succss-tmp';
 
     if (options.pages != undefined) {
       pages = options.pages.split(',');
@@ -198,7 +200,7 @@ function Succss() {
 
     var command = function(capture) {
 
-      if (!options.skipUpdates) {
+      if (!options.checkDir) {
         self.takeScreenshot(casperInstance, capture);
       }
 
@@ -217,7 +219,7 @@ function Succss() {
           imgCheck.src = fs.absolute(capture.filePath);
         }
         else {
-          throw "[SucCSS] Update screenshots not found (" + capture.filePath + "). Check your --rootDir, --diffDir and --skipUpdates options.";
+          throw "[SucCSS] Screenshot updates not found (" + capture.filePath + "). Check your --checkDir option.";
         }
 
         imgBase.onload = imgCheck.onload = function() {
@@ -235,8 +237,8 @@ function Succss() {
               }
             });
             if (!SuccssCount.remaining) {
-              if (!options.skipUpdates && !SuccssCount.remaining && ['.','./','/',undefined].indexOf(capture.options.diffDir) == -1) {
-                fs.removeTree(capture.options.diffDir);
+              if (!options.checkDir && !SuccssCount.remaining) {
+                fs.removeTree(checkDir);
               }
               if (SuccssCount.failures) {
                 casper.test.error('Tests failed with ' + SuccssCount.failures + ' errors.');

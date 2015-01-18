@@ -60,7 +60,6 @@ try {
       Succss.allOptions = {
         imgType:'png',
         imgQuality:'80',
-        diffDir:'.succss-tmp',
         diff:true,
         imagediff:true,
         resemble:false,
