@@ -90,6 +90,9 @@ function Succss() {
     };
 
     var checkDir = options.checkDir || '.succss-tmp';
+    if (options.checkDir && !fs.isDirectory(checkDir)) {
+      throw "[SucCSS] Reference directory not found. Check your --checkDir option.";
+    }
 
     if (options.pages != undefined) {
       pages = options.pages.split(',');
@@ -225,7 +228,7 @@ function Succss() {
           imgCheck.src = fs.absolute(capture.filePath);
         }
         else {
-          throw "[SucCSS] Screenshot updates not found (" + capture.filePath + "). Check your --checkDir option.";
+          throw "[SucCSS] Screenshot reference not found (" + capture.filePath + "). Check your --checkDir option.";
         }
 
         imgBase.onload = imgCheck.onload = function() {
