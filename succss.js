@@ -195,6 +195,15 @@ function Succss() {
     }
   });
 
+  casperInstance.on('run.complete', function(data) {
+    if (SuccssCount.failures) {
+      casper.test.error('Tests failed with ' + SuccssCount.failures + ' errors.');
+    }
+    else {
+      self.echo('[SUCCSS] All captures (' + SuccssCount.planned + ') tests pass!', 'GREEN_BAR');
+    }
+  });
+
   self.add = function() {
 
     var command = function(capture) {
@@ -248,12 +257,6 @@ function Succss() {
             if (!SuccssCount.remaining) {
               if (!options.checkDir && !SuccssCount.remaining) {
                 fs.removeTree(checkDir);
-              }
-              if (SuccssCount.failures) {
-                casper.test.error('Tests failed with ' + SuccssCount.failures + ' errors.');
-              }
-              else {
-                self.echo('[SUCCSS] All captures (' + SuccssCount.planned + ') tests pass!', 'GREEN_BAR');
               }
             }
           }
