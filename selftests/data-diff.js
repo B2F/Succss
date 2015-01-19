@@ -16,7 +16,7 @@
 
 phantom.injectJs(fs.workingDirectory + '/selftests/data.js');
 
-// Replaces bgColor 080 by 088
+// Replaces body's background-color #080 by #088
 Succss.pages['advanced-selectors'].url.replace('bgColor=080', 'bgColor=088');
 // Changing default headline (header #dynamic-line) to another one
 Succss.pages['advanced-selectors'].url += '&headline=4';
@@ -59,7 +59,7 @@ Succss.diff = function(imgBase, imgCheck, capture) {
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
 
     if (!imagesMatch) {
-      var filePath = capture.filePath.replace('.succss-tmp/', './selftests/diff-screenshots/');
+      var filePath = capture.filePath.replace(/^.*\//, './selftests/diff-screenshots/');
       this.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
     }
 

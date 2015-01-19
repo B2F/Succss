@@ -82,7 +82,7 @@ Succss.pages = {
  * capture.options (current filters): pages, captures, viewports
  */
 Succss.setFileName = function(capture) {
-  return capture.page.name + '--' + capture.name + '--' + capture.viewport.width + 'x' + capture.viewport.height + '.png';
+  return capture.page.name + '-' + capture.name + '-' + capture.viewport.width + 'x' + capture.viewport.height + '.png';
 };
 
 Succss.viewports = {

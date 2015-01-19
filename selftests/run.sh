@@ -10,7 +10,7 @@ echo "single filter, custom configuration and rmtree option"
 succss add selftests/data.js --pages=advanced-selectors --rmtree
 echo
 echo "check with a filter, imagediff (default) and resemble (optional)"
-succss check selftests/data.js --pages=advanced-selectors --resemble=true
+succss check selftests/data.js --pages=advanced-selectors --resemble
 echo
 echo "Writing small diff images with minimum width"
 succss add selftests/data.js --pages=diffCanvas

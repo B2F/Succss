@@ -16,7 +16,7 @@ Succss.pages = {
     directory:SuccssDataCommon.baseDirectory,
     // Key:name Value:CSS selector.
     captures: {
-      'homebody':'body',
+      'body':'',
     },
   }
 }
@@ -37,7 +37,7 @@ Succss.callback = function (capture) {
         break;
 
       case 'home':
-        var defaultPath = './screenshots/body--default-viewport.png';
+        var defaultPath = './screenshots/defaults--body--default-viewport.png';
         if (fs.exists(defaultPath)) {
           casper.test.assertEquals(fs.size(capture.filePath), fs.size(defaultPath), 'Basic and default captures have the same size');
         }
