@@ -46,17 +46,6 @@ try {
     case 'add':
     case 'check':
 
-      Succss.casper = new casper.constructor(Succss.allOptions);
-      Succss.mouse = require("mouse").create(Succss.casper);
-
-      var dataFilePath = Succss.cliOptions.dataFile;
-      if (fs.exists(dataFilePath)) {
-        phantom.injectJs(dataFilePath);
-      }
-      else {
-        throw '[Succss] File "' + dataFilePath + '" not found. Please enter a valid relative path.';
-      }
-
       Succss.allOptions = {
         imgType:'png',
         imgQuality:'80',
@@ -67,12 +56,23 @@ try {
         tolerancePixels:'0',
       };
 
+      var dataFilePath = Succss.cliOptions.dataFile;
+      if (fs.exists(dataFilePath)) {
+        phantom.injectJs(dataFilePath);
+      }
+      else {
+        throw '[Succss] File "' + dataFilePath + '" not found. Please enter a valid relative path.';
+      }
+
       for (var opt in Succss.options) {
         Succss.allOptions[opt] = Succss.options[opt];
       }
       for (var opt in Succss.cliOptions) {
         Succss.allOptions[opt] = Succss.cliOptions[opt];
       }
+
+      Succss.casper = new casper.constructor(Succss.allOptions);
+      Succss.mouse = require("mouse").create(Succss.casper);
 
       var succss = require('succss.js').Succss.call(Succss);
       succss[Succss.cliOptions.do]();
