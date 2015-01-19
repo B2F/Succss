@@ -86,7 +86,7 @@ function Succss() {
     }
 
     if (!self.setFileName) self.setFileName = function(captureState) {
-      return captureState.name + '--' + captureState.viewport.name + '-viewport.png';
+      return captureState.page.name + '--' + captureState.name + '--' + captureState.viewport.name + '-viewport.png';
     };
 
     var checkDir = options.checkDir || '.succss-tmp';
