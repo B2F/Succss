@@ -224,6 +224,16 @@ function Succss() {
 
       casperInstance.then(function() {
 
+        // After capture or on checkDir:
+        if (capture.after != undefined) {
+          try {
+            capture.after.call(self, capture);
+          }
+          catch (err) {
+            self.catchErrors(err);
+          }
+        }
+
         var imgLoadCount = 0;
         if (fs.exists(capture.basePath)) {
           imgBase = new Image();
@@ -349,15 +359,6 @@ function Succss() {
 
       casper.captureSelector(captureState.filePath, captureState.selector, imgOptions);
 
-      // After capture:
-      if (captureState.after != undefined) {
-        try {
-          captureState.after.call(self, captureState);
-        }
-        catch (err) {
-          self.catchErrors(err);
-        }
-      }
     });
   }
 
