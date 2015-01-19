@@ -40,9 +40,9 @@ if slimerjsCheck:
   # adding tmp updates with slimerjs
   allArgs.append('--rootDir=.slimerjs-base')
   p=subprocess.Popen(allArgs,stdin=subprocess.PIPE,stdout=subprocess.PIPE)
-  print '... Taking captures updates'
+  print('... Taking captures updates')
   msg = p.communicate()
-  print 'Done'
+  print('Done')
   # preparing to check with default engine:
   allArgs.pop(engineArgPos)
   allArgs.pop(allArgs.index('--rootDir=.slimerjs-base'))
