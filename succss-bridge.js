@@ -71,6 +71,15 @@ try {
         Succss.allOptions[opt] = Succss.cliOptions[opt];
       }
 
+      Succss.getAllOptions = function() {
+        var allOptions = '';
+        for (var i in Succss.allOptions) {
+          allOptions += '--' + i + '=' + Succss.allOptions[i] + ', ';
+        }
+        allOptions = allOptions.slice(0, -2);
+        return allOptions;
+      }
+
       Succss.casper = new casper.constructor(Succss.allOptions);
       Succss.mouse = require("mouse").create(Succss.casper);
 

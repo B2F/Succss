@@ -26,6 +26,12 @@ function Succss() {
 
     var self = this;
 
+    if (!self.casper) {
+      throw "[SucCSS] Succss.casper instance missing.";
+    }
+
+    var casperInstance = self.casper;
+
     var fs = self.fs;
     var options = self.allOptions;
     var utils = self.utils;
@@ -34,10 +40,10 @@ function Succss() {
 
     self.echo('|-> ' + options.do + ' from file: ' + options.dataFile, 'INFO_BAR');
 
-    if (!self.casper) {
-      throw "[SucCSS] Succss.casper instance missing.";
+    if ((typeof self.getAllOptions == 'function')) {
+      var logMsg = '[SucCSS] Options: ' + self.getAllOptions();
+      self.casper.log(logMsg, 'info');
     }
-    var casperInstance = self.casper;
 
     if (!self.pages) {
       throw "[SucCSS] Succss.pages instance missing. See succss.ifzenelse.net";
