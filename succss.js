@@ -342,7 +342,8 @@ function Succss() {
 
                 casperInstance.viewport(capture.viewport.width, capture.viewport.height);
 
-              if (casperInstance.currentHTTPStatus != 200) {
+                // Throw on Client (4xx) or Server (5xx) errors.
+                if (casperInstance.currentHTTPStatus > 400) {
                   switch (casperInstance.currentHTTPStatus) {
                     case null:
                       throw "[SucCSS] Can't access " + capture.page.url + ". Check the website url and your internet connexion.";
