@@ -237,36 +237,42 @@ function Succss() {
 
     var command = function(capture) {
 
-      if (!options.checkDir) {
+      if (!options.checkDir && !options.slimerCheck) {
         self.takeScreenshot(casperInstance, capture);
       }
 
       casperInstance.then(function() {
 
-        // After capture or on checkDir:
-        if (capture.after != undefined) {
-          try {
-            capture.after.call(self, capture);
-          }
-          catch (err) {
-            self.catchErrors(err);
-          }
-        }
+        try {
 
-        var imgLoadCount = 0;
-        if (fs.exists(capture.basePath)) {
-          imgBase = new Image();
-          imgBase.src = fs.absolute(capture.basePath);
+          // After capture or on checkDir:
+          if (capture.after != undefined) {
+            try {
+              capture.after.call(self, capture);
+            }
+            catch (err) {
+              self.catchErrors(err);
+            }
+          }
+
+          var imgLoadCount = 0;
+          if (fs.exists(capture.basePath)) {
+            imgBase = new Image();
+            imgBase.src = fs.absolute(capture.basePath);
+          }
+          else {
+            throw "[SucCSS] Base screenshot not found (" + capture.basePath + "). Did you forget to add it ?";
+          }
+          if (fs.exists(capture.filePath)) {
+            imgCheck = new Image();
+            imgCheck.src = fs.absolute(capture.filePath);
+          }
+          else {
+            throw "[SucCSS] Screenshot reference not found (" + capture.filePath + "). Check your --checkDir option.";
+          }
         }
-        else {
-          throw "[SucCSS] Base screenshot not found (" + capture.basePath + "). Did you forget to add it ?";
-        }
-        if (fs.exists(capture.filePath)) {
-          imgCheck = new Image();
-          imgCheck.src = fs.absolute(capture.filePath);
-        }
-        else {
-          throw "[SucCSS] Screenshot reference not found (" + capture.filePath + "). Check your --checkDir option.";
+        catch (err) {
+          self.catchErrors(err);
         }
 
         imgBase.onload = imgCheck.onload = function() {
@@ -452,7 +458,7 @@ function Succss() {
       ctx.drawImage(imgDiff, 0, headerHeight);
     }
     else {
-      throw 'Unable to write image diff file, unknwown diff image type (' + imgDiffType + ')';
+      throw 'Unable to write image diff file, unknown diff image type (' + imgDiffType + ')';
     }
     ctx.drawImage(imgBase, imgBase.width+borderWidth, headerHeight);
     ctx.drawImage(imgCheck, (imgBase.width+borderWidth)*2, headerHeight);
