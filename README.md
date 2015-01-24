@@ -1,7 +1,7 @@
 ##SUCCSS, a CSS Regression testing tool
 ###Turn your CSS designs into successful integrations.
 
-Full documentation: [succss.ifzenelse.net][7]
+Full documentation at: [succss.ifzenelse.net][7]
 
 ####Install:
 ```
@@ -56,14 +56,14 @@ succss check your-conf.js
 
 ####Do you need more infos ?
 
-.) [Typical use cases][0]
-.) [Installation troubleshooting][1]
-.) [Advanced Configuration][2]
-.) [Succss from the CLI][3]
-.) [Custom validations][4]
-.) [Why another CSS Regression Testing tool ?][5]
-.) [Fork Succss !][6]
-<-- [Home page][7]
+- [Installation troubleshooting][1]
+- [Advanced Configuration][2]
+- [Succss from the CLI][3]
+- [Custom validations][4]
+- [Why another CSS Regression Testing tool ?][5]
+- [Fork Succss !][6]
+- [Typical use cases][0]
+- --[Home page][7]
 
 [0]:http://succss.ifzenelse.net/usecases
 [1]:http://succss.ifzenelse.net/installation
@@ -72,4 +72,4 @@ succss check your-conf.js
 [4]:http://succss.ifzenelse.net/customize
 [5]:http://succss.ifzenelse.net/why
 [6]:http://succss.ifzenelse.net/fork
-[7]:http://succss.ifzenelse.net/index.php
+[7]:http://succss.ifzenelse.net/home
