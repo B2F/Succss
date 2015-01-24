@@ -330,28 +330,33 @@ function Succss() {
 
             casperInstance.thenOpen(data[p].url, function(){
 
-              SuccssCount.remaining--;
+              try {
 
-              var capture = createCaptureState(p, c, v, action);
+                SuccssCount.remaining--;
 
-              self.echo('\nCapturing "' + capture.page.name + '" ' + capture.name + ' screenshot with ' + v + ' viewport:', 'INFO');
-              self.echo('Selector is: "' + capture.selector + '"', 'PARAMETER');
-              self.echo('> Opening ' + capture.page.url, 'PARAMETER');
+                var capture = createCaptureState(p, c, v, action);
 
-              casperInstance.viewport(capture.viewport.width, capture.viewport.height);
+                self.echo('\nCapturing "' + capture.page.name + '" ' + capture.name + ' screenshot with ' + v + ' viewport:', 'INFO');
+                self.echo('Selector is: "' + capture.selector + '"', 'PARAMETER');
+                self.echo('> Opening ' + capture.page.url, 'PARAMETER');
+
+                casperInstance.viewport(capture.viewport.width, capture.viewport.height);
 
               if (casperInstance.currentHTTPStatus != 200) {
-                switch (casperInstance.currentHTTPStatus) {
-                  case null:
-                    throw "[SucCSS] Can't access " + capture.page.url + ". Check the website url and your internet connexion.";
-                    break;
-                  default:
-                    throw "[SucCSS] Response code for " + capture.page.url + " was " + casperInstance.currentHTTPStatus;
+                  switch (casperInstance.currentHTTPStatus) {
+                    case null:
+                      throw "[SucCSS] Can't access " + capture.page.url + ". Check the website url and your internet connexion.";
+                      break;
+                    default:
+                      throw "[SucCSS] Response code for " + capture.page.url + " was " + casperInstance.currentHTTPStatus;
+                  }
                 }
+
+                command(capture);
               }
-
-              command(capture);
-
+              catch(e) {
+                self.catchErrors(e);
+              }
             });
           });
         });
@@ -474,7 +479,7 @@ function Succss() {
       ctx.drawImage(imgDiff, 0, headerHeight);
     }
     else {
-      throw 'Unable to write image diff file, unknown diff image type (' + imgDiffType + ')';
+      casper.test.error('Unable to write image diff file, unknown diff image type (' + imgDiffType + ')');
     }
     ctx.drawImage(imgBase, imgBase.width+borderWidth, headerHeight);
     ctx.drawImage(imgCheck, (imgBase.width+borderWidth)*2, headerHeight);
@@ -489,7 +494,7 @@ function Succss() {
 
   self.catchErrors = function(err) {
     SuccssCount.failures++;
-    casper.test.error(err);
+    self.echo(err, 'ERROR');
   }
 
   return self;
