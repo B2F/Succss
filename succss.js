@@ -123,6 +123,25 @@ function Succss() {
       var page = pages[p];
       data[page].name = page;
 
+      if (data[page].source != undefined) {
+        var source = data[page].source;
+        if (data[source] == undefined) {
+          throw "[SucCSS] Tried to copy unexisting " +  source + " to " + page;
+        }
+        function extendPage(origin, copy) {
+          for (var prop in origin) {
+            if (copy[prop] == undefined && origin[prop]) {
+              copy[prop] = origin[prop];
+            }
+            else if (typeof(copy[prop]) == 'object') {
+              copy[prop] = extendPage(origin[prop], copy[prop]);
+            }
+          }
+          return copy;
+        }
+        data[page] = extendPage(data[source], data[page]);
+      }
+
       if (data[page].url == undefined) {
         throw "[SucCSS] Each configuration page requires an url, see succss.ifzenelse.net example.";
       }
