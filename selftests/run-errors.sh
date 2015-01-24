@@ -36,4 +36,6 @@ succss add selftests/data-errors.js --pages=badUrl --viewports=goodViewport
 echo
 echo "bad selector"
 succss add selftests/data-errors.js --pages=badSelector --viewports=goodViewport
-
+echo
+echo 'compare pages and viewports'
+succss check selftests/data-compare.js
