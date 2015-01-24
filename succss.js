@@ -220,7 +220,7 @@ function Succss() {
 
   casperInstance.on('run.complete', function(data) {
     if (SuccssCount.failures) {
-      casper.test.error('Tests failed with ' + SuccssCount.failures + ' errors.');
+      self.echo('Tests failed with ' + SuccssCount.failures + ' errors.', 'ERROR');
     }
     else {
       self.echo('[SUCCSS] All captures (' + SuccssCount.planned + ') tests pass!', 'GREEN_BAR');
@@ -385,9 +385,13 @@ function Succss() {
     };
 
     casper.then(function() {
-
-      casper.captureSelector(captureState.filePath, captureState.selector, imgOptions);
-
+      try {
+        casper.captureSelector(captureState.filePath, captureState.selector, imgOptions);
+      }
+      catch (err) {
+        self.echo(err, 'ERROR');
+        self.catchErrors(err);
+      }
     });
   }
 
@@ -479,8 +483,8 @@ function Succss() {
   }
 
   self.catchErrors = function(err) {
-    casper.test.error(err);
     SuccssCount.failures++;
+    casper.test.error(err);
   }
 
   return self;
