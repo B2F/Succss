@@ -75,10 +75,15 @@ function Succss() {
       captureState.count = SuccssCount;
       // Available in after capture callback:
       captureState.file = self.setFileName(captureState);
-      captureState.basePath = captureState.page.directory + '/' + captureState.file;
+      captureState.basePath = captureState.page.directory.replace(/\/$/, '') + '/' + captureState.file;
       captureState.filePath = captureState.basePath;
       if (action == 'check') {
-        captureState.filePath = cleanPreprendPath(checkDir, captureState.page.directory+'/'+captureState.file);
+        var checkPrefix = checkDir;
+        if (!options.checkDir) {
+          var uniqueDirId = captureState.page.name + '-' + captureState.viewport.name;
+          checkPrefix = checkDir + '/' + uniqueDirId;
+        }
+        captureState.filePath = cleanPreprendPath(checkPrefix, captureState.page.directory+'/'+captureState.file);
         captureState.filePath = captureState.filePath.replace(/\.\//, '');
       }
       captureState.action = action;
@@ -393,7 +398,7 @@ function Succss() {
 
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
     if (!imagesMatch) {
-      var filePath = './imagediff/' + SuccssCount.startTime + '/' + capture.basePath.replace(/^\.?\//, '');
+      var filePath = './imagediff/' + SuccssCount.startTime + '/' + capture.filePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
       var imgDiff = imagediff.diff(imgBase, imgCheck);
       self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
     }
@@ -411,7 +416,7 @@ function Succss() {
         try {
           var imagesMatch = !Math.round(data.misMatchPercentage);
           if (!imagesMatch) {
-            var filePath = './resemble/' + SuccssCount.startTime + '/' + capture.basePath.replace(/^\.?\//, '');
+            var filePath = './resemble/' + SuccssCount.startTime + '/' + capture.filePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
             self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
           }
           casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot (resemble).');
