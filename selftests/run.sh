@@ -16,6 +16,9 @@ echo "Writing small diff images with minimum width"
 succss add selftests/data.js --pages=diffCanvas
 succss check selftests/data-diff.js --pages=diffCanvas
 echo
+echo with static images comparison
+succss check selftests/data.js --pages=diffCanvas --checkDir=selftests/static-images
+echo
 echo phantom base, phantom matches, slimer diff
 succss add selftests/data-diff.js --pages=installation
 succss check selftests/data-diff.js --pages=installation --diff=false --good
