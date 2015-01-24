@@ -47,9 +47,7 @@ allArgs.append('--do=' + do)
 
 if slimerjsCheck:
 
-  # adding tmp updates with slimerjs
-  slimerTmp = '.slimer-tmp'
-  allArgs.append('--rootDir='+slimerTmp)
+  allArgs.append('--slimerCheck')
 
   # info logs are needed to pass slimers options to phantomjs, when checking
   if verbose is not None:
@@ -82,12 +80,6 @@ if slimerjsCheck:
   # check:
   slimerArgs = slimerArgs.replace('--do=add', '--do=check')
 
-  # resetting checking directory:
-  slimerArgs = slimerArgs.replace('--rootDir', '--checkDir')
-
   allArgs = requiredArgs + slimerArgs.split(', ')
 
-  call(allArgs)
-  shutil.rmtree(slimerTmp)
-else:
-  call(allArgs)
+call(allArgs)

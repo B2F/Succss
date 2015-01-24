@@ -77,7 +77,7 @@ function Succss() {
       captureState.file = self.setFileName(captureState);
       captureState.basePath = captureState.page.directory.replace(/\/$/, '') + '/' + captureState.file;
       captureState.filePath = captureState.basePath;
-      if (action == 'check') {
+      if (action == 'check' || options.slimerCheck) {
         var checkPrefix = checkDir;
         if (!options.checkDir) {
           var uniqueDirId = captureState.page.name + '-' + captureState.viewport.name;
@@ -155,7 +155,6 @@ function Succss() {
       }
 
       if (!data[page].directory) data[page].directory = './screenshots';
-      if (options.rootDir) data[page].directory = cleanPreprendPath(options.rootDir, data[page].directory);
 
       if (data[page].captures == undefined || !Object.keys(data[page].captures).length) {
         data[page].captures = {
