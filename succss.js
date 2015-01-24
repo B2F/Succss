@@ -386,6 +386,11 @@ function Succss() {
 
     casper.then(function() {
       try {
+        // Quickfix in case window.scrollTo is called on client side.
+        // CasperJS getElementBounds does not do well on capture otherwise.
+        casper.evaluate(function() {
+          window.scrollTo(0,0);
+        })
         casper.captureSelector(captureState.filePath, captureState.selector, imgOptions);
       }
       catch (err) {
