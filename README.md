@@ -3,39 +3,44 @@
 
 Full documentation at: [succss.ifzenelse.net][7]
 
+![small diff image example][12]
+
 ####Install:
 ```
 npm install -g succss
 ```
 
-
 ####Configure:
 ```
-// your-conf.js
+// data.js
 Succss.pages = {
-  'any webpage': {
-    url:'succss.ifzenelse.net',
-    directory:'./screenshots',
+  'home': {
+    url:'succss.ifzenelse.net/home',
+    directory:'screenshots/dir',
+    // captures: { 'name' : 'CSS selector' }
     captures: {
-      // Key:name Value:CSS selector.
-      'header':'header',
-      'square1':'#red.color-square',
-      'square2':'#green.color-square',
-      'square3':'#blue.color-square'
+      // leave an empty value if selector == name
+      'header':'',
+      'dynamic-text':'body #header-text > #static-line + span',
+      ...
     },
   },
-  'another one': { 
-    ... 
+  'another-page': {
+    ...
   }
 };
 
-Succss.viewports: {
-  'classic wide': {
+Succss.viewports = {
+  // './screenshots/dir/home--header--1366x768.png' file
+  // './screenshots/dir/home--dynamic-text--1366x768.png' file
+  'default': {
     width: 1366,
     height: 768
   },
-  'mobile': {
-    width: 320,
+  // './screenshots/dir/home--header--640x480.png' file
+  // './screenshots/dir/home--dynamic-text--640x480.png' file
+  'mobile-landscape': {
+    width: 640,
     height: 480
   },
   ...
@@ -65,6 +70,14 @@ succss check your-conf.js
 - [Typical use cases][0]
 - --[Home page][7]
 
+![large diff image example][8]
+
+####Built with:
+- [CasperJS][9]
+- [Imagediff][10]
+- [ResembleJS][11]
+- MIT Licenses
+
 [0]:http://succss.ifzenelse.net/usecases
 [1]:http://succss.ifzenelse.net/installation
 [2]:http://succss.ifzenelse.net/configuration
@@ -73,3 +86,8 @@ succss check your-conf.js
 [5]:http://succss.ifzenelse.net/why
 [6]:http://succss.ifzenelse.net/fork
 [7]:http://succss.ifzenelse.net/home
+[8]:https://raw.githubusercontent.com/B2F/Succss-doc/master/img/screenshots/large-diff.jpeg
+[9]:http://casperjs.org/
+[10]:http://humblesoftware.github.io/js-imagediff/
+[11]:http://huddle.github.io/Resemble.js/
+[12]:https://raw.githubusercontent.com/B2F/Succss-doc/master/img/screenshots/small-diff.jpeg
