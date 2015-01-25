@@ -101,8 +101,11 @@ function Succss() {
       throw "[SucCSS] Reference directory not found. Check your --checkDir option.";
     }
 
-    if (options.pages != undefined) {
+    if (options.pages != undefined && options.pages !== true) {
       pages = options.pages.split(',');
+      while (pages.indexOf('') != -1) {
+        pages.splice(pages.indexOf(''), 1);
+      }
       self.echo('\n--pages option found, captures will only run for <' + options.pages + '> pages.', 'WARNING');
       for (var p in pages) {
         if(data[pages[p]] == undefined) {
@@ -111,12 +114,15 @@ function Succss() {
       }
     }
 
-    if (options.captures != undefined) {
+    if (options.captures != undefined && options.captures !== true) {
       captureFilters = options.captures.split(',');
       self.echo('\n--captures option found, captures will only run for <' + options.captures + '>', 'WARNING');
     }
     if (options.viewports != undefined) {
       viewports = options.viewports.split(',');
+      while (viewports.indexOf('') != -1) {
+        viewports.splice(viewports.indexOf(''), 1);
+      }
       self.echo('\n--viewports option found, captures will only run with <' + options.viewports + '> viewport.', 'WARNING');
       for (var v in viewports) {
         if(viewportsData[viewports[v]] == undefined) {
