@@ -39,3 +39,6 @@ succss add selftests/data-errors.js --pages=badSelector --viewports=goodViewport
 echo
 echo 'compare pages and viewports'
 succss check selftests/data-compare.js
+echo
+echo 'escaped char in filename'
+succss add selftests/data-errors.js --pages='bad pagename' --viewports=goodViewport

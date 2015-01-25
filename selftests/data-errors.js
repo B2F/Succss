@@ -12,6 +12,12 @@ Succss.pages = {
     'captures': {
       'fakeElement':'',
     }
+  },
+  'bad-pagename': {
+    'source':'goodPage',
+    'captures': {
+      '#colors':'',
+    }
   }
 }
 
