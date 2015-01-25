@@ -28,3 +28,11 @@ echo slimer base, phantom diff, slimer matches
 succss add selftests/data-diff.js --pages=installation --engine=slimerjs
 succss check selftests/data-diff.js --pages=installation
 succss check selftests/data-diff.js --pages=installation --engine=slimerjs --diff=false --good
+echo
+echo custom capture property
+succss add selftests/data-web-examples.js --viewports=classic-wide --pages=capture-prop
+succss check selftests/data-web-examples.js --viewports=classic-wide --pages=capture-prop
+echo
+echo callback 'before' after a window.scrollTo, special slimerjs fix
+succss add selftests/data-web-examples.js --viewports=classic-wide --pages=,special --captures=body --engine=slimerjs
+succss check selftests/data-web-examples.js --viewports=classic-wide --pages=,special --captures=body --engine=slimerjs
