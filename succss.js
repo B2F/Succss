@@ -438,6 +438,10 @@ function Succss() {
       var imgDiff = new Image();
       imgDiff.src = data.getImageDataUrl();
       imgDiff.onload = function() {
+
+        // Adds 1sec to avoid casper run.complete before image loads.
+        self.casper.wait(1000);
+
         try {
           var imagesMatch = !Math.round(data.misMatchPercentage);
           if (!imagesMatch) {
