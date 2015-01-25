@@ -64,22 +64,25 @@ if slimerjsCheck:
 
   # restore initial options:
   msgRe = re.search(r'\[phantom\] \[SucCSS\] Options: (--.*)\n', msg[0])
-  slimerArgs = msgRe.group(1)
+  if msgRe is not None:
+    slimerArgs = msgRe.group(1)
 
-  # restore logging options:
-  slimerArgs = slimerArgs.replace(', --verbose=true', '')
-  slimerArgs = slimerArgs.replace(', --logLevel=info', '')
-  if verbose is not None:
-    slimerArgs = slimerArgs + ', ' + verbose
-  if logLevel is not None:
-    slimerArgs = slimerArgs + ', ' + logLevel
+    # restore logging options:
+    slimerArgs = slimerArgs.replace(', --verbose=true', '')
+    slimerArgs = slimerArgs.replace(', --logLevel=info', '')
+    if verbose is not None:
+      slimerArgs = slimerArgs + ', ' + verbose
+    if logLevel is not None:
+      slimerArgs = slimerArgs + ', ' + logLevel
 
-  # check with phantomjs engine:
-  slimerArgs = slimerArgs.replace('slimerjs', 'phantomjs')
+    # check with phantomjs engine:
+    slimerArgs = slimerArgs.replace('slimerjs', 'phantomjs')
 
-  # check:
-  slimerArgs = slimerArgs.replace('--do=add', '--do=check')
+    # check:
+    slimerArgs = slimerArgs.replace('--do=add', '--do=check')
 
-  allArgs = requiredArgs + slimerArgs.split(', ')
+    allArgs = requiredArgs + slimerArgs.split(', ')
+  else:
+    print('An exception was thrown, try running succss with the default engine.')
 
 call(allArgs)
