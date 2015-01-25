@@ -53,6 +53,8 @@ function Succss() {
     // After capture callback.
     var after = self.callback;
 
+    var injectedJSFiles = [];
+
     var pages = Object.keys(data);
 
     var capturesFound = false;
@@ -408,7 +410,7 @@ function Succss() {
 
   self.imagediff = function(imgBase, imgCheck, capture) {
 
-    phantom.injectJs('lib/imagediff.js');
+    self.injectJs('lib/imagediff.js');
 
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
     if (!imagesMatch) {
@@ -421,7 +423,7 @@ function Succss() {
 
   self.resemble = function(imgBase, imgCheck, capture) {
 
-    phantom.injectJs('lib/resemble.js');
+    self.injectJs('lib/resemble.js');
 
     resemble(imgBase.src).compareTo(imgCheck.src).onComplete(function(data){
       var imgDiff = new Image();
@@ -496,6 +498,18 @@ function Succss() {
   self.catchErrors = function(err) {
     SuccssCount.failures++;
     self.echo(err, 'ERROR');
+  }
+
+  self.injectJs = function(filePath) {
+    if (injectedJSFiles.indexOf(filePath) == -1) {
+      var loaded = phantom.injectJs(filePath);
+      if (loaded) {
+        injectedJSFiles.push(filePath);
+      }
+      else {
+        self.catchErrors('Unable to load script file: ' + filePath);
+      }
+    }
   }
 
   return self;
