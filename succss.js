@@ -294,7 +294,7 @@ function Succss() {
 
           imgLoadCount++;
           if (imgLoadCount == 2) {
-            ['imagediff', 'resemble', 'diff'].forEach(function(diff) {
+            ['resemble', 'imagediff', 'diff'].forEach(function(diff) {
               try {
                 if (self[diff] && capture.options[diff] == true) {
                   self[diff].call(self, imgBase, imgCheck, capture);
