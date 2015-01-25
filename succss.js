@@ -268,23 +268,26 @@ function Succss() {
           }
 
           var imgLoadCount = 0;
-          if (fs.exists(capture.basePath)) {
-            imgBase = new Image();
-            imgBase.src = fs.absolute(capture.basePath);
-          }
-          else {
-            throw "[SucCSS] Base screenshot not found (" + capture.basePath + "). Did you forget to add it ?";
-          }
-          if (fs.exists(capture.filePath)) {
-            imgCheck = new Image();
-            imgCheck.src = fs.absolute(capture.filePath);
-          }
-          else {
-            throw "[SucCSS] Screenshot reference not found (" + capture.filePath + "). Check your --checkDir option.";
-          }
+
+          imgBase = new Image();
+          imgCheck = new Image();
+          imgBase.src = fs.absolute(capture.basePath);
+          imgCheck.src = fs.absolute(capture.filePath);
+
         }
         catch (err) {
           self.catchErrors(err);
+        }
+
+        imgBase.onerror = function(e) {
+          var errorMsg = '[SucCSS] Base screenshot not found ("' + e.srcElement.src + '). Did you forget to add it ?\n';
+          errorMsg += 'Check that the file path is a valid URI with no reserved ($ & + , / : ; = ? @) nor unsafe (" < > # % { } | \ ^ ~ [ ] `) characters.';
+          self.catchErrors(errorMsg);
+        }
+
+        imgCheck.onerror = function(e) {
+          var errorMsg = '[SucCSS] Screenshot reference not found ("' + e.srcElement.src + '). Check your --checkDir option';
+          self.catchErrors(errorMsg);
         }
 
         imgBase.onload = imgCheck.onload = function() {
