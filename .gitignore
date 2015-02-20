@@ -1,0 +1,12 @@
+altercommit
+compare/*
+nbproject/*
+node_modules/*
+screenshots/*
+selftests/diff-screenshots/*
+*.tmp
+succss*.tgz
+todo
+imagediff/*
+resemble/*
+/package/*
