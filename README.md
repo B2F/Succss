@@ -49,13 +49,13 @@ Succss.viewports = {
 
 ####Run:
 ```
-succss add your-conf.js
+succss add data.js
 ```
 
 
 ####Check updates against added references:
 ```
-succss check your-conf.js
+succss check data.js
 ```
 
 
@@ -77,6 +77,7 @@ succss check your-conf.js
 - [Imagediff][10]
 - [ResembleJS][11]
 - MIT Licenses
+Thanks to them !
 
 [0]:http://succss.ifzenelse.net/usecases
 [1]:http://succss.ifzenelse.net/installation
