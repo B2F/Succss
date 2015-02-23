@@ -56,6 +56,7 @@ if slimerjsCheck:
   p=subprocess.Popen(allArgs,stdin=subprocess.PIPE,stdout=subprocess.PIPE)
   print('... SlimerJS is taking captures updates')
   msg = p.communicate()
+  if verbose is not None: print(msg[0])
   print('Done')
 
   # restore initial options:
