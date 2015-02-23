@@ -7,28 +7,25 @@ SuccssDataCommon.url = 'succss.ifzenelse.net';
 // Base screenshots path can be absolute or relative like below:
 SuccssDataCommon.baseDirectory = './screenshots';
 
-SuccssDataCommon.versionedPrefix = './selftests/self-';
-
 SuccssDataCommon.previousCaptureFile = '';
 
 SuccssDataCommon.test = function(capture) {
 
   // The callback has access to an object representing the capture after it's done.
-  var page = capture.page;
   var viewport = capture.viewport;
-  var options = capture.options;
 
-  var expectedCapturePath = page.directory + '/' + this.setFileName(capture);
-  var referenceScreenshot = expectedCapturePath.replace('./', SuccssDataCommon.versionedPrefix);
+  var expectedCapturePath = capture.page.directory + '/' + this.setFileName(capture);
+
+  if (expectedCapturePath != capture.filePath) {
+    this.catchErrors('Unexpected capture path (' + capture.filePath + '). Expected path is '+ expectedCapturePath);
+  }
 
   casper.test.assertTruthy(capture.name, '- Captured "' + capture.file + '" file for ' + capture.selector + " selector");
-  casper.test.assert(this.fs.exists(expectedCapturePath), '- On page "' + page.name + '" ' + page.url + ', in ' + page.directory + ' directory.');
+  casper.test.assertTruthy(this.fs.exists(expectedCapturePath), '- Capture file exists (' + expectedCapturePath + ')');
   casper.test.assertTruthy(viewport, '- With viewport "' + viewport.name + '" having ' + viewport.width + " width and " + viewport.height + " height.");
 
   casper.test.assertNotEquals(capture.filePath, SuccssDataCommon.previousCaptureFile, 'The capture file path is different from previous capture.');
   SuccssDataCommon.previousCaptureFile = capture.filePath;
-
-  casper.test.assertEquals(expectedCapturePath, capture.filePath, '"' + capture.page.name + '" path is ' + expectedCapturePath);
 
   // slimerjs does not seem to support fs.size, at least on some browsers versions.
   if (this.allOptions.engine != 'slimerjs') {
