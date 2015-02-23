@@ -79,16 +79,7 @@ function Succss() {
       captureState.file = self.setFileName(captureState);
       captureState.basePath = captureState.page.directory.replace(/\/$/, '') + '/' + captureState.file;
       captureState.filePath = captureState.basePath;
-      if (action == 'check' || options.slimerCheck) {
-        var checkPrefix = checkDir;
-        if (!options.checkDir) {
-          var uniqueDirId = captureState.page.name + '-' + captureState.viewport.name;
-          checkPrefix = checkDir + '/' + uniqueDirId;
-        }
-        captureState.filePath = cleanPreprendPath(checkPrefix, captureState.page.directory+'/'+captureState.file);
-        captureState.filePath = captureState.filePath.replace(/\.\//, '');
-      }
-      captureState.action = action;
+      captureState.action = captureState.options.action;
       return captureState;
     }
 
@@ -242,9 +233,18 @@ function Succss() {
 
   self.prepareScreenshot = function(capture) {
 
-    var command = function(capture) {
+    // Slimer fix: SlimerJS engine is unable to check updates itself, succss.py
+    // trick is a options.slimerCheck, so slimerJS engine use the 'add' action first
 
-    if (!options.checkDir && !(capture.options.action == 'check' && options.slimerCheck)) {
+    if (capture.options.action == 'check'  || options.slimerCheck) {
+      capture.filePath = cleanPreprendPath(checkDir, capture.page.directory+'/'+capture.file);
+      capture.filePath = capture.filePath.replace(/\.\//, '');
+    }
+
+    // 2. Slimer fix: then updates are checked with the phantomJS engine (phantomIsCheckingSlimer).
+    var phantomIsCheckingSlimer = (capture.options.action == 'check' && options.slimerCheck);
+
+    if (!options.checkDir && !phantomIsCheckingSlimer) {
       self.takeScreenshot(capture);
     }
 
