@@ -68,7 +68,7 @@ function Succss() {
     };
     var viewports = Object.keys(viewportsData);
 
-    var createCaptureState = function(pageName, captureIndex, viewportName, action) {
+    var createCaptureState = function(pageName, captureIndex, viewportName) {
       // Available in setFileName:
       captureState = data[pageName].captures[captureIndex];
       captureState.page = data[pageName];
@@ -240,37 +240,43 @@ function Succss() {
     }
   });
 
-  self.add = function() {
+  self.prepareScreenshot = function(capture) {
 
     var command = function(capture) {
 
-      self.echo('> ... Saving ' + capture.name + ' screenshot under ' + capture.filePath, 'PARAMETER');
-      self.takeScreenshot(casperInstance, capture);
+    if (!options.checkDir && !(capture.options.action == 'check' && options.slimerCheck)) {
+      self.takeScreenshot(capture);
     }
-    self.parseData(command, 'add');
+
+    casperInstance.then(function() {
+      // After capture or on checkDir:
+      if (capture.after != undefined) {
+        try {
+          capture.after.call(self, capture);
+        }
+        catch (err) {
+          self.catchErrors(err);
+        }
+      }
+    });
+  }
+
+  self.add = function() {
+
+    self.parseData(function(capture) {
+      self.prepareScreenshot(capture);
+    });
   }
 
   self.check = function() {
 
     var command = function(capture) {
 
-      if (!options.checkDir && !options.slimerCheck) {
-        self.takeScreenshot(casperInstance, capture);
-      }
+      self.prepareScreenshot(capture);
 
       casperInstance.then(function() {
 
         try {
-
-          // After capture or on checkDir:
-          if (capture.after != undefined) {
-            try {
-              capture.after.call(self, capture);
-            }
-            catch (err) {
-              self.catchErrors(err);
-            }
-          }
 
           var imgLoadCount = 0;
 
@@ -291,7 +297,7 @@ function Succss() {
         }
 
         imgCheck.onerror = function(e) {
-          var errorMsg = '[SucCSS] Screenshot reference not found ("' + e.srcElement.src + '). Check your --checkDir option';
+          var errorMsg = '[SucCSS] Current screenshot reference not found ("' + e.srcElement.src + '). Check your --checkDir option';
           self.catchErrors(errorMsg);
         }
 
@@ -318,10 +324,10 @@ function Succss() {
         }
       });
    }
-    self.parseData(command, 'check');
+    self.parseData(command);
   }
 
-  self.parseData = function(command, action) {
+  self.parseData = function(command) {
 
     casperInstance.start('about:blank', function() {
 
@@ -345,7 +351,7 @@ function Succss() {
 
                 SuccssCount.remaining--;
 
-                var capture = createCaptureState(p, c, v, action);
+                var capture = createCaptureState(p, c, v);
 
                 self.echo('\nCapturing "' + capture.page.name + '" ' + capture.name + ' screenshot with ' + v + ' viewport:', 'INFO');
                 self.echo('Selector is: "' + capture.selector + '"', 'PARAMETER');
@@ -376,20 +382,20 @@ function Succss() {
     }).run();
   }
 
-  self.takeScreenshot = function(casper, captureState) {
+  self.takeScreenshot = function(captureState) {
 
     // Before capture:
-    casper.then(function() {
-      casper.waitForSelector(captureState.selector, function() {
+    casperInstance.then(function() {
+      casperInstance.waitForSelector(captureState.selector, function() {
         if (captureState.before) {
           var siblings = {};
           var pageCaptures = data[captureState.page.name].captures;
           for (var c in pageCaptures) {
             if (c != captureState.name && pageCaptures[c].before) {
-              siblings[c] = pageCaptures[c].before.bind(casper, siblings);
+              siblings[c] = pageCaptures[c].before.bind(casperInstance, siblings);
             }
           }
-          captureState.before.call(casper, siblings);
+          captureState.before.call(casperInstance, siblings);
         }
       }, function() {
         self.echo('Selector "' + captureState.selector + '" was not found anywhere on the page.', 'ERROR');
@@ -401,14 +407,15 @@ function Succss() {
       quality: captureState.options.imgQuality
     };
 
-    casper.then(function() {
+    casperInstance.then(function() {
       try {
         // Quickfix in case window.scrollTo is called on client side.
         // CasperJS getElementBounds does not do well on capture otherwise.
-        casper.evaluate(function() {
+        casperInstance.evaluate(function() {
           window.scrollTo(0,0);
         })
-        casper.captureSelector(captureState.filePath, captureState.selector, imgOptions);
+        self.echo('> ... Saving ' + captureState.name + ' screenshot under ' + captureState.filePath, 'PARAMETER');
+        casperInstance.captureSelector(captureState.filePath, captureState.selector, imgOptions);
       }
       catch (err) {
         self.echo(err, 'ERROR');
