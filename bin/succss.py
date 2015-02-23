@@ -50,15 +50,11 @@ if slimerjsCheck:
   allArgs.append('--slimerCheck')
 
   # info logs are needed to pass slimers options to phantomjs, when checking
-  if verbose is not None:
-    allArgs.pop(allArgs.index(verbose))
-  if logLevel is not None:
-    allArgs.pop(allArgs.index(logLevel))
-  allArgs.append('--verbose=true')
-  allArgs.append('--logLevel=info')
+  if verbose not in allArgs: allArgs.append('--verbose=true')
+  if logLevel not in allArgs: allArgs.append('--logLevel=info')
 
   p=subprocess.Popen(allArgs,stdin=subprocess.PIPE,stdout=subprocess.PIPE)
-  print('... Taking captures updates')
+  print('... SlimerJS is taking captures updates')
   msg = p.communicate()
   print('Done')
 
@@ -70,10 +66,8 @@ if slimerjsCheck:
     # restore logging options:
     slimerArgs = slimerArgs.replace(', --verbose=true', '')
     slimerArgs = slimerArgs.replace(', --logLevel=info', '')
-    if verbose is not None:
-      slimerArgs = slimerArgs + ', ' + verbose
-    if logLevel is not None:
-      slimerArgs = slimerArgs + ', ' + logLevel
+    if verbose is not None: slimerArgs = slimerArgs + ', ' + verbose
+    if logLevel is not None: slimerArgs = slimerArgs + ', ' + logLevel
 
     # check with phantomjs engine:
     slimerArgs = slimerArgs.replace('slimerjs', 'phantomjs')
