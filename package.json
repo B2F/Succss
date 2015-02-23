@@ -1,6 +1,6 @@
 {
   "name": "succss",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Easy to install, easy to use CSS regression testing tool.",
   "author": "B2F <d4rb2f@gmail.com>",
   "bin": {
