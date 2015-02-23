@@ -164,6 +164,11 @@ function Succss() {
 
       if (!data[page].directory) data[page].directory = './screenshots';
 
+      if (options.action == 'add' && options.rmtree == true && fs.isDirectory(data[page].directory)) {
+        self.echo('\nWarning! ' + data[page].directory + " directory tree erased.", 'WARNING');
+        fs.removeTree(data[page].directory);
+      }
+
       if (data[page].captures == undefined || !Object.keys(data[page].captures).length) {
         data[page].captures = {
           'body':''
@@ -324,11 +329,6 @@ function Succss() {
       SuccssCount.startTime = date.getTime();
 
       casperInstance.each(pages, function(casperInstance, p) {
-
-        if (action == 'add' && options.rmtree == true && fs.isDirectory(data[p].directory)) {
-          self.echo('\nWarning! ' + data[p].directory + " directory tree erased.", 'WARNING');
-          fs.removeTree(data[p].directory);
-        }
 
         self.echo('\nFound "' + p + '" page configuration.', 'INFO');
 
