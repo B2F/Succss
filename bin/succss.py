@@ -11,11 +11,11 @@ casperbridge = scriptpath + '/../succss-bridge.js'
 requiredArgs = ["casperjs", "test", casperbridge]
 allArgs = requiredArgs[:]
 
-#1. take first sys.argv argument and prepend --do to it, add the resulting string to allArgs list
+#1. take first sys.argv argument and prepend --action to it, add the resulting string to allArgs list
 #2. take the second argument and prepend --dataFile tot it, add the resulting string to allArgs list
 #3. append all the remaining options to the allArgs list
 if len(sys.argv) > 1:
-  do = sys.argv.pop(1)
+  action = sys.argv.pop(1)
 else:
   call(requiredArgs)
   exit()
@@ -39,11 +39,11 @@ for i, arg in enumerate(sys.argv):
 #add with slimer then check with phantom
 slimerjsCheck = False
 args=''.join(sys.argv)
-if do == 'check' and re.match('.*--engine=(\'|")?slimerjs(\'|")?', args) and ('--checkDir' not in args):
-  do='add'
+if action == 'check' and re.match('.*--engine=(\'|")?slimerjs(\'|")?', args) and ('--checkDir' not in args):
+  action='add'
   slimerjsCheck = True
 
-allArgs.append('--do=' + do)
+allArgs.append('--action=' + action)
 
 if slimerjsCheck:
 
@@ -79,7 +79,7 @@ if slimerjsCheck:
     slimerArgs = slimerArgs.replace('slimerjs', 'phantomjs')
 
     # check:
-    slimerArgs = slimerArgs.replace('--do=add', '--do=check')
+    slimerArgs = slimerArgs.replace('--action=add', '--action=check')
 
     allArgs = requiredArgs + slimerArgs.split(', ')
   else:

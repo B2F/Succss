@@ -23,12 +23,12 @@ try {
     Succss.cliOptions.engine = 'phantomjs';
   }
 
-  if (Succss.cliOptions.do == 'check' && Succss.cliOptions.engine == 'slimerjs') {
-    console.log(Succss.colorizer.colorize('[Succss] succss does not currently support the check command with slimerjs engine."', 'ERROR'));
+  if (Succss.cliOptions.action == 'check' && Succss.cliOptions.engine == 'slimerjs') {
+    console.log(Succss.colorizer.colorize('[Succss] succss actiones not currently support the check command with slimerjs engine."', 'ERROR'));
     casper.exit();
   }
 
-  switch (Succss.cliOptions.do) {
+  switch (Succss.cliOptions.action) {
 
     case undefined:
     case 'help':
@@ -84,7 +84,7 @@ try {
       Succss.mouse = require("mouse").create(Succss.casper);
 
       var succss = require('succss.js').Succss.call(Succss);
-      succss[Succss.cliOptions.do]();
+      succss[Succss.cliOptions.action]();
       break;
 
     default:

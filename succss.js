@@ -38,7 +38,7 @@ function Succss() {
     var mouse = self.mouse;
     var colorizer = self.colorizer;
 
-    self.echo('|-> ' + options.do + ' from file: ' + options.dataFile, 'INFO_BAR');
+    self.echo('|-> ' + options.action + ' from file: ' + options.dataFile, 'INFO_BAR');
 
     if ((typeof self.getAllOptions == 'function')) {
       var logMsg = '[SucCSS] Options: ' + self.getAllOptions();
