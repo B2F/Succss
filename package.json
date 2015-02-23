@@ -7,7 +7,7 @@
     "succss": "./bin/succss.py"
   },
   "scripts": {
-    "test": "./selftests/run.sh"
+    "test": "./selftests/test.sh"
   },
   "main": "succss.js",
   "repository": {

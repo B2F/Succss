@@ -4,6 +4,7 @@ nbproject/*
 node_modules/*
 screenshots/*
 selftests/diff-screenshots/*
+selftests/run.log
 *.tmp
 succss*.tgz
 todo
