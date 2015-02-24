@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Log latest test:
 ./selftests/run.sh 2>&1 | tee ./selftests/run.log
 # Trim shell colors:
@@ -7,4 +9,3 @@ if grep -rni 'Tests failed' ./selftests/run.log; then
 else
   echo 'selftests suite is successful'
 fi
-
