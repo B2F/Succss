@@ -1,6 +1,22 @@
+/**
+ * @file
+ * This file is used by "npm test" to selftest the succss package.
+ * Selftests are made from http://succss.ifzenelse.net documentation website.
+ * 
+ * @see selftests/run.sh, selftests/test.sh
+ * 
+ */
 
+// Include another javascript file from the command line working directory.
+// The data.class.js file is used to import "SuccssDataCommon" variables.
 phantom.injectJs(fs.workingDirectory + '/selftests/data.class.js');
 
+/*
+ * Succss.pages object is where you describe where and how screenshots are done.
+ * The snippet below provides extensive examples, yours can be simpler though.
+ * 
+ * @see http://succss.ifzenelse.net/configuration#pages for more infos.
+ */
 Succss.pages = {
   // url parameter + directory suffix.
   'installation': {
@@ -75,16 +91,28 @@ Succss.pages = {
 };
 
 /*
- * Available capture Object properties ->
- * capture: name, selector, directory, callback
- * capture.page: name, url, directory
- * capture.viewport: name, width, height
- * capture.options (current filters): pages, captures, viewports
+ * Succss.setFileName set your captures names for both adding and checking.
+ * 
+ * @param capture Object (available properties listed below):
+ *  capture: name, selector, directory, callback
+ *  capture.page: name, url, directory
+ *  capture.viewport: name, width, height
+ *  capture.options (command line options): pages, captures, viewports
+ *  
+ *  @see http://succss.ifzenelse.net/configuration#filename
  */
 Succss.setFileName = function(capture) {
   return capture.page.name + '-' + capture.name + '-' + capture.viewport.width + 'x' + capture.viewport.height + '.png';
 };
 
+/**
+ * Succss.viewports
+ * 
+ * A list of viewports for taking screenshots.
+ * 
+ * @see http://succss.ifzenelse.net/configuration#viewports
+ *
+ */
 Succss.viewports = {
  'wide':
   {
@@ -102,10 +130,11 @@ Succss.viewports = {
  * Optional:
  * You can use a callback function after each capture is done.
  *
- * capture Object: @see Succss.setFileName above plus the following:
- * capture.file, capture.filePath, capture.action (add or check).
+ * @param capture Object: same as in Succss.setFileName plus the following:
+ * capture.file, capture.filePath, capture.action ('add' or 'check').
  *
- * @see selftests/data.class.js pratical example.
+ * @see selftests/data.class.js file
+ * @see http://succss.ifzenelse.net/customize#callback
  *
  */
 Succss.callback = function (capture) {
@@ -116,6 +145,12 @@ Succss.callback = function (capture) {
   }
 };
 
+/**
+ * Succss.options can take "default" options you would normally pass to the 
+ * command line. Command line options take precedence.
+ * 
+ * @see http://succss.ifzenelse.net/commandline#options
+ */
 Succss.options = {
   exitOnError:false,
 }

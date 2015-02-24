@@ -1,3 +1,8 @@
+/**
+ * @file
+ * Set of common variables and methods used across the selftests suite.
+ * 
+ */
 
 var SuccssDataCommon = {};
 

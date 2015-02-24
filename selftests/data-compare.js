@@ -1,8 +1,12 @@
 /**
  * @file
+ * This file is used by "npm test" to selftest the succss package.
+ * Selftests are made from http://succss.ifzenelse.net documentation website.
  * 
  * Compare multiple viewports to one reference, same for pages.
  * 
+ * @see selftests/run.sh, selftests/test.sh
+ *
  */
 
 phantom.injectJs(fs.workingDirectory + '/selftests/data.js');

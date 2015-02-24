@@ -1,7 +1,10 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * @file
+ * This file is used by "npm test" to selftest the succss package.
+ * Selftests are made from http://succss.ifzenelse.net documentation website.
+ * 
+ * @see selftests/run.sh, selftests/test.sh
+ * 
  */
 var baseUrl = 'succss.ifzenelse.net';
 
