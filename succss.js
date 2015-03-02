@@ -426,7 +426,7 @@ function Succss() {
 
   self.imagediff = function(imgBase, imgCheck, capture) {
 
-    self.injectJs('lib/imagediff.js');
+    self.injectJs(options.scriptpath + '/../lib/imagediff.js');
 
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
     if (!imagesMatch) {
@@ -439,7 +439,7 @@ function Succss() {
 
   self.resemble = function(imgBase, imgCheck, capture) {
 
-    self.injectJs('lib/resemble.js');
+    self.injectJs(options.scriptpath + '/../lib/resemble.js');
 
     resemble(imgBase.src).compareTo(imgCheck.src).onComplete(function(data){
       var imgDiff = new Image();

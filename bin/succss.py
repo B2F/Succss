@@ -11,6 +11,9 @@ casperbridge = scriptpath + '/../succss-bridge.js'
 requiredArgs = ["casperjs", "test", casperbridge]
 allArgs = requiredArgs[:]
 
+# this is used to get the lib/imagediff.js and lib/resemble.js files for diffing
+allArgs.append('--scriptpath=' + scriptpath)
+
 #1. take first sys.argv argument and prepend --action to it, add the resulting string to allArgs list
 #2. take the second argument and prepend --dataFile tot it, add the resulting string to allArgs list
 #3. append all the remaining options to the allArgs list
