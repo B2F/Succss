@@ -58,6 +58,15 @@ try {
 
       var dataFilePath = Succss.cliOptions.dataFile;
       if (fs.exists(dataFilePath)) {
+        phantom.onError = function(msg, stack) {
+          Succss.echo("There is an error in your " + dataFilePath + " Succss configuration file" + ".", 'ERROR');
+          Succss.echo(msg, 'ERROR');
+          if (stack.length && stack[0].line) {
+            var filename = stack[0].file.replace(new RegExp('^.*/'), '');
+            Succss.echo('Found at line ' + stack[0].line + ' in file ' + filename, 'ERROR');
+          }
+          casper.exit(1);
+        }
         phantom.injectJs(dataFilePath);
       }
       else {
