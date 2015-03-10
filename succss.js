@@ -18,6 +18,7 @@ SuccssCount = {
   remaining:0,
   failures:0,
   startTime:0,
+  startDate:null,
 };
 
 function Succss() {
@@ -331,8 +332,8 @@ function Succss() {
 
     casperInstance.start('about:blank', function() {
 
-      var date = new Date();
-      SuccssCount.startTime = date.getTime();
+      SuccssCount.startDate = new Date();
+      SuccssCount.startTime = SuccssCount.startDate.getTime();
 
       casperInstance.each(pages, function(casperInstance, p) {
 
@@ -425,12 +426,11 @@ function Succss() {
   }
 
   self.imagediff = function(imgBase, imgCheck, capture) {
-
     self.injectJs(options.scriptpath + '/../lib/imagediff.js');
 
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
     if (!imagesMatch) {
-      var filePath = './imagediff/' + SuccssCount.startTime + '/' + capture.filePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
+      var filePath = './imagediff/' + self.defaultDiffDirName() + '/' + capture.filePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
       var imgDiff = imagediff.diff(imgBase, imgCheck);
       self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
     }
@@ -452,7 +452,7 @@ function Succss() {
         try {
           var imagesMatch = !Math.round(data.misMatchPercentage);
           if (!imagesMatch) {
-            var filePath = './resemble/' + SuccssCount.startTime + '/' + capture.filePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
+            var filePath = './resemble/' + self.defaultDiffDirName() + '/' + capture.filePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
             self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
           }
           casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot (resemble).');
@@ -513,6 +513,15 @@ function Succss() {
     var data = canvas.toDataURL("image/jpeg", options.diffQuality/100).split(",")[1];
     fs.write(filePath.replace('png', 'jpeg'), atob(data),'wb');
     self.echo('The diff image has been written in : ' + filePath, 'INFO');
+  }
+
+  self.defaultDiffDirName = function() {
+    return SuccssCount.startDate.getFullYear() + '-' +
+           SuccssCount.startDate.getDate() + '-' +
+           SuccssCount.startDate.getDay() + '--' +
+           SuccssCount.startDate.getHours() + '-' +
+           SuccssCount.startDate.getMinutes() + '\'' +
+           SuccssCount.startDate.getSeconds();
   }
 
   self.catchErrors = function(err) {
