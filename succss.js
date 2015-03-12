@@ -319,14 +319,14 @@ function Succss() {
               }
             });
             if (!SuccssCount.remaining) {
-              if (!options.checkDir && !SuccssCount.remaining) {
+              if (!options.checkDir && !options.keepTmp) {
                 fs.removeTree(checkDir);
               }
             }
           }
         }
       });
-   }
+    }
     self.parseData(command);
   }
 
