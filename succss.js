@@ -430,7 +430,7 @@ function Succss() {
 
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
     if (!imagesMatch) {
-      var filePath = './imagediff/' + self.defaultDiffDirName() + '/' + capture.filePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
+      var filePath = './imagediff/' + self.defaultDiffDirName(capture);
       var imgDiff = imagediff.diff(imgBase, imgCheck);
       self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
     }
@@ -452,7 +452,7 @@ function Succss() {
         try {
           var imagesMatch = !Math.round(data.misMatchPercentage);
           if (!imagesMatch) {
-            var filePath = './resemble/' + self.defaultDiffDirName() + '/' + capture.filePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
+            var filePath = './resemble/' + self.defaultDiffDirName(capture);
             self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
           }
           casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot (resemble).');
@@ -515,13 +515,15 @@ function Succss() {
     self.echo('The diff image has been written in : ' + filePath, 'INFO');
   }
 
-  self.defaultDiffDirName = function() {
+  self.defaultDiffDirName = function(capture) {
     return SuccssCount.startDate.getFullYear() + '-' +
-           SuccssCount.startDate.getDate() + '-' +
-           SuccssCount.startDate.getDay() + '--' +
-           SuccssCount.startDate.getHours() + '-' +
-           SuccssCount.startDate.getMinutes() + '\'' +
-           SuccssCount.startDate.getSeconds();
+            SuccssCount.startDate.getDate() + '-' +
+            SuccssCount.startDate.getDay() + '--' +
+            SuccssCount.startDate.getHours() + '-' +
+            SuccssCount.startDate.getMinutes() + '\'' +
+            SuccssCount.startDate.getSeconds() +
+            '/' + capture.page.name + '-' + capture.viewport.name +
+            '/' + capture.filePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
   }
 
   self.catchErrors = function(err) {
