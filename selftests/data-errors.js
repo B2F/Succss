@@ -20,12 +20,6 @@ Succss.pages = {
       'fakeElement':'',
     }
   },
-  'bad-pagename': {
-    'source':'goodPage',
-    'captures': {
-      '#colors':'',
-    }
-  }
 }
 
 Succss.options = {

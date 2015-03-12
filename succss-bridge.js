@@ -103,7 +103,7 @@ try {
 }
 catch(e) {
   Succss.echo(e, 'COMMENT');
-  Succss.echo('See succss.ifzenelse.net for more infos.');
   Succss.echo('Wrong succss arguments. Type succss help for infos.');
+  Succss.echo('See succss.ifzenelse.net for more infos.');
   casper.exit();
 }

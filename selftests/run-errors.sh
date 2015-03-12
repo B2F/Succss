@@ -6,42 +6,39 @@ set -v
 # missing arguments:
 succss
 
-# wrong action argument":
+# wrong action argument:
 succss ads
 
-# missing data file":
+# missing data file:
 succss add 
 
-# wrong data file":
+# wrong data file:
 succss add a
 
-# missing page url":
+# missing page url:
 succss add selftests/data-errors.js
 
-# wrong capture filter":
+# wrong capture filter:
 succss add selftests/data-errors.js --pages=goodPage --captures=badCapture
 
-# wrong pages filter":
+# wrong pages filter:
 succss add selftests/data-errors.js --pages=badPage
 
-# wrong viewports filter":
+# wrong viewports filter:
 succss add selftests/data-errors.js --viewports=badViewport
 
-# bad viewport values"
+# bad viewport values
 succss add selftests/data-errors.js --pages=goodPage --viewports=brokenViewportWrongValueType
 succss add selftests/data-errors.js --pages=goodPage --viewports=brokenViewportMissingProp
 
-# missing base screenshot"
+# missing base screenshot
 succss check selftests/data-errors.js --pages=goodPage --viewports=goodViewport
 
-# bad url value"
+# bad url value
 succss add selftests/data-errors.js --pages=badUrl --viewports=goodViewport
 
-# bad selector"
+# bad selector
 succss add selftests/data-errors.js --pages=badSelector --viewports=goodViewport
 
-# compare pages and viewports'
+# compare pages and viewports
 succss check selftests/data-compare.js
-
-# escaped char in filename'
-succss add selftests/data-errors.js --pages='bad pagename' --viewports=goodViewport
