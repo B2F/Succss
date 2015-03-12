@@ -284,7 +284,9 @@ function Succss() {
           imgBase = new Image();
           imgCheck = new Image();
           imgBase.src = fs.absolute(capture.basePath);
-          imgCheck.src = fs.absolute(capture.filePath);
+          // Uses Math.Random() to reset browser's cache between pages,
+          // useful when comapring pages, using same src between tests.
+          imgCheck.src = fs.absolute(capture.filePath+'?reset='+Math.random());
 
         }
         catch (err) {
