@@ -16,7 +16,7 @@ succss add
 succss add a
 
 # missing page url:
-succss add selftests/data-errors.js
+succss add selftests/data-errors/missing-url.js
 
 # wrong capture filter:
 succss add selftests/data-errors.js --pages=goodPage --captures=badCapture
@@ -28,17 +28,17 @@ succss add selftests/data-errors.js --pages=badPage
 succss add selftests/data-errors.js --viewports=badViewport
 
 # bad viewport values
-succss add selftests/data-errors.js --pages=goodPage --viewports=brokenViewportWrongValueType
-succss add selftests/data-errors.js --pages=goodPage --viewports=brokenViewportMissingProp
+succss add selftests/data-errors/bad-viewports.js --viewports=brokenViewportWrongValueType
+succss add selftests/data-errors/bad-viewports.js --viewports=brokenViewportMissingProp
 
 # missing base screenshot
-succss check selftests/data-errors.js --pages=goodPage --viewports=goodViewport
+succss check selftests/data-errors.js --pages=goodPage
 
 # bad url value
-succss add selftests/data-errors.js --pages=badUrl --viewports=goodViewport
+succss add selftests/data-errors.js --pages=badUrl
 
 # bad selector
-succss add selftests/data-errors.js --pages=badSelector --viewports=goodViewport
+succss add selftests/data-errors.js --pages=badSelector
 
 # compare pages and viewports
 succss check selftests/data-compare.js

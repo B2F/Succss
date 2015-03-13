@@ -9,14 +9,15 @@
 Succss.pages = {
   'goodPage': {
     'url': 'succss.ifzenelse.net',
+  }
+}
+
+Succss.viewports = {
+  'brokenViewportMissingProp': {
+    'height':1000
   },
-  'badUrl': {
-    'url': 'sucs.ifzenelse.net',
-  },
-  'badSelector': {
-    'url': 'succss.ifzenelse.net',
-    'captures': {
-      'fakeElement':'',
-    }
-  },
+  'brokenViewportWrongValueType': {
+    'height':'1980',
+    'width':1200,
+  }
 }
