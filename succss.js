@@ -539,13 +539,13 @@ function Succss() {
 
   self.defaultDiffDirName = function(capture) {
     return SuccssCount.startDate.getFullYear() + '-' +
-            SuccssCount.startDate.getDate() + '-' +
-            SuccssCount.startDate.getDay() + '--' +
+            (SuccssCount.startDate.getMonth() + 1) + '-' +
+            SuccssCount.startDate.getDate() + '--' +
             SuccssCount.startDate.getHours() + '-' +
             SuccssCount.startDate.getMinutes() + '\'' +
             SuccssCount.startDate.getSeconds() +
-            '/' + capture.page.name + '-' + capture.viewport.name +
-            '/' + capture.filePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
+            '/' + capture.page.name + '--' + capture.viewport.name +
+            '/' + capture.basePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
   }
 
   self.catchErrors = function(err) {
