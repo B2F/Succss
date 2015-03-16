@@ -39,3 +39,6 @@ succss check selftests/data-web-examples.js --viewports=classic-wide --pages=cap
 # callback 'before' after a window.scrollTo, special slimerjs '=,' fix
 succss add selftests/data-web-examples.js --viewports=classic-wide --pages=,special --captures=body --engine=slimerjs
 succss check selftests/data-web-examples.js --viewports=classic-wide --pages=,special --captures=body --engine=slimerjs --verbose
+
+# page and viewports comparisons
+succss check selftests/data-compare.js

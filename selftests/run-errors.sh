@@ -40,5 +40,5 @@ succss add selftests/data-errors.js --pages=badUrl
 # bad selector
 succss add selftests/data-errors.js --pages=badSelector
 
-# compare pages and viewports
-succss check selftests/data-compare.js
+# using wrong compareTo* arguments
+succss check selftests/data-errors.js --pages=goodPage --compareToPage=badPage --compareToViewport=badViewport

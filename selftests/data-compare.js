@@ -11,26 +11,26 @@
 
 phantom.injectJs(fs.workingDirectory + '/selftests/data.js');
 
-var installation = Succss.pages['installation'];
-var diffCanvas = Succss.pages['diffCanvas'];
-
-// We keep advanced selectors only.
-Succss.pages = {};
-
-Succss.pages['installation'] = installation;
-
-Succss.pages['configuration'] = {
-  url:SuccssDataCommon.url + '?page=configuration&variation=10&bgColor=A7A',
-  source:'installation'
-}
-Succss.pages['customize'] = {
-  url:SuccssDataCommon.url + '?page=customize&variation=10&bgColor=123',
-  source:'installation'
-}
-Succss.pages['fork'] = {
-  url:SuccssDataCommon.url + '?page=fork&variation=10&bgColor=789',
-  source:'installation'
-}
+Succss.pages = {
+  'installation': {
+    url:SuccssDataCommon.url + '?page=installation',
+    captures: {
+      'header':''
+    }
+  },
+  'configuration' : {
+    url:SuccssDataCommon.url + '?page=configuration',
+    source:'installation'
+  },
+  'customize' : {
+    url:SuccssDataCommon.url + '?page=customize&bgColor=123',
+    source:'installation'
+  },
+  'fork' : {
+    url:SuccssDataCommon.url + '?page=fork&bgColor=789',
+    source:'installation'
+  }
+};
 
 Succss.callback = function(capture) {
   viewport = capture.viewport;
@@ -53,11 +53,41 @@ Succss.viewports = {
   }
 }
 
-Succss.setFileName = function(capture) {
-  // Compare all to the 'wide' viewport (see data.js viewports):
-  var viewport = '1920x1200';
-  // Compare all to the advanced-selector installation page:
-  var page = 'installation';
-  // Selector (capture.name) remains dynamically configured:
-  return page + '-' + capture.name + '-' + viewport + '.png';
+/**
+ * Succss.options can take "default" options you would normally pass to the
+ * command line. Command line options take precedence.
+ * 
+ * @see http://succss.ifzenelse.net/commandline#options
+ */
+Succss.options = {
+  // Disabling default imagediff behavior (inverting the casper test).
+  'imagediff':false,
+  'diffQuality':100,
+  'captures':'header',
+  'viewports':'default-reduced',
+  'compareToPage':'installation',
+  'compareToViewport':'mobile-portrait'
+}
+
+/*
+ *
+ * Overrides the default imagediff function, changing imgDiffPath and assertion.
+ *
+ * @see http://succss.ifzenelse.net/customize#diff
+ *
+ */
+Succss.diff = function(imgBase, imgCheck, capture) {
+
+    phantom.injectJs(capture.options.scriptpath + '/../lib/imagediff.js');
+
+    imgDiff = imagediff.diff(imgBase, imgCheck);
+    var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
+
+    if (!imagesMatch) {
+      var filePath = capture.filePath.replace(/^.*\//, './selftests/diff-screenshots/');
+      this.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
+    }
+
+    casper.test.assertFalse(imagesMatch, 'Capture is different to base screenshot (imagediff).');
+    SuccssDataCommon.assertSuiteSuccess(capture.count);
 }
