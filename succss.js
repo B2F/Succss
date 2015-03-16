@@ -71,8 +71,12 @@ function Succss() {
 
     var createCaptureState = function(pageName, captureIndex, viewportName) {
       // Available in setFileName:
-      captureState = data[pageName].captures[captureIndex];
-      captureState.page = data[pageName];
+      var captureState = data[pageName].captures[captureIndex];
+      captureState.page = {
+        name : data[pageName].name,
+        url : data[pageName].url,
+        directory : data[pageName].directory
+      }
       captureState.viewport = viewportsData[viewportName];
       captureState.options = options;
       captureState.count = SuccssCount;
