@@ -127,9 +127,8 @@ function Succss() {
       }
     }
 
-    for (var p in pages) {
+    Object.keys(data).forEach(function(page) {
 
-      var page = pages[p];
       data[page].name = page;
 
       if (data[page].source != undefined) {
@@ -153,7 +152,7 @@ function Succss() {
       }
 
       if (data[page].url == undefined) {
-        throw "[SucCSS] Each configuration page requires an url, see succss.ifzenelse.net example.";
+        throw '[SucCSS] Your configuration page "' + page + '" requires an url."';
       }
       if (data[page].url.indexOf('http') != 0) {
         data[page].url = 'http://' + data[page].url;
@@ -198,20 +197,19 @@ function Succss() {
           data[page].captures[c].after = after;
         }
       }
-    }
+    });
 
     if (!capturesFound) {
       throw "[SucCSS] No captures selector found. Check your Succss.pages configuration and filters.";
     }
 
-    for (var v in viewports) {
-      var viewportName = viewports[v];
+    Object.keys(viewportsData).forEach(function(viewportName) {
       viewportsData[viewportName].name = viewportName;
       if (typeof viewportsData[viewportName].height != 'number' ||
           typeof viewportsData[viewportName].width != 'number') {
         throw "[SucCSS] The viewport height and width must be set with numbers.";
       }
-    }
+    });
   }
   catch (e) {
     self.echo(e + '\n', 'ERROR');
