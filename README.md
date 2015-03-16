@@ -1,65 +1,30 @@
 ##SUCCSS, a CSS Regression testing tool
-###Turn your CSS designs into successful integrations.
+###What is succss ?
 
-Full documentation at: [succss.ifzenelse.net][7]
+Succss is a command line tool built to find **image-based differences** between website **updates**. It uses a javascript [configuration file][100] where captures are defined from **css selectors**, additional actions and/or other [options][101] can be specified. First, write a [configuration file][100], then capture or update image references:
 
-![small diff image example][12]
-
-####Install:
 ```
-npm install -g succss
+succss add configuration.js
 ```
 
-####Configure:
+When your website is updated, you will be able to compare its current state to previously added references, running:
 ```
-// data.js
-Succss.pages = {
-  'home': {
-    url:'succss.ifzenelse.net/home',
-    directory:'screenshots/dir',
-    // captures: { 'name' : 'CSS selector' }
-    captures: {
-      // leave an empty value if selector == name
-      'header':'',
-      'dynamic-text':'body #header-text > #static-line + span',
-      ...
-    },
-  },
-  'another-page': {
-    ...
-  }
-};
-
-Succss.viewports = {
-  // './screenshots/dir/home--header--1366x768.png' file
-  // './screenshots/dir/home--dynamic-text--1366x768.png' file
-  'default': {
-    width: 1366,
-    height: 768
-  },
-  // './screenshots/dir/home--header--640x480.png' file
-  // './screenshots/dir/home--dynamic-text--640x480.png' file
-  'mobile-landscape': {
-    width: 640,
-    height: 480
-  },
-  ...
-}
+succss check configuration.js
 ```
+If at least one difference is found, you will be notified and a corresponding screenshot will be generated:
 
-####Run:
-```
-succss add data.js
-```
+![large diff image example][12]
 
+Among other things, Succss has features to compare similar selectors rendering across multiple pages and/or viewports, it can also achieve advanced comparisons with custom user input and in-browser javascript alterations.
 
-####Check updates against added references:
-```
-succss check data.js
-```
+####Read the documentation: [succss.ifzenelse.net][7]
+####Fork the documentation: [github.com/B2F/Succss-doc][-1]
 
+***
 
-####Do you need more infos ?
+![large diff image example][8]
+
+####Discover a new way to test websites, automagically.
 
 - [Installation troubleshooting][1]
 - [Advanced Configuration][2]
@@ -70,15 +35,14 @@ succss check data.js
 - [Typical use cases][0]
 - --[Home page][7]
 
-![large diff image example][8]
-
 ####Built with:
 - [CasperJS][9]
 - [Imagediff][10]
 - [ResembleJS][11]
 - MIT Licenses
-Thanks to them !
+- Thanks to them !
 
+[-1]: https://github.com/B2F/Succss-doc
 [0]:http://succss.ifzenelse.net/usecases
 [1]:http://succss.ifzenelse.net/installation
 [2]:http://succss.ifzenelse.net/configuration
@@ -92,3 +56,5 @@ Thanks to them !
 [10]:http://humblesoftware.github.io/js-imagediff/
 [11]:http://huddle.github.io/Resemble.js/
 [12]:https://raw.githubusercontent.com/B2F/Succss-doc/master/img/screenshots/small-diff.jpeg
+[100]:http://succss.ifzenelse.net/configuration
+[101]:http://succss.ifzenelse.net/commandline
