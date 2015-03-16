@@ -74,10 +74,11 @@ function Succss() {
       if (typeof viewportsData[viewportName] !== 'object') self.catchErrors('Viewport ' + viewportName + ' is missing from your configuration file. You can\'t compareToViewport without it.');
       // Available in setFileName:
       var captureState = data[pageName].captures[captureIndex];
-      captureState.page = {
-        name : data[pageName].name,
-        url : data[pageName].url,
-        directory : data[pageName].directory
+      captureState.page = {};
+      for (var prop in data[pageName]) {
+        if (prop != 'captures') {
+          captureState.page[prop] = data[pageName][prop];
+        }
       }
       captureState.viewport = viewportsData[viewportName];
       captureState.options = options;
