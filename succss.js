@@ -107,7 +107,7 @@ function Succss() {
       self.echo('\n--pages option found, captures will only run for <' + options.pages + '> pages.', 'WARNING');
       for (var p in pages) {
         if(data[pages[p]] == undefined) {
-          throw "[SucCSS] The page configuration " + pages[p] + ' was not found.';
+          throw '[SucCSS] The page configuration "' + pages[p] + '" was not found. Available pages: ' + Object.keys(data).join(', ');
         }
       }
     }
@@ -124,7 +124,7 @@ function Succss() {
       self.echo('\n--viewports option found, captures will only run with <' + options.viewports + '> viewport.', 'WARNING');
       for (var v in viewports) {
         if(viewportsData[viewports[v]] == undefined) {
-          throw "[SucCSS] The viewport " + viewports[v] + " was not found.";
+          throw '"[SucCSS] The viewport "' + viewports[v] + '" was not found. Available viewports: ' + Object.keys(viewportsData).join(', ');
         }
       }
     }
