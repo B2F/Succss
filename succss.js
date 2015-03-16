@@ -493,6 +493,9 @@ function Succss() {
     if (imgBase.width < imgCheck.width) {
       imgBase.width = imgCheck.width;
     }
+    if (imgBase.height < imgCheck.height) {
+      imgBase.height = imgCheck.height;
+    }
     canvas.width = imgBase.width * 3;
     canvas.height = imgBase.height + headerHeight;
     var ctx = canvas.getContext('2d');
