@@ -131,14 +131,15 @@ function Succss() {
       if (data[page].source != undefined) {
         var source = data[page].source;
         if (data[source] == undefined) {
-          throw "[SucCSS] Tried to copy unexisting " +  source + " to " + page;
+          throw '[SucCSS] Source property must have a matching page ("' +  page + '" is missing "' + source + '" source).';
         }
         function extendPage(origin, copy) {
           for (var prop in origin) {
-            if (copy[prop] == undefined && origin[prop]) {
+            if (copy[prop] == undefined && typeof origin[prop] != 'object') {
               copy[prop] = origin[prop];
             }
-            else if (typeof(copy[prop]) == 'object') {
+            else if (typeof(origin[prop]) == 'object') {
+              copy[prop] = {};
               copy[prop] = extendPage(origin[prop], copy[prop]);
             }
           }
