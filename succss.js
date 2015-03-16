@@ -70,6 +70,8 @@ function Succss() {
     var viewports = Object.keys(viewportsData);
 
     var createCaptureState = function(pageName, captureIndex, viewportName) {
+      if (typeof data[pageName] !== 'object') self.catchErrors('Page ' + pageName + ' is missing from your configuration file. You can\'t compareToPage without it.');
+      if (typeof viewportsData[viewportName] !== 'object') self.catchErrors('Viewport ' + viewportName + ' is missing from your configuration file. You can\'t compareToViewport without it.');
       // Available in setFileName:
       var captureState = data[pageName].captures[captureIndex];
       captureState.page = {
@@ -82,8 +84,7 @@ function Succss() {
       captureState.count = SuccssCount;
       // Available in after capture callback:
       captureState.file = self.setFileName(captureState);
-      captureState.basePath = captureState.page.directory.replace(/\/$/, '') + '/' + captureState.file;
-      captureState.filePath = captureState.basePath;
+      captureState.filePath = captureState.page.directory.replace(/\/$/, '') + '/' + captureState.file;
       captureState.action = captureState.options.action;
       return captureState;
     }
@@ -235,8 +236,21 @@ function Succss() {
     }
   });
 
-  self.prepareScreenshot = function(capture) {
+  var getReferenceFilePath = function(capture) {
+    // if compareTo option set, get the capture state from another pagename or
+    // viewport, using same captureindex
+    if (options.compareToViewport || options.compareToPage) {
+      var pageReference = options.compareToPage || capture.page.name;
+      var viewportReference = options.compareToViewport || capture.viewport.name;
+      return createCaptureState(pageReference, capture.name, viewportReference).filePath;
+    }
+    else {
+      return capture.filePath;
+    }
+  }
 
+  self.prepareScreenshot = function(capture) {
+    capture.basePath = getReferenceFilePath(capture);
     // Slimer fix: SlimerJS engine is unable to check updates itself, succss.py
     // trick is a options.slimerCheck, so slimerJS engine use the 'add' action first
 
@@ -287,8 +301,8 @@ function Succss() {
           imgBase = new Image();
           imgCheck = new Image();
           imgBase.src = fs.absolute(capture.basePath);
-          // Uses Math.Random() to reset browser's cache between pages,
-          // useful when comapring pages, using same src between tests.
+          // Uses Math.Random() to reset browser's cache between pages requests,
+          // useful when comapring pages, using same src for multiple checks.
           imgCheck.src = fs.absolute(capture.filePath+'?reset='+Math.random());
 
         }
