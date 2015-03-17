@@ -1,7 +1,16 @@
 ##SUCCSS, a CSS Regression testing tool
 ###What is succss ?
 
-Succss is a command line tool built to find **image-based differences** between website **updates**. It uses a javascript [configuration file][100] where captures are defined from **css selectors**, additional actions and/or other [options][101] can be specified. First, write a [configuration file][100], then capture or update image references:
+Succss is a command line tool built to find **image-based differences** between website **updates**. Succss relies on [npm][200] and is installed globally.
+
+Get it with the following command:
+
+```
+npm install -g succss
+```
+
+
+First, write a [configuration file][100] where captures are defined from **css selectors**, additional actions and/or other [options][101] can be specified. Then capture or update image references:
 
 ```
 succss add configuration.js
@@ -15,14 +24,14 @@ If at least one difference is found, you will be notified and a corresponding sc
 
 ![large diff image example][12]
 
-Among other things, Succss has features to compare similar selectors rendering across multiple pages and/or viewports, it can also achieve advanced comparisons with custom user input and in-browser javascript alterations.
+Among other things, Succss has features to achieve advanced comparisons with [custom user input][300], it can also [hide elements][301] before captures and compare similar selectors rendering across [multiple pages and/or viewports][302].
 
 ####Read the documentation: [succss.ifzenelse.net][7]
 ####Fork the documentation: [github.com/B2F/Succss-doc][-1]
 
 ***
 
-![large diff image example][8]
+[![large diff image example][8]][7]
 
 ####Discover a new way to test websites, automagically.
 
@@ -56,5 +65,10 @@ Among other things, Succss has features to compare similar selectors rendering a
 [10]:http://humblesoftware.github.io/js-imagediff/
 [11]:http://huddle.github.io/Resemble.js/
 [12]:https://raw.githubusercontent.com/B2F/Succss-doc/master/img/screenshots/small-diff.jpeg
-[100]:http://succss.ifzenelse.net/configuration
+[100]:http://succss.ifzenelse.net/configuration#pages
 [101]:http://succss.ifzenelse.net/commandline
+[200]:https://www.npmjs.com/
+[300]:http://succss.ifzenelse.net/configuration#before
+[301]:http://succss.ifzenelse.net/configuration#hide
+[302]:http://succss.ifzenelse.net/commandline#compareto
+
