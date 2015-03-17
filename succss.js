@@ -185,10 +185,9 @@ function Succss() {
             capturesFound = true;
           }
           if (typeof(data[page].captures[c]) == 'object') {
-            data[page].captures[c] = {
-              selector:captures[c].selector || c,
-              before:captures[c].before || false
-            };
+            data[page].captures[c] = captures[c];
+            data[page].captures[c].selector = captures[c].selector || c;
+            data[page].captures[c].before = captures[c].before || false;
           }
           else {
             data[page].captures[c] = {
@@ -422,6 +421,17 @@ function Succss() {
         self.echo('Selector "' + captureState.selector + '" was not found anywhere on the page.', 'ERROR');
       });
     });
+
+    // Processing the 'hidden' capture property:
+    if (captureState.hidden) {
+      var selectors = captureState.hidden;
+      casperInstance.thenEvaluate(function(selectors) {
+        var elements = document.querySelectorAll(selectors);
+        for (var e in elements) {
+          elements[e].style.visibility = 'hidden';
+        }
+      }, { selectors:selectors })
+    };
 
     var imgOptions = {
       format: captureState.options.imgType,
