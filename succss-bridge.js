@@ -52,7 +52,7 @@ try {
         diff:true,
         imagediff:true,
         resemble:false,
-        diffQuality:'80',
+        diffQuality:'70',
         tolerancePixels:'0',
       };
 

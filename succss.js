@@ -534,7 +534,7 @@ function Succss() {
     ctx.fillText("Base", imgBase.width + 10, headerHeight/1.4);
     ctx.fillText("Update", imgBase.width*2 + 10, headerHeight/1.4);
     var data = canvas.toDataURL("image/jpeg", options.diffQuality/100).split(",")[1];
-    fs.write(filePath.replace('png', 'jpeg'), atob(data),'wb');
+    fs.write(filePath, atob(data),'wb');
     self.echo('The diff image has been written in : ' + filePath, 'INFO');
   }
 
