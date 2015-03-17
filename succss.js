@@ -543,7 +543,7 @@ function Succss() {
             (SuccssCount.startDate.getMonth() + 1) + '-' +
             SuccssCount.startDate.getDate() + '--' +
             SuccssCount.startDate.getHours() + '-' +
-            SuccssCount.startDate.getMinutes() + '\'' +
+            SuccssCount.startDate.getMinutes() + '-' +
             SuccssCount.startDate.getSeconds() +
             '/' + capture.page.name + '--' + capture.viewport.name +
             '/' + capture.basePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
