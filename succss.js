@@ -70,8 +70,8 @@ function Succss() {
     var viewports = Object.keys(viewportsData);
 
     var createCaptureState = function(pageName, captureIndex, viewportName) {
-      if (typeof data[pageName] !== 'object') self.catchErrors('Page ' + pageName + ' is missing from your configuration file. You can\'t compareToPage without it.');
-      if (typeof viewportsData[viewportName] !== 'object') self.catchErrors('Viewport ' + viewportName + ' is missing from your configuration file. You can\'t compareToViewport without it.');
+      if (typeof data[pageName] !== 'object') self.catchErrors('Page ' + pageName + ' is missing from your configuration file. You can\'t compareToPage without it. Available pages: ' + Object.keys(data).join(', '));
+      if (typeof viewportsData[viewportName] !== 'object') self.catchErrors('Viewport ' + viewportName + ' is missing from your configuration file. You can\'t compareToViewport without it. Available viewports: ' + Object.keys(viewportsData).join(', '));
       // Available in setFileName:
       var captureState = data[pageName].captures[captureIndex];
       captureState.page = {};
