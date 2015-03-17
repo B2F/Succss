@@ -87,6 +87,16 @@ Succss.pages = {
         }
       }
     }
+  },
+  'hiddenElements': {
+    'url':SuccssDataCommon.url+'/usecases',
+    'directory':SuccssDataCommon.baseDirectory+'/hiddenElement',
+    'captures': {
+      'navigation-menu': {
+        selector: '#more-infos',
+        hidden: '#colors div, #colors a'
+      }
+    }
   }
 };
 

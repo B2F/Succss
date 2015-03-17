@@ -42,3 +42,7 @@ succss check selftests/data-web-examples.js --viewports=classic-wide --pages=,sp
 
 # page and viewports comparisons
 succss check selftests/data-compare.js
+
+# hidden capture property:
+succss add selftests/data.js --pages=hiddenElements --viewports=wide
+succss check selftests/data-diff.js --pages=hiddenElements --viewports=wide

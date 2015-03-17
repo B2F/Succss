@@ -29,6 +29,7 @@ for (var selector in Succss.pages['advanced-selectors'].captures) {
   Succss.pages['advanced-selectors'].captures[selector].before = undefined;
 }
 Succss.pages['diffCanvas'].captures['logoImg'].before = undefined;
+Succss.pages['hiddenElements'].captures['navigation-menu'].hidden = undefined;
 
 Succss.callback = function(capture) {
 
