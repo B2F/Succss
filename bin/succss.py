@@ -6,13 +6,15 @@ from subprocess import call
 from optparse import OptionParser
 parser = OptionParser()
 
-scriptpath = os.path.dirname(os.path.realpath(__file__)) 
+scriptpath = os.path.dirname(os.path.realpath(__file__))
 casperbridge = scriptpath + '/../succss-bridge.js'
 requiredArgs = ["casperjs", "test", casperbridge]
 allArgs = requiredArgs[:]
+allArgs.append('--scriptpath=' + scriptpath)
 
 # this is used to get the lib/imagediff.js and lib/resemble.js files for diffing
-allArgs.append('--scriptpath=' + scriptpath)
+libpath = os.path.join(scriptpath, os.pardir) + '/lib'
+allArgs.append('--libpath=' + libpath)
 
 #1. take first sys.argv argument and prepend --action to it, add the resulting string to allArgs list
 #2. take the second argument and prepend --dataFile tot it, add the resulting string to allArgs list

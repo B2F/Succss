@@ -78,7 +78,7 @@ Succss.options = {
  */
 Succss.diff = function(imgBase, imgCheck, capture) {
 
-    phantom.injectJs(capture.options.scriptpath + '/../lib/imagediff.js');
+    this.injectJs(capture.options.libpath + '/imagediff.js');
 
     imgDiff = imagediff.diff(imgBase, imgCheck);
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);

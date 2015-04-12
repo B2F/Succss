@@ -462,7 +462,7 @@ function Succss() {
   }
 
   self.imagediff = function(imgBase, imgCheck, capture) {
-    self.injectJs(options.scriptpath + '/../lib/imagediff.js');
+    self.injectJs(options.libpath + '/imagediff.js');
 
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
     if (!imagesMatch) {
@@ -475,7 +475,7 @@ function Succss() {
 
   self.resemble = function(imgBase, imgCheck, capture) {
 
-    self.injectJs(options.scriptpath + '/../lib/resemble.js');
+    self.injectJs(options.libpath + '/resemble.js');
 
     resemble(imgBase.src).compareTo(imgCheck.src).onComplete(function(data){
       var imgDiff = new Image();
