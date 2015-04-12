@@ -35,13 +35,13 @@ Among other things, Succss has features to achieve advanced comparisons with [cu
 
 ####Discover a new way to test websites, automagically.
 
-- [Installation troubleshooting][1]
-- [Advanced Configuration][2]
-- [Succss from the CLI][3]
+- [Use cases][0]
+- [Configuration][2]
+- [CLI options][3]
 - [Custom validations][4]
 - [Why another CSS Regression Testing tool ?][5]
 - [Fork Succss !][6]
-- [Typical use cases][0]
+- [Installation troubleshooting][1]
 - --[Home page][7]
 
 ####Built with:
