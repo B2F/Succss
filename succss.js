@@ -251,18 +251,18 @@ function Succss() {
 
   self.prepareScreenshot = function(capture) {
     capture.basePath = getReferenceFilePath(capture);
-    // Slimer fix: SlimerJS engine is unable to check updates itself, succss.py
-    // trick is a options.slimerCheck, so slimerJS engine use the 'add' action first
+    // Slimer fix 1: SlimerJS engine is unable to check updates itself due to canvas writing issues,
+    // succss.py's trick is the options.slimerCheck telling slimerJS engine it has to 'add' with phantomjs first
 
     if (capture.options.action == 'check'  || options.slimerCheck) {
       capture.filePath = cleanPreprendPath(checkDir, capture.page.directory+'/'+capture.file);
       capture.filePath = capture.filePath.replace(/\.\//, '');
     }
 
-    // 2. Slimer fix: then updates are checked with the phantomJS engine (phantomIsCheckingSlimer).
-    var phantomIsCheckingSlimer = (capture.options.action == 'check' && options.slimerCheck);
+    // Slimer fix 2: updates are checked with the previously made phantomJS captures instead of live SlimerJs captures.
+    var slimerIsCheckingPhantomCaptures = (capture.options.action == 'check' && options.slimerCheck);
 
-    if (!options.checkDir && !phantomIsCheckingSlimer) {
+    if (!options.checkDir && !slimerIsCheckingPhantomCaptures) {
       self.takeScreenshot(capture);
     }
 
@@ -347,6 +347,12 @@ function Succss() {
     self.parseData(command);
   }
 
+  /**
+   * The self.parseData method is called with either add or check commandline functions.
+   *
+   * @param function command (
+   * @returns casperInstance.run()
+   */
   self.parseData = function(command) {
 
     casperInstance.start('about:blank', function() {
