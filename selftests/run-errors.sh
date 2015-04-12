@@ -42,3 +42,7 @@ succss add selftests/data-errors.js --pages=badSelector
 
 # using wrong compareTo* arguments
 succss check selftests/data-errors.js --pages=goodPage --compareToPage=badPage --compareToViewport=badViewport
+
+# testing canvas diff with custom settings for resemblejs
+succss add selftests/data-web-examples.js --pages=custom-resemble
+succss check selftests/data-web-examples.js --pages=custom-resemble

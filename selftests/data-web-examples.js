@@ -51,6 +51,10 @@ Succss.pages = {
     'url':baseUrl + '/fork&variation=0',
     'captures': { 'header-text':'#static-line' },
     'good':true
+  },
+  'custom-resemble': {
+    'url':baseUrl + '?variation=100&speed=70',
+    'captures': { 'aside-colors':'aside#colors' },
   }
 };
 
@@ -81,14 +85,14 @@ Succss.options = {
 
 Succss.diff = function(imgBase, imgCheck, capture) {
 
-  if (capture.page.name != 'special') {
+  if (capture.page.name == 'custom-resemble') {
     try {
-        this.injectJs('lib/resemble.js');
+        this.injectJs(capture.options.libpath + '/resemble.js');
 
         resemble.outputSettings({
           errorColor: {
             red: 0,
-            green: 255,
+            green: 0,
             blue: 255
           },
           errorType: 'movement',
