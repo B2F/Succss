@@ -9,7 +9,7 @@
 
 // Include another javascript file from the command line working directory.
 // The data.class.js file is used to import "SuccssDataCommon" variables.
-phantom.injectJs(fs.workingDirectory + '/selftests/data.class.js');
+phantom.injectJs('selftests/data.class.js');
 
 /*
  * Succss.pages object is where you describe where and how screenshots are done.

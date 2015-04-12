@@ -9,7 +9,7 @@
  *
  */
 
-phantom.injectJs(fs.workingDirectory + '/selftests/data.js');
+phantom.injectJs('selftests/data.js');
 
 Succss.pages = {
   'installation': {

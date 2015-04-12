@@ -18,7 +18,7 @@
  * 
  */
 
-phantom.injectJs(fs.workingDirectory + '/selftests/data.js');
+phantom.injectJs('selftests/data.js');
 
 // Replaces body's background-color #080 by #088
 Succss.pages['advanced-selectors'].url.replace('bgColor=080', 'bgColor=088');
