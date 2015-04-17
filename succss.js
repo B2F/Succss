@@ -23,6 +23,10 @@ SuccssCount = {
 
 function Succss() {
 
+  /*
+   * Try catching the initialisation phase, while parsing the javascript configuration data via self.
+   * @see succss-bridge.js
+   */
   try {
 
     var self = this;
@@ -69,6 +73,15 @@ function Succss() {
     };
     var viewports = Object.keys(viewportsData);
 
+    /**
+     * Creates the capture state object used for taking screenshots, naming screenshots (Succss.setFileName),
+     * hooking after capture (Succss.callback), then while diffing (Succss.diff | Succss.imagediff | Succss.resemble).
+     *
+     * @param {String} pageName
+     * @param {Number} captureIndex
+     * @param {String} viewportName
+     * @returns {Object} capture state
+     */
     var createCaptureState = function(pageName, captureIndex, viewportName) {
       if (typeof data[pageName] !== 'object') self.catchErrors('Page ' + pageName + ' is missing from your configuration file. You can\'t compareToPage without it. Available pages: ' + Object.keys(data).join(', '));
       if (typeof viewportsData[viewportName] !== 'object') self.catchErrors('Viewport ' + viewportName + ' is missing from your configuration file. You can\'t compareToViewport without it. Available viewports: ' + Object.keys(viewportsData).join(', '));
@@ -83,24 +96,28 @@ function Succss() {
       captureState.viewport = viewportsData[viewportName];
       captureState.options = options;
       captureState.count = SuccssCount;
-      // Available in after capture callback:
+      // Available in the after capture callback:
       captureState.file = self.setFileName(captureState);
       captureState.filePath = captureState.page.directory.replace(/\/$/, '') + '/' + captureState.file;
       captureState.action = captureState.options.action;
       return captureState;
     }
 
+    // Default filenaming for captured screenshot files:
     if (!self.setFileName) self.setFileName = function(captureState) {
       return captureState.page.name + '--' + captureState.name + '--' + captureState.viewport.width + 'x' + captureState.viewport.height + '.png';
     };
 
+    // Directory path used as reference prefix when checking for differences.
     var checkDir = options.checkDir || '.succss-tmp';
     if (options.checkDir && !fs.isDirectory(checkDir)) {
       throw "[SucCSS] Reference directory not found. Check your --checkDir option.";
     }
 
+    // Processes the --pages option: restricts the pages keys object to it.
     if (options.pages != undefined && options.pages !== true) {
       pages = options.pages.split(',');
+      // Support for '=,s...' (Replacement fix for '=s...' with SlimerJs engine):
       while (pages.indexOf('') != -1) {
         pages.splice(pages.indexOf(''), 1);
       }
@@ -111,13 +128,15 @@ function Succss() {
         }
       }
     }
-
+    // Processes the --captures option:
     if (options.captures != undefined && options.captures !== true) {
       captureFilters = options.captures.split(',');
       self.echo('\n--captures option found, captures will only run for <' + options.captures + '>', 'WARNING');
     }
+    // Processes the --viewports option: restricts the viewports keys object to it.
     if (options.viewports != undefined) {
       viewports = options.viewports.split(',');
+      // Support for '=,s...' (Replacement fix for '=s...' with SlimerJs engine):
       while (viewports.indexOf('') != -1) {
         viewports.splice(viewports.indexOf(''), 1);
       }
@@ -129,6 +148,10 @@ function Succss() {
       }
     }
 
+    /**
+     * Fills the data object with values processed from the javascript configuration file.
+     * The data object's has pages and captures properties later used in self.parseData.
+     */
     Object.keys(data).forEach(function(page) {
 
       data[page].name = page;
@@ -217,8 +240,12 @@ function Succss() {
     casperInstance.exit();
   }
 
+  /**
+   * Handles "window.callPhantom" messages from casper.evaluate functions.
+   */
   casperInstance.on('remote.callback', function(data) {
 
+    // Calls utils.dump when window.callPhantm({dump:object}) is used:
     if (data.dump) {
       utils.dump(data.dump);
     }
@@ -227,6 +254,9 @@ function Succss() {
     }
   });
 
+  /**
+   * Handles completed CasperJs run events, when succss command has finished.
+   */
   casperInstance.on('run.complete', function(data) {
     if (SuccssCount.failures) {
       self.echo('Tests failed with ' + SuccssCount.failures + ' errors.', 'ERROR');
@@ -236,9 +266,15 @@ function Succss() {
     }
   });
 
+  /**
+   * Returns a filepath used as image reference.
+   *
+   * @param {Object} capture state
+   * @returns {String} base image filepath
+   */
   var getReferenceFilePath = function(capture) {
-    // if compareTo option set, get the capture state from another pagename or
-    // viewport, using same captureindex
+    // If compareTo{Page|Viewport} option is set, gets the filepath corresponding
+    // to the capture index (page, capture, viewport):
     if (options.compareToViewport || options.compareToPage) {
       var pageReference = options.compareToPage || capture.page.name;
       var viewportReference = options.compareToViewport || capture.viewport.name;
@@ -249,19 +285,35 @@ function Succss() {
     }
   }
 
+  /**
+   * Prepares a screenshot, then calls the after capture callback if it exists.
+   * In case the "checkDir" option is used or during SlimerJs checking phase, screenshots capture will not occur.
+   *
+   * Note: SlimerJS engine is unable to check updates itself due to canvas writing issues.
+   * So succss.py's adds an options.slimerCheck and starts with the 'add' command with PhantomJS taking captures
+   * Then updates are checked with the previously made PhantomJS captures instead of live SlimerJs captures,
+   * as if Slimer had made them because the default '.succss-tmp' directory is used.
+   *
+   * @param {Object} capture state
+   */
   self.prepareScreenshot = function(capture) {
-    capture.basePath = getReferenceFilePath(capture);
-    // Slimer fix 1: SlimerJS engine is unable to check updates itself due to canvas writing issues,
-    // succss.py's trick is the options.slimerCheck telling slimerJS engine it has to 'add' with phantomjs first
 
+    // Sets the image reference path for searching image differences when 'succss check' is called:
+    capture.basePath = getReferenceFilePath(capture);
+
+    // When 'succss check {config.js}' is called, screenshots images used for computing differences are either
+    // written in '.succss-tmp' (the default checkDir value) or found in the path specified by --checkDir.
+    // In case of slimerCheck, PhantomJs will capture updates in '.succss-tmp' with the 'add' action.
     if (capture.options.action == 'check'  || options.slimerCheck) {
       capture.filePath = cleanPreprendPath(checkDir, capture.page.directory+'/'+capture.file);
       capture.filePath = capture.filePath.replace(/\.\//, '');
     }
 
-    // Slimer fix 2: updates are checked with the previously made phantomJS captures instead of live SlimerJs captures.
+    // @see above SlimerJS engine notes.
     var slimerIsCheckingPhantomCaptures = (capture.options.action == 'check' && options.slimerCheck);
 
+    // Screenshot taking happens with 'add' and normal 'check',
+    // it doesn't take place with --checkDir or SlimerJs checks.
     if (!options.checkDir && !slimerIsCheckingPhantomCaptures) {
       self.takeScreenshot(capture);
     }
@@ -279,6 +331,9 @@ function Succss() {
     });
   }
 
+  /*
+   * The function that is executed with "succss add {config.js}"
+   */
   self.add = function() {
 
     self.parseData(function(capture) {
@@ -286,6 +341,9 @@ function Succss() {
     });
   }
 
+  /**
+   * The function that is executed with "succss check {config.js}"
+   */
   self.check = function() {
 
     var command = function(capture) {
@@ -294,6 +352,7 @@ function Succss() {
 
       casperInstance.then(function() {
 
+        // Writing base and updated HTML images on PhantomJS canvas before passing them to a diff function.
         try {
 
           var imgLoadCount = 0;
@@ -327,6 +386,7 @@ function Succss() {
           if (imgLoadCount == 2) {
             ['resemble', 'imagediff', 'diff'].forEach(function(diff) {
               try {
+                // Only calls diff methods enabled in Succss.options:
                 if (self[diff] && capture.options[diff] == true) {
                   self[diff].call(self, imgBase, imgCheck, capture);
                 }
@@ -348,9 +408,12 @@ function Succss() {
   }
 
   /**
-   * The self.parseData method is called with either add or check commandline functions.
+   * The parseData function iterates through the pages, captures and viewports objects
+   * generated from the javascript configuration during Succss private data initialisation phase.
+   * Capture state objects are created for each iteration, then casperjs opens a webbrowser
+   * and set the viewport for these. A command is called on each capture state (add, check).
    *
-   * @param function command (
+   * @param {Function} command functions from self.add and self.check above.
    * @returns casperInstance.run()
    */
   self.parseData = function(command) {
@@ -408,12 +471,20 @@ function Succss() {
     }).run();
   }
 
+  /**
+   * Captures a screenshot from the data contained in a Succss capture state object.
+   *
+   * @param {Object} capture state
+   */
   self.takeScreenshot = function(captureState) {
 
-    // Before capture:
     casperInstance.then(function() {
       casperInstance.waitForSelector(captureState.selector, function() {
+
+        // Processing before capture callbacks:
         if (captureState.before) {
+          // Siblings are before functions made available in other before functions,
+          // see http://succss.ifzenelse.net/configuration#before.
           var siblings = {};
           var pageCaptures = data[captureState.page.name].captures;
           for (var c in pageCaptures) {
@@ -444,6 +515,7 @@ function Succss() {
       quality: captureState.options.imgQuality
     };
 
+    // Takes the screenshot with CasperJs:
     casperInstance.then(function() {
       try {
         // Quickfix in case window.scrollTo is called on client side.
@@ -461,6 +533,13 @@ function Succss() {
     });
   }
 
+  /**
+   * Succss bundled diffing implementation of imagediff.js
+   *
+   * @param {HTMLImageElement} image reference
+   * @param {HTMLImageElement} updated image
+   * @param {Object} capture state
+   */
   self.imagediff = function(imgBase, imgCheck, capture) {
     self.injectJs(options.libpath + '/imagediff.js');
 
@@ -473,6 +552,13 @@ function Succss() {
     casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot (imagediff).');
   }
 
+  /**
+   * Succss bundled diffing implementation of resemblejs
+   *
+   * @param {HTMLImageElement} image reference
+   * @param {HTMLImageElement} updated image
+   * @param {Object} capture state
+   */
   self.resemble = function(imgBase, imgCheck, capture) {
 
     self.injectJs(options.libpath + '/resemble.js');
@@ -500,6 +586,15 @@ function Succss() {
     });
   }
 
+  /**
+   * Writes an image to a HTML5 Canvas, assembled from images differences (imgDiff) between the original and updated images,
+   * then saves it.
+   *
+   * @param {ImageData|HTMLImageElement} imgDiff The diff html image or image data output from any library: imagediff, resemble...
+   * @param {HTMLImageElement} imgBase The original image.
+   * @param {HTMLImageElement} imgCheck The updated image.
+   * @param {String} filePath for saving the composed image.
+   */
   self.writeImgDiff = function(imgDiff, imgBase, imgCheck, filePath) {
     var canvas = document.createElement('canvas');
     var headerHeight = 50;
@@ -554,6 +649,10 @@ function Succss() {
     self.echo('The diff image has been written in : ' + filePath, 'INFO');
   }
 
+  /**
+   * @param {Object} capture state
+   * @returns {String} The default path for writing diff images.
+   */
   self.defaultDiffDirName = function(capture) {
     return SuccssCount.startDate.getFullYear() + '-' +
             (SuccssCount.startDate.getMonth() + 1) + '-' +
@@ -565,11 +664,19 @@ function Succss() {
             '/' + capture.basePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
   }
 
+  /**
+   * Increments the current Succss run error count, print the related message.
+   * @param {String} error message
+   */
   self.catchErrors = function(err) {
     SuccssCount.failures++;
     self.echo(err, 'ERROR');
   }
 
+  /**
+   * Injects a javascript file with PhantomJs, only once.
+   * @param {String} filePath
+   */
   self.injectJs = function(filePath) {
     if (injectedJSFiles.indexOf(filePath) == -1) {
       var loaded = phantom.injectJs(filePath);
@@ -585,6 +692,13 @@ function Succss() {
   return self;
 }
 
-function cleanPreprendPath(path, dir) {
-  return path.replace(/\/$/, '') + '/' + dir.replace(/^(\.\/|\/)/, '');
+/**
+ * Prepend a filepath, removes double slashes and "current directory" dots.
+ *
+ * @param {String} path used as a prefix
+ * @param {String} dir used as a suffix
+ * @returns {String} the resulting filepath
+ */
+function cleanPreprendPath(prefix, suffix) {
+  return prefix.replace(/\/$/, '') + '/' + suffix.replace(/^(\.\/|\/)/, '');
 }
