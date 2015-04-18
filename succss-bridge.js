@@ -54,6 +54,7 @@ try {
         resemble:false,
         diffQuality:'70',
         tolerancePixels:'0',
+        diffLightness:100
       };
 
       var dataFilePath = Succss.cliOptions.dataFile;

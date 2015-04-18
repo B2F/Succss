@@ -85,6 +85,7 @@ function Succss() {
     var createCaptureState = function(pageName, captureIndex, viewportName) {
       if (typeof data[pageName] !== 'object') self.catchErrors('Page ' + pageName + ' is missing from your configuration file. You can\'t compareToPage without it. Available pages: ' + Object.keys(data).join(', '));
       if (typeof viewportsData[viewportName] !== 'object') self.catchErrors('Viewport ' + viewportName + ' is missing from your configuration file. You can\'t compareToViewport without it. Available viewports: ' + Object.keys(viewportsData).join(', '));
+      if (typeof data[pageName].captures[captureIndex] != 'object') throw('Capture "' + captureIndex + '" is missing from your configuration page named "' + pageName +'"/ Your captures must be present on both sides when compareToPage is used.');
       // Available in setFileName:
       var captureState = data[pageName].captures[captureIndex];
       captureState.page = {};
@@ -542,11 +543,14 @@ function Succss() {
    */
   self.imagediff = function(imgBase, imgCheck, capture) {
     self.injectJs(options.libpath + '/imagediff.js');
-
+    var imagediffOptions = {
+      lightness:options.diffLightness,
+      align:'top'
+    }
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
     if (!imagesMatch) {
       var filePath = './imagediff/' + self.defaultDiffDirName(capture);
-      var imgDiff = imagediff.diff(imgBase, imgCheck);
+      var imgDiff = imagediff.diff(imgBase, imgCheck, imagediffOptions);
       self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
     }
     casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot (imagediff).');
