@@ -43,6 +43,7 @@ try {
       casper.exit();
       break;
 
+    case 'list':
     case 'add':
     case 'check':
 

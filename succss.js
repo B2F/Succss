@@ -333,6 +333,13 @@ function Succss() {
     });
   }
 
+  self.list = function() {
+
+    self.parseData(function(capture) {
+      self.echo(capture.name + ' capture is valid.');
+    });
+  }
+
   /*
    * The function that is executed with "succss add {config.js}"
    */
