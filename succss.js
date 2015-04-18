@@ -235,6 +235,7 @@ function Succss() {
         throw "[SucCSS] The viewport height and width must be set with numbers.";
       }
     });
+    self.echo('Available viewports: ' + Object.keys(viewportsData).join(', '), 'INFO');
   }
   catch (e) {
     self.echo(e + '\n', 'ERROR');
