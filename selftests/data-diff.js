@@ -56,7 +56,9 @@ Succss.options = {
   'imagediff':false,
   'diffQuality':100,
   'exitOnError':false,
-  'pages':'advanced-selectors',
+  'check': {
+    'pages': 'diffCanvas'
+  }
 }
 
 /*

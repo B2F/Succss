@@ -97,7 +97,9 @@ Succss.pages = {
         hidden: '#colors div, #colors a'
       }
     }
-  }
+  },
+  // Should not be run unless explicitly. Used to verify that Succss.options.[check|add] was used by default.
+  'doesNotRun' : { url: 'willFail' }
 };
 
 /*
@@ -163,4 +165,7 @@ Succss.callback = function (capture) {
  */
 Succss.options = {
   exitOnError:false,
+  add: {
+    'pages':'diffCanvas'
+  }
 }

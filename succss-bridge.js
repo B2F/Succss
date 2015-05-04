@@ -88,6 +88,13 @@ try {
       for (var opt in Succss.options) {
         Succss.allOptions[opt] = Succss.options[opt];
       }
+      // 2. then override 1. with options for a specific action ('add', 'check', 'list'):
+      if (Succss.options[Succss.cliOptions.action]) {
+        for (var opt in Succss.options[Succss.cliOptions.action]) {
+          Succss.allOptions[opt] = Succss.options[Succss.cliOptions.action][opt];
+        }
+      }
+      // Finally override 2. with commandline options:
       for (var opt in Succss.cliOptions) {
         Succss.allOptions[opt] = Succss.cliOptions[opt];
       }

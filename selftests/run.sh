@@ -16,8 +16,9 @@ succss add selftests/data.js --pages=advanced-selectors --rmtree
 succss check selftests/data.js --pages=advanced-selectors --resemble
 
 # Writing small diff images with minimum width
-succss add selftests/data.js --pages=diffCanvas
-succss check selftests/data-diff.js --pages=diffCanvas
+# Also, overrides default 'add' and 'check' options from the configuration file
+succss add selftests/data.js
+succss check selftests/data-diff.js
 
 # with static images comparison
 succss check selftests/data.js --pages=diffCanvas --checkDir=selftests/static-images
