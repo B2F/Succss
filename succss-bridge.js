@@ -13,7 +13,12 @@ try {
   Succss.utils = require('utils');
   Succss.cliOptions = casper.cli.options;
   Succss.echo = function(msg, type) {
-    console.log(Succss.colorizer.colorize(msg, type));
+    if (type == 'dump') {
+      Succss.utils.dump(msg);
+    }
+    else {
+      console.log(Succss.colorizer.colorize(msg, type));
+    }
   }
 
   // Setting Succss.cliOptions.engine for reference:

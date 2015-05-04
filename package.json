@@ -1,6 +1,6 @@
 {
   "name": "succss",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Succss is a command line tool built to find image-based differences between website updates.",
   "author": "B2F <d4rb2f@gmail.com>",
   "bin": {
