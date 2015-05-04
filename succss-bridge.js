@@ -6,6 +6,7 @@
  */
 try {
 
+  // Initialisation:
   var Succss = {};
   Succss.fs = require('fs');
   Succss.colorizer = require('colorizer').create('Colorizer');
@@ -15,6 +16,7 @@ try {
     console.log(Succss.colorizer.colorize(msg, type));
   }
 
+  // Setting Succss.cliOptions.engine for reference:
   try {
     slimer;
     Succss.cliOptions.engine = 'slimerjs';
@@ -23,6 +25,7 @@ try {
     Succss.cliOptions.engine = 'phantomjs';
   }
 
+  // The binary should handle SlimerJS checking with PhantomJS, never hitting this condition:
   if (Succss.cliOptions.action == 'check' && Succss.cliOptions.engine == 'slimerjs') {
     console.log(Succss.colorizer.colorize('[Succss] succss actiones not currently support the check command with slimerjs engine."', 'ERROR'));
     casper.exit();
@@ -58,6 +61,7 @@ try {
         diffLightness:100
       };
 
+      // Injecting the succss.js script to create succss from a casper object.
       var dataFilePath = Succss.cliOptions.dataFile;
       if (fs.exists(dataFilePath)) {
         phantom.onError = function(msg, stack) {
@@ -75,6 +79,7 @@ try {
         throw '[Succss] File "' + dataFilePath + '" not found. Please enter a valid relative path.';
       }
 
+      // 1, load options from configuration file:
       for (var opt in Succss.options) {
         Succss.allOptions[opt] = Succss.options[opt];
       }
@@ -99,7 +104,7 @@ try {
       break;
 
     default:
-      throw new Error('succss {{add | check} FILE.js} | help }');
+      throw new Error('succss { { add | check | list } FILE.js } | help }');
 
   }
 }
