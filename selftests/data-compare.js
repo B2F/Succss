@@ -12,23 +12,24 @@
 phantom.injectJs('selftests/data.js');
 
 Succss.pages = {
-  'installation': {
-    url:SuccssDataCommon.url + '?page=installation',
+  'advanced-selectors': {
+    'url':SuccssDataCommon.url + '?&variation=10&bgColor=080',
+    'directory':SuccssDataCommon.baseDirectory+'/advanced-selectors',
     captures: {
       'header':''
     }
   },
   'configuration' : {
     url:SuccssDataCommon.url + '?page=configuration',
-    source:'installation'
+    source:'advanced-selectors'
   },
   'customize' : {
     url:SuccssDataCommon.url + '?page=customize&bgColor=123',
-    source:'installation'
+    source:'advanced-selectors'
   },
   'fork' : {
     url:SuccssDataCommon.url + '?page=fork&bgColor=789',
-    source:'installation'
+    source:'advanced-selectors'
   }
 };
 
@@ -47,9 +48,9 @@ Succss.viewports = {
     width:1600,
     height:1200    
   },
-  'mobile-portrait': {
-    width:480,
-    height:640
+  'mobile-landscape': {
+    width:640,
+    height:480
   }
 }
 
@@ -65,8 +66,8 @@ Succss.options = {
   'diffQuality':100,
   'captures':'header',
   'viewports':'default-reduced',
-  'compareToPage':'installation',
-  'compareToViewport':'mobile-portrait'
+  'compareToPage':'advanced-selectors',
+  'compareToViewport':'mobile-landscape'
 }
 
 /*
