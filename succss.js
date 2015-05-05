@@ -37,11 +37,11 @@ function Succss() {
 
     var casperInstance = self.casper;
 
-    var fs = self.fs;
-    var options = self.allOptions;
-    var utils = self.utils;
-    var mouse = self.mouse;
-    var colorizer = self.colorizer;
+    var fs = self.fs,
+        options = self.allOptions,
+        utils = self.utils,
+        mouse = self.mouse,
+        colorizer = self.colorizer;
 
     self.echo('|-> ' + options.action + ' from file: ' + options.dataFile, 'INFO_BAR');
 
@@ -60,10 +60,8 @@ function Succss() {
 
     var injectedJSFiles = [];
 
-    var pages = Object.keys(data);
-
-    var capturesFound = false;
-    var captureFilters = false;
+    var capturesFound = false,
+        captureFilters = false;
 
     var viewportsData = self.viewports || { 
       'default': {
@@ -71,7 +69,9 @@ function Succss() {
         'height':768
       }
     };
-    var viewports = Object.keys(viewportsData);
+
+    var pages = Object.keys(data),
+        viewports = Object.keys(viewportsData);
 
     /**
      * Creates the capture state object used for taking screenshots, naming screenshots (Succss.setFileName),
@@ -87,7 +87,10 @@ function Succss() {
       if (typeof viewportsData[viewportName] !== 'object') self.catchErrors('Viewport ' + viewportName + ' is missing from your configuration file. You can\'t compareToViewport without it. Available viewports: ' + Object.keys(viewportsData).join(', '));
       if (typeof data[pageName].captures[captureIndex] != 'object') throw('Capture "' + captureIndex + '" is missing from your configuration page named "' + pageName +'"/ Your captures must be present on both sides when compareToPage is used.');
       // Available in setFileName:
-      var captureState = data[pageName].captures[captureIndex];
+      var captureState = {};
+      for (var prop in data[pageName].captures[captureIndex]) {
+        captureState[prop] = data[pageName].captures[captureIndex][prop];
+      };
       captureState.page = {};
       for (var prop in data[pageName]) {
         if (prop != 'captures') {
