@@ -13,12 +13,19 @@
 
 exports.Succss = Succss;
 
-SuccssCount = {
-  planned:0,
-  remaining:0,
-  failures:0,
+SuccssStats = {
+  planned: {
+    pages:0,
+    selectors:0,
+    captures:0,
+  },
+  parsedCaptures: 0,
+  success: [],
+  failures: [],
+  errors: [],
   startTime:0,
   startDate:null,
+  execTime:0
 };
 
 function Succss() {
@@ -263,11 +270,15 @@ function Succss() {
    * Handles completed CasperJs run events, when succss command has finished.
    */
   casperInstance.on('run.complete', function(data) {
-    if (SuccssCount.failures) {
-      self.echo('Tests failed with ' + SuccssCount.failures + ' errors.', 'ERROR');
+    // cleanup:
+    if (!options.checkDir && !options.keepTmp) {
+      fs.removeTree(checkDir);
+    }
+    if (SuccssStats.errors.length) {
+      self.echo('Tests failed with ' + SuccssStats.errors + ' errors.', 'ERROR');
     }
     else {
-      self.echo('[SUCCSS] All captures (' + SuccssCount.planned + ') tests pass!', 'GREEN_BAR');
+      self.echo('[SUCCSS] All captures (' + SuccssStats.parsedCaptures + ') tests pass!', 'GREEN_BAR');
     }
   });
 
@@ -334,6 +345,8 @@ function Succss() {
         }
       }
     });
+
+    SuccssStats.parsedCaptures++;
   }
 
   self.list = function() {
@@ -407,11 +420,6 @@ function Succss() {
                 self.catchErrors(e);
               }
             });
-            if (!SuccssCount.remaining) {
-              if (!options.checkDir && !options.keepTmp) {
-                fs.removeTree(checkDir);
-              }
-            }
           }
         }
       });
@@ -432,19 +440,22 @@ function Succss() {
 
     casperInstance.start('about:blank', function() {
 
-      SuccssCount.startDate = new Date();
-      SuccssCount.startTime = SuccssCount.startDate.getTime();
+      SuccssStats.startDate = new Date();
+      SuccssStats.startTime = SuccssStats.startDate.getTime();
 
       casperInstance.each(pages, function(casperInstance, p) {
 
         self.echo('\nFound "' + p + '" page configuration.', 'INFO');
 
-        SuccssCount.planned += data[p].captureKeys.length*viewports.length;
-        SuccssCount.remaining = SuccssCount.planned;
+        SuccssStats.planned.pages++;
 
         casperInstance.each(data[p].captureKeys, function(casperInstance, c) {
 
+          SuccssStats.planned.selectors++;
+
           casperInstance.each(viewports, function(casperInstance, v) {
+
+            SuccssStats.planned.captures++;
 
             casperInstance.thenOpen(data[p].url, function(){
 
@@ -669,12 +680,12 @@ function Succss() {
    * @returns {String} The default path for writing diff images.
    */
   self.defaultDiffDirName = function(capture) {
-    return SuccssCount.startDate.getFullYear() + '-' +
-            (SuccssCount.startDate.getMonth() + 1) + '-' +
-            SuccssCount.startDate.getDate() + '--' +
-            SuccssCount.startDate.getHours() + '-' +
-            SuccssCount.startDate.getMinutes() + '-' +
-            SuccssCount.startDate.getSeconds() +
+    return SuccssStats.startDate.getFullYear() + '-' +
+            (SuccssStats.startDate.getMonth() + 1) + '-' +
+            SuccssStats.startDate.getDate() + '--' +
+            SuccssStats.startDate.getHours() + '-' +
+            SuccssStats.startDate.getMinutes() + '-' +
+            SuccssStats.startDate.getSeconds() +
             '/' + capture.page.name + '--' + capture.viewport.name +
             '/' + capture.basePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
   }
@@ -684,7 +695,7 @@ function Succss() {
    * @param {String} error message
    */
   self.catchErrors = function(err) {
-    SuccssCount.failures++;
+    SuccssStats.errors.push(err);
     self.echo(err, 'ERROR');
   }
 
