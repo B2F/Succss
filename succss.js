@@ -239,8 +239,21 @@ function Succss() {
       self.echo('Tests failed with ' + SuccssStats.errors + ' errors.', 'ERROR');
     }
     else {
-      self.echo('[SUCCSS] All captures (' + SuccssStats.parsedCaptures + ') tests pass!', 'GREEN_BAR');
+      self.echo('[SUCCSS] ' + SuccssStats.parsedCaptures + '/' + SuccssStats.planned.captures + ' captures tests pass! ', 'GREEN_BAR');
     }
+//    if (Succss.options.report) {
+    try {
+      if (true) {
+        self.injectJs(options.libpath + '/succss-reports/SuccssReporter.js');
+        var succssReporter = new SuccssReporter(SuccssStats);
+        succssReporter.report();
+        self.echo(options, 'dump');
+      }
+    }
+    catch(e) {
+      self.echo(e, 'dump');
+    }
+//    }
   });
 
   /**
