@@ -80,45 +80,6 @@ function Succss() {
     var pages = Object.keys(data),
         viewports = Object.keys(viewportsData);
 
-    /**
-     * Creates the capture state object used for taking screenshots, naming screenshots (Succss.setFileName),
-     * hooking after capture (Succss.callback), then while diffing (Succss.diff | Succss.imagediff | Succss.resemble).
-     *
-     * @param {String} pageName
-     * @param {Number} captureIndex
-     * @param {String} viewportName
-     * @returns {Object} capture state
-     */
-    var createCaptureState = function(pageName, captureIndex, viewportName) {
-      if (typeof data[pageName] !== 'object') self.catchErrors('Page ' + pageName + ' is missing from your configuration file. You can\'t compareToPage without it. Available pages: ' + Object.keys(data).join(', '));
-      if (typeof viewportsData[viewportName] !== 'object') self.catchErrors('Viewport ' + viewportName + ' is missing from your configuration file. You can\'t compareToViewport without it. Available viewports: ' + Object.keys(viewportsData).join(', '));
-      if (typeof data[pageName].captures[captureIndex] != 'object') throw('Capture "' + captureIndex + '" is missing from your configuration page named "' + pageName +'"/ Your captures must be present on both sides when compareToPage is used.');
-      // Available in setFileName:
-      var captureState = {};
-      for (var prop in data[pageName].captures[captureIndex]) {
-        captureState[prop] = data[pageName].captures[captureIndex][prop];
-      };
-      captureState.page = {};
-      for (var prop in data[pageName]) {
-        if (prop != 'captures') {
-          captureState.page[prop] = data[pageName][prop];
-        }
-      }
-      captureState.viewport = viewportsData[viewportName];
-      captureState.options = options;
-      captureState.count = SuccssCount;
-      // Available in the after capture callback:
-      captureState.file = self.setFileName(captureState);
-      captureState.filePath = captureState.page.directory.replace(/\/$/, '') + '/' + captureState.file;
-      captureState.action = captureState.options.action;
-      return captureState;
-    }
-
-    // Default filenaming for captured screenshot files:
-    if (!self.setFileName) self.setFileName = function(captureState) {
-      return captureState.page.name + '--' + captureState.name + '--' + captureState.viewport.width + 'x' + captureState.viewport.height + '.png';
-    };
-
     // Directory path used as reference prefix when checking for differences.
     var checkDir = options.checkDir || '.succss-tmp';
     if (options.checkDir && !fs.isDirectory(checkDir)) {
@@ -283,7 +244,45 @@ function Succss() {
   });
 
   /**
-   * Returns a filepath used as image reference.
+   * Creates the capture state object used for taking screenshots, naming screenshots (Succss.setFileName),
+   * hooking after capture (Succss.callback), and while diffing (Succss.diff | Succss.imagediff | Succss.resemble).
+   *
+   * PVC unique ID:
+   * @param {String} pageName
+   * @param {String} viewportName
+   * @param {Number} captureIndex
+   *
+   * @returns {Object} capture state
+   */
+  var createCaptureState = function(pageName, viewportName, captureIndex) {
+    if (typeof data[pageName] !== 'object') self.catchErrors('Page ' + pageName + ' is missing from your configuration file. You can\'t compareToPage without it. Available pages: ' + Object.keys(data).join(', '));
+    if (typeof viewportsData[viewportName] !== 'object') self.catchErrors('Viewport ' + viewportName + ' is missing from your configuration file. You can\'t compareToViewport without it. Available viewports: ' + Object.keys(viewportsData).join(', '));
+    if (typeof data[pageName].captures[captureIndex] != 'object') throw('Capture "' + captureIndex + '" is missing from your configuration page named "' + pageName +'"/ Your captures must be present on both sides when compareToPage is used.');
+    // Available in setFileName:
+    var captureState = {};
+    for (var prop in data[pageName].captures[captureIndex]) {
+      captureState[prop] = data[pageName].captures[captureIndex][prop];
+    };
+    captureState.page = {};
+    for (var prop in data[pageName]) {
+      if (prop != 'captures') {
+        captureState.page[prop] = data[pageName][prop];
+      }
+    }
+    captureState.viewport = viewportsData[viewportName];
+    captureState.options = options;
+    captureState.stats = SuccssStats;
+    captureState.differences = [];
+    captureState.id = captureState.page.name + '--' + captureState.viewport.name + '--' + captureState.name;
+    // Available in the after capture callback:
+    captureState.file = self.setFileName(captureState);
+    captureState.filePath = captureState.page.directory.replace(/\/$/, '') + '/' + captureState.file;
+    captureState.action = captureState.options.action;
+    return captureState;
+  }
+
+  /**
+   * Sets the filepath used as image reference.
    *
    * @param {Object} capture state
    * @returns {String} base image filepath
@@ -300,6 +299,11 @@ function Succss() {
       return capture.filePath;
     }
   }
+
+  // Default filenaming for captured screenshot files:
+  if (!self.setFileName) self.setFileName = function(captureState) {
+    return captureState.page.name + '--' + captureState.name + '--' + captureState.viewport.width + 'x' + captureState.viewport.height + '.png';
+  };
 
   /**
    * Prepares a screenshot, then calls the after capture callback if it exists.
@@ -461,9 +465,7 @@ function Succss() {
 
               try {
 
-                SuccssCount.remaining--;
-
-                var capture = createCaptureState(p, c, v);
+                var capture = createCaptureState(p, v, c);
 
                 self.echo('\nCapturing "' + capture.page.name + '" ' + capture.name + ' screenshot with ' + v + ' viewport:', 'INFO');
                 self.echo('Selector is: "' + capture.selector + '"', 'PARAMETER');
