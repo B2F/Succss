@@ -14,7 +14,7 @@
 exports.Succss = Succss;
 
 // @todo: rename to something else (this is not statistics)
-SuccssStats = {
+SuccssRecords = {
   planned: {
     pages:0,
     selectors:0,
@@ -230,7 +230,7 @@ function Succss() {
    * Handles completed captures.
    */
   casperInstance.on('capture.complete', function(succeed, capture, message) {
-    SuccssStats.captures[capture.id] = capture;
+    SuccssRecords.captures[capture.id] = capture;
     try {
       casperInstance.test.assertTrue(succeed, message);
     }
@@ -243,29 +243,35 @@ function Succss() {
    * Handles completed CasperJs run events, when succss command has finished.
    */
   casperInstance.on('run.complete', function(data) {
-    // cleanup:
-    if (!options.checkDir && !options.keepTmp) {
-      fs.removeTree(checkDir);
+    var now = new Date();
+    SuccssRecords.execTime = now.getTime() - SuccssRecords.startTime;
+    var nbCaptured = Object.keys(SuccssRecords.captures).length;
+    if (SuccssRecords.errors.length) {
+      self.echo('Tests failed with ' + SuccssRecords.errors.length + ' errors.', 'ERROR');
     }
-    if (SuccssStats.errors.length) {
-      self.echo('Tests failed with ' + SuccssStats.errors + ' errors.', 'ERROR');
+    else if (nbCaptured == SuccssRecords.planned.captures) {
+      self.echo('[SUCCSS] ' + nbCaptured + '/' + SuccssRecords.planned.captures + ' captures tests pass! ', 'GREEN_BAR');
     }
     else {
-      self.echo('[SUCCSS] ' + SuccssStats.parsedCaptures + '/' + SuccssStats.planned.captures + ' captures tests pass! ', 'GREEN_BAR');
+      self.echo('Tests failed with ' + nbCaptured + '/' + SuccssRecords.planned.captures + ' captures.', 'ERROR');
     }
 //    if (Succss.options.report) {
-    try {
-      if (true) {
-        self.injectJs(options.libpath + '/succss-reports/SuccssReporter.js');
-        var succssReporter = new SuccssReporter(SuccssStats);
-        succssReporter.report();
-        self.echo(options, 'dump');
-      }
-    }
-    catch(e) {
-      self.echo(e, 'dump');
-    }
+//    try {
+//      if (true) {
+//        self.injectJs(options.libpath + '/succss-reports/SuccssReporter.js');
+//        var succssReporter = new SuccssReporter(SuccssRecords);
+//        succssReporter.report();
+//        self.echo(options, 'dump');
+//      }
 //    }
+//    catch(e) {
+//      self.echo(e, 'dump');
+//    }
+//    }
+    // cleanup:
+    if (options.action == 'check' && !options.checkDir && !options.keepTmp) {
+      fs.removeTree(checkDir);
+    }
   });
 
   /**
@@ -296,7 +302,7 @@ function Succss() {
     }
     captureState.viewport = viewportsData[viewportName];
     captureState.options = options;
-    captureState.stats = SuccssStats;
+    captureState.stats = SuccssRecords;
     captureState.differences = [];
     captureState.id = captureState.page.name + '--' + captureState.viewport.name + '--' + captureState.name;
     // Available in the after capture callback:
@@ -478,22 +484,22 @@ function Succss() {
 
     casperInstance.start('about:blank', function() {
 
-      SuccssStats.startDate = new Date();
-      SuccssStats.startTime = SuccssStats.startDate.getTime();
+      SuccssRecords.startDate = new Date();
+      SuccssRecords.startTime = SuccssRecords.startDate.getTime();
 
       casperInstance.each(pages, function(casperInstance, p) {
 
         self.echo('\nFound "' + p + '" page configuration.', 'INFO');
 
-        SuccssStats.planned.pages++;
+        SuccssRecords.planned.pages++;
 
         casperInstance.each(data[p].captureKeys, function(casperInstance, c) {
 
-          SuccssStats.planned.selectors++;
+          SuccssRecords.planned.selectors++;
 
           casperInstance.each(viewports, function(casperInstance, v) {
 
-            SuccssStats.planned.captures++;
+            SuccssRecords.planned.captures++;
 
             casperInstance.thenOpen(data[p].url, function(){
 
@@ -738,12 +744,12 @@ function Succss() {
    * @returns {String} The default path for writing diff images.
    */
   self.defaultDiffDirName = function(capture) {
-    return SuccssStats.startDate.getFullYear() + '-' +
-            (SuccssStats.startDate.getMonth() + 1) + '-' +
-            SuccssStats.startDate.getDate() + '--' +
-            SuccssStats.startDate.getHours() + '-' +
-            SuccssStats.startDate.getMinutes() + '-' +
-            SuccssStats.startDate.getSeconds() +
+    return SuccssRecords.startDate.getFullYear() + '-' +
+            (SuccssRecords.startDate.getMonth() + 1) + '-' +
+            SuccssRecords.startDate.getDate() + '--' +
+            SuccssRecords.startDate.getHours() + '-' +
+            SuccssRecords.startDate.getMinutes() + '-' +
+            SuccssRecords.startDate.getSeconds() +
             '/' + capture.page.name + '--' + capture.viewport.name +
             '/' + capture.basePath.replace(/^\.?\//, '').replace(checkDir+'/', '');
   }
@@ -753,7 +759,7 @@ function Succss() {
    * @param {String} error message
    */
   self.catchErrors = function(err) {
-    SuccssStats.errors.push(err);
+    SuccssRecords.errors.push(err);
     self.echo(err, 'ERROR');
   }
 
