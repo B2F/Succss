@@ -64,16 +64,6 @@ Succss.options = {
   }
 }
 
-/**
- * Hookable actions to be done before calling the 'capture.complete' event.
- * This hook is invoked when diff functions have finished.
- */
-Succss.afterDiff = function(succeed, capture, diffType) {
-  if (!capture.options.good) succeed = !succeed;
-  var message = 'Capture is different to base screenshot (' + diffType + ').';
-  this.casper.emit('capture.complete', succeed, capture, message);
-}
-
 /*
  * Apply custom settings to the default resemble method.
  * 
@@ -90,9 +80,19 @@ Succss.diff = function(imgBase, imgCheck, capture) {
         green: 0,
         blue: 0
       },
-      transparency: 0.3,
+      transparency: 1,
       largeImageThreshold: 0
     });
 
     this.resemble(imgBase, imgCheck, capture);
+}
+
+/**
+ * Hookable actions to be done before calling the 'capture.complete' event.
+ * This hook is invoked when diff functions have finished.
+ */
+Succss.afterDiff = function(succeed, capture, diffType) {
+  if (!capture.options.good) succeed = !succeed;
+  var message = 'Capture is different to base screenshot (' + diffType + ').';
+  this.casper.emit('capture.complete', succeed, capture, message);
 }

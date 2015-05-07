@@ -43,7 +43,7 @@ succss check selftests/data-compare.js
 
 # hidden capture property:
 succss add selftests/data.js --pages=hiddenElements --viewports=wide
-succss check selftests/data-diff.js --pages=hiddenElements --viewports=wide
+succss check selftests/data-diff.js --pages=hiddenElements --viewports=wide --diff=false
 
 # imagediff lightness, stack, diffRGB & canvas setting
 succss check selftests/data-diff.js --lightness=255

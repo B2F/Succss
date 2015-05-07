@@ -33,7 +33,7 @@ Succss.pages = {
   }
 };
 
-Succss.afterCallback = function(capture) {
+Succss.afterCapture = function(capture) {
   viewport = capture.viewport;
   casper.test.assertTruthy(capture.name, '- Captured "' + capture.file + '" file for ' + capture.selector + " selector");
   casper.test.assertTruthy(viewport, '- With viewport "' + viewport.name + '" having ' + viewport.width + " width and " + viewport.height + " height.");
