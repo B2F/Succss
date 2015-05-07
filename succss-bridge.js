@@ -62,7 +62,7 @@ try {
         imagediff:true,
         resemble:false,
         diffQuality:'70',
-        tolerancePixels:'0',
+        toleranceInPixels:'0',
         diffLightness:125,
         diffStack:false,
         compareCaptures:true

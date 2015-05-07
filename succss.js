@@ -627,7 +627,7 @@ function Succss() {
     if (options.diffRGB != null) {
       imagediffOptions['rgb'] = options.diffRGB.split(',').map(function(x){return parseInt(x)});
     }
-    var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
+    var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.toleranceInPixels);
     if (!imagesMatch) {
       var filePath = './succss-reports/imagediff/' + self.defaultDiffDirName(capture);
       var imgDiff = imagediff.diff(imgBase, imgCheck, imagediffOptions);
@@ -649,6 +649,7 @@ function Succss() {
     self.injectJs(options.libpath + '/resemble.js');
 
     resemble(imgBase.src).compareTo(imgCheck.src).onComplete(function(data){
+
       var imgDiff = new Image();
       imgDiff.src = data.getImageDataUrl();
       imgDiff.onload = function() {
