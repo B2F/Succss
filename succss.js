@@ -434,7 +434,7 @@ function Succss() {
               try {
                 // Only calls diff methods enabled in Succss.options:
                 if (self[diff] && capture.options[diff] == true) {
-                  self[diff].call(self, imgBase, imgCheck, capture);
+                  self[diff](imgBase, imgCheck, capture);
                 }
               }
               catch (e) {
