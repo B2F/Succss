@@ -642,37 +642,53 @@ function Succss() {
    */
   self.writeImgDiff = function(imgDiff, imgBase, imgCheck, filePath) {
     var canvas = document.createElement('canvas');
+    var ctx = canvas.getContext('2d');
     var headerHeight = 50;
     var borderWidth = 1;
-    if (imgBase.width < 150) {
-      imgBase.width = 150;
+    if (options.compareCaptures) {
+      if (imgBase.width < 150) {
+        imgBase.width = 150;
+      }
+      if (imgBase.width < imgCheck.width) {
+        imgBase.width = imgCheck.width;
+      }
+      if (imgBase.height < imgCheck.height) {
+        imgBase.height = imgCheck.height;
+      }
+      canvas.width = imgBase.width * 3;
+      canvas.height = imgBase.height + headerHeight;
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#000';
+      ctx.font = "bold 35px Arial";
+      // Drawing image reference:
+      ctx.fillText("Base", imgBase.width + 10, headerHeight/1.4);
+      ctx.beginPath();
+      ctx.moveTo(imgBase.width, 0);
+      ctx.lineTo(imgBase.width, headerHeight);
+      ctx.lineTo(imgBase.width+borderWidth, headerHeight);
+      ctx.lineTo(imgBase.width+borderWidth, 0);
+      ctx.lineTo(imgBase.width, 0);
+      ctx.fill();
+      ctx.drawImage(imgBase, imgBase.width+borderWidth, headerHeight);
+      // Drawing image update:
+      ctx.fillText("Update", imgBase.width*2 + 10, headerHeight/1.4);
+      ctx.beginPath();
+      ctx.moveTo(imgBase.width*2, 0);
+      ctx.lineTo(imgBase.width*2, headerHeight);
+      ctx.lineTo(imgBase.width*2+borderWidth, headerHeight);
+      ctx.lineTo(imgBase.width*2+borderWidth, 0);
+      ctx.lineTo(imgBase.width*2, 0);
+      ctx.fill();
+      ctx.drawImage(imgCheck, (imgBase.width+borderWidth)*2, headerHeight);
+      ctx.fillText("Diff", 10, headerHeight/1.4);
     }
-    if (imgBase.width < imgCheck.width) {
-      imgBase.width = imgCheck.width;
+    else {
+      headerHeight = 0;
+      canvas.width = imgDiff.width;
+      canvas.height = imgDiff.height;
     }
-    if (imgBase.height < imgCheck.height) {
-      imgBase.height = imgCheck.height;
-    }
-    canvas.width = imgBase.width * 3;
-    canvas.height = imgBase.height + headerHeight;
-    var ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#000';
-    ctx.beginPath();
-    ctx.moveTo(imgBase.width, 0);
-    ctx.lineTo(imgBase.width, headerHeight);
-    ctx.lineTo(imgBase.width+borderWidth, headerHeight);
-    ctx.lineTo(imgBase.width+borderWidth, 0);
-    ctx.lineTo(imgBase.width, 0);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(imgBase.width*2, 0);
-    ctx.lineTo(imgBase.width*2, headerHeight);
-    ctx.lineTo(imgBase.width*2+borderWidth, headerHeight);
-    ctx.lineTo(imgBase.width*2+borderWidth, 0);
-    ctx.lineTo(imgBase.width*2, 0);
-    ctx.fill();
+    // Drawing image differences:
     var imgDiffType = imgDiff.toString();
     if (imgDiffType == '[object ImageData]') {
       ctx.putImageData(imgDiff, 0, headerHeight);
@@ -683,12 +699,6 @@ function Succss() {
     else {
       casper.test.error('Unable to write image diff file, unknown diff image type (' + imgDiffType + ')');
     }
-    ctx.drawImage(imgBase, imgBase.width+borderWidth, headerHeight);
-    ctx.drawImage(imgCheck, (imgBase.width+borderWidth)*2, headerHeight);
-    ctx.font = "bold 35px Arial";
-    ctx.fillText("Diff", 10, headerHeight/1.4);
-    ctx.fillText("Base", imgBase.width + 10, headerHeight/1.4);
-    ctx.fillText("Update", imgBase.width*2 + 10, headerHeight/1.4);
     var data = canvas.toDataURL("image/jpeg", options.diffQuality/100).split(",")[1];
     fs.write(filePath, atob(data),'wb');
     self.echo('The diff image has been written in : ' + filePath, 'INFO');
