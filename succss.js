@@ -228,6 +228,19 @@ function Succss() {
   });
 
   /**
+   * Handles completed captures.
+   */
+  casperInstance.on('capture.complete', function(succeed, capture, message) {
+    SuccssStats.captures[capture.id] = capture;
+    try {
+      casperInstance.test.assertTrue(succeed, message);
+    }
+    catch(e) {
+      self.catchErrors(e);
+    }
+  });
+
+  /**
    * Handles completed CasperJs run events, when succss command has finished.
    */
   casperInstance.on('run.complete', function(data) {
@@ -356,7 +369,13 @@ function Succss() {
     }
 
     casperInstance.then(function() {
-      // After capture or on checkDir:
+
+      casperInstance.emit('capture.complete',
+                         fs.exists(capture.filePath),
+                         capture,
+                         'Captured ' + capture.name + ' screenshot under ' + capture.filePath);
+
+      // After capture callback:
       if (capture.after != undefined) {
         try {
           capture.after.call(self, capture);
@@ -366,14 +385,13 @@ function Succss() {
         }
       }
     });
-
-    SuccssStats.parsedCaptures++;
   }
 
   self.list = function() {
 
     self.parseData(function(capture) {
       self.echo(capture.name + ' capture is valid.');
+      casperInstance.emit('capture.complete', true);
     });
   }
 
@@ -565,7 +583,6 @@ function Succss() {
         casperInstance.evaluate(function() {
           window.scrollTo(0,0);
         })
-        self.echo('> ... Saving ' + captureState.name + ' screenshot under ' + captureState.filePath, 'PARAMETER');
         casperInstance.captureSelector(captureState.filePath, captureState.selector, imgOptions);
       }
       catch (err) {
