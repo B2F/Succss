@@ -613,7 +613,11 @@ function Succss() {
 
     var imagediffOptions = {
       lightness:options.diffLightness,
+      stack:options.diffStack,
       align:'top'
+    }
+    if (options.diffRGB != null) {
+      imagediffOptions['rgb'] = options.diffRGB.split(',').map(function(x){return parseInt(x)});
     }
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
     if (!imagesMatch) {

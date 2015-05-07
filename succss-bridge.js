@@ -64,6 +64,7 @@ try {
         diffQuality:'70',
         tolerancePixels:'0',
         diffLightness:125,
+        diffStack:false,
         compareCaptures:true
       };
 
