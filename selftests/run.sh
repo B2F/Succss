@@ -45,5 +45,14 @@ succss check selftests/data-compare.js
 succss add selftests/data.js --pages=hiddenElements --viewports=wide
 succss check selftests/data-diff.js --pages=hiddenElements --viewports=wide --diff=false
 
-# imagediff lightness, stack, diffRGB & canvas setting
-succss check selftests/data-diff.js --lightness=255
+# imgadiff with defaults (diffStack=false, compareCapture=true, lightness=125):
+succss check selftests/data-canvas.js --imagediffDefaults
+
+# imgadiff with increased lightness:
+succss check selftests/data-canvas.js --diffLightness=255 --imagediffLightness
+
+# imagediff with diffStack, compareCapture=false and diffRGB:
+succss check selftests/data-canvas.js --diffStack --diffRGB=255,255,0 --compareCaptures=false --imagediffCustom
+
+# resemblejs custom settings:
+succss check selftests/data-canvas.js --diff --imagediff=false --resembleSettings
