@@ -598,9 +598,10 @@ function Succss() {
   }
 
   /**
-   * Hookable actions to be done before 'capture.complete' event is called.
+   * Hookable actions to be done before calling the 'capture.complete' event.
+   * This hook is invoked when diff functions have finished.
    */
-  if (!self.reportCaptureDiff) self.reportCaptureDiff = function(succeed, capture, diffType) {
+  if (!self.afterDiff) self.afterDiff = function(succeed, capture, diffType) {
     var message = 'Capture matches base screenshot (' + diffType + ')';
     casperInstance.emit('capture.complete', succeed, capture, message);
   }
@@ -631,7 +632,7 @@ function Succss() {
       self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
       capture.differences.push({imagediff: filePath});
     }
-    self.reportCaptureDiff(imagesMatch, capture, 'imagediff');
+    self.afterDiff(imagesMatch, capture, 'imagediff');
   }
 
   /**
@@ -657,7 +658,7 @@ function Succss() {
             self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
             capture.differences.push({resemble: filePath});
           }
-          self.reportCaptureDiff(imagesMatch, capture, 'resemble');
+          self.afterDiff(imagesMatch, capture, 'resemble');
         }
         catch (e) {
           self.catchErrors(e);

@@ -65,11 +65,10 @@ Succss.options = {
 }
 
 /**
- * Hookable actions to be done before 'capture.complete' event is called.
- * 
- * Here it is used to invert the default assertion, expecting image differences.
+ * Hookable actions to be done before calling the 'capture.complete' event.
+ * This hook is invoked when diff functions have finished.
  */
-Succss.reportCaptureDiff = function(succeed, capture, diffType) {
+Succss.afterDiff = function(succeed, capture, diffType) {
   if (!capture.options.good) succeed = !succeed;
   var message = 'Capture is different to base screenshot (' + diffType + ').';
   this.casper.emit('capture.complete', succeed, capture, message);
