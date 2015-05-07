@@ -13,15 +13,14 @@
 
 exports.Succss = Succss;
 
+// @todo: rename to something else (this is not statistics)
 SuccssStats = {
   planned: {
     pages:0,
     selectors:0,
     captures:0,
   },
-  parsedCaptures: 0,
-  success: [],
-  failures: [],
+  captures: {},
   errors: [],
   startTime:0,
   startDate:null,
@@ -621,9 +620,10 @@ function Succss() {
     }
     var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
     if (!imagesMatch) {
-      var filePath = './imagediff/' + self.defaultDiffDirName(capture);
+      var filePath = './succss-reports/imagediff/' + self.defaultDiffDirName(capture);
       var imgDiff = imagediff.diff(imgBase, imgCheck, imagediffOptions);
       self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
+      capture.differences.push({imagediff: filePath});
     }
     self.reportCaptureDiff(imagesMatch, capture, 'imagediff');
   }
@@ -644,14 +644,12 @@ function Succss() {
       imgDiff.src = data.getImageDataUrl();
       imgDiff.onload = function() {
 
-        // Adds 1sec to avoid casper run.complete before image loads.
-        self.casper.wait(1000);
-
         try {
           var imagesMatch = !Math.round(data.misMatchPercentage);
           if (!imagesMatch) {
-            var filePath = './resemble/' + self.defaultDiffDirName(capture);
+            var filePath = './succss-reports/resemble/' + self.defaultDiffDirName(capture);
             self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
+            capture.differences.push({resemble: filePath});
           }
           self.reportCaptureDiff(imagesMatch, capture, 'resemble');
         }
