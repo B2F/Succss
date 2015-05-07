@@ -453,16 +453,18 @@ function Succss() {
 
           imgLoadCount++;
           if (imgLoadCount == 2) {
-            ['resemble', 'imagediff', 'diff'].forEach(function(diff) {
-              try {
-                // Only calls diff methods enabled in Succss.options:
-                if (self[diff] && capture.options[diff] == true) {
-                  self[diff](imgBase, imgCheck, capture);
+            ['imagediff', 'resemble', 'diff'].forEach(function(diff) {
+              casperInstance.then(function() {
+                try {
+                  // Only calls diff methods enabled in Succss.options:
+                  if (self[diff] && capture.options[diff] == true) {
+                    self[diff](imgBase, imgCheck, capture);
+                  }
                 }
-              }
-              catch (e) {
-                self.catchErrors(e);
-              }
+                catch (e) {
+                  self.catchErrors(e);
+                }
+              });
             });
           }
         }
