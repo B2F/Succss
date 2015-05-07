@@ -62,7 +62,7 @@ function Succss() {
     var data = self.pages;
 
     // After capture callback.
-    var after = self.callback;
+    var after = self.afterCapture;
 
     var injectedJSFiles = [];
 
