@@ -18,7 +18,7 @@ succss add selftests/data.js
 succss check selftests/data-diff.js
 
 # with static images comparison
-succss check selftests/data.js --checkDir=selftests/static-images
+succss check selftests/data.js --checkDir=selftests/static-images/diffCanvas
 
 # phantom base, phantom matches, slimer diff
 succss add selftests/data-diff.js --pages=installation
