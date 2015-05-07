@@ -154,7 +154,7 @@ function Succss() {
         data[page].url = 'http://' + data[page].url;
       }
 
-      if (!data[page].directory) data[page].directory = './screenshots';
+      if (!data[page].directory) data[page].directory = './succss-reports/screenshots';
 
       if (options.action == 'add' && options.rmtree == true && fs.isDirectory(data[page].directory)) {
         self.echo('\nWarning! ' + data[page].directory + " directory tree erased.", 'WARNING');
