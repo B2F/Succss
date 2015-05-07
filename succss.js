@@ -593,14 +593,24 @@ function Succss() {
   }
 
   /**
-   * Succss bundled diffing implementation of imagediff.js
+   * Hookable actions to be done before 'capture.complete' event is called.
+   */
+  if (!self.reportCaptureDiff) self.reportCaptureDiff = function(succeed, capture, diffType) {
+    var message = 'Capture matches base screenshot (' + diffType + ')';
+    casperInstance.emit('capture.complete', succeed, capture, message);
+  }
+
+  /**
+   * Succss bundled diffing method for imagediff.js
    *
    * @param {HTMLImageElement} image reference
    * @param {HTMLImageElement} updated image
    * @param {Object} capture state
    */
   self.imagediff = function(imgBase, imgCheck, capture) {
+
     self.injectJs(options.libpath + '/imagediff.js');
+
     var imagediffOptions = {
       lightness:options.diffLightness,
       align:'top'
@@ -611,11 +621,11 @@ function Succss() {
       var imgDiff = imagediff.diff(imgBase, imgCheck, imagediffOptions);
       self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
     }
-    casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot (imagediff).');
+    self.reportCaptureDiff(imagesMatch, capture, 'imagediff');
   }
 
   /**
-   * Succss bundled diffing implementation of resemblejs
+   * Succss bundled diffing method for resemblejs
    *
    * @param {HTMLImageElement} image reference
    * @param {HTMLImageElement} updated image
@@ -639,7 +649,7 @@ function Succss() {
             var filePath = './resemble/' + self.defaultDiffDirName(capture);
             self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
           }
-          casper.test.assertTrue(imagesMatch, 'Capture matches base screenshot (resemble).');
+          self.reportCaptureDiff(imagesMatch, capture, 'resemble');
         }
         catch (e) {
           self.catchErrors(e);
