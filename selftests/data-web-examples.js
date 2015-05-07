@@ -58,7 +58,7 @@ Succss.pages = {
   }
 };
 
-Succss.callback = function(capture) {
+Succss.afterCapture = function(capture) {
 
   // The other available action is 'add'
   if (capture.action == 'check') {
@@ -82,28 +82,3 @@ Succss.options = {
   diff:true,
   exitOnError:false
 }
-
-Succss.diff = function(imgBase, imgCheck, capture) {
-
-  if (capture.page.name == 'custom-resemble') {
-    try {
-        this.injectJs(capture.options.libpath + '/resemble.js');
-
-        resemble.outputSettings({
-          errorColor: {
-            red: 0,
-            green: 0,
-            blue: 255
-          },
-          errorType: 'movement',
-          transparency: 0.8,
-          largeImageThreshold: 1000
-        });
-
-        this.resemble(imgBase, imgCheck, capture);
-    }
-    catch(e) {
-      console.log(e);
-    }
-  }
-};

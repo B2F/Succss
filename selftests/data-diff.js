@@ -31,7 +31,7 @@ for (var selector in Succss.pages['advanced-selectors'].captures) {
 Succss.pages['diffCanvas'].captures['logoImg'].before = undefined;
 Succss.pages['hiddenElements'].captures['navigation-menu'].hidden = undefined;
 
-Succss.callback = function(capture) {
+Succss.afterCapture = function(capture) {
 
   if (capture.action == 'check') {
 
@@ -52,8 +52,11 @@ Succss.callback = function(capture) {
  * @see http://succss.ifzenelse.net/commandline#options
  */
 Succss.options = {
+  viewports:'mobile-landscape',
   // Disabling default imagediff behavior (inverting the casper test).
-  'imagediff':false,
+  'imagediff':true,
+  'diff':true,
+  'resemble':false,
   'diffQuality':100,
   'exitOnError':false,
   'check': {
@@ -61,25 +64,36 @@ Succss.options = {
   }
 }
 
-/*
+/**
+ * Hookable actions to be done before 'capture.complete' event is called.
  * 
- * Overrides the default imagediff function, changing imgDiffPath and assertion.
+ * Here it is used to invert the default assertion, expecting image differences.
+ */
+Succss.reportCaptureDiff = function(succeed, capture, diffType) {
+  if (!capture.options.good) succeed = !succeed;
+  var message = 'Capture is different to base screenshot (' + diffType + ').';
+  this.casper.emit('capture.complete', succeed, capture, message);
+}
+
+/*
+ * Apply custom settings to the default resemble method.
  * 
  * @see http://succss.ifzenelse.net/customize#diff
  *
  */
 Succss.diff = function(imgBase, imgCheck, capture) {
 
-    phantom.injectJs(capture.options.libpath + '/imagediff.js');
+    this.injectJs(capture.options.libpath + '/resemble.js');
 
-    imgDiff = imagediff.diff(imgBase, imgCheck);
-    var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
+    resemble.outputSettings({
+      errorColor: {
+        red: 255,
+        green: 0,
+        blue: 0
+      },
+      transparency: 0.3,
+      largeImageThreshold: 0
+    });
 
-    if (!imagesMatch) {
-      var filePath = capture.filePath.replace(/^.*\//, './selftests/diff-screenshots/');
-      this.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
-    }
-
-    casper.test.assertFalse(imagesMatch, 'Capture is different to base screenshot (imagediff).');
-    SuccssDataCommon.assertSuiteSuccess(capture.count);
+    this.resemble(imgBase, imgCheck, capture);
 }

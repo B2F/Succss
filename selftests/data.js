@@ -8,27 +8,27 @@
  */
 
 // Include another javascript file from the command line working directory.
-// The data.class.js file is used to import "SuccssDataCommon" variables.
-phantom.injectJs('selftests/data.class.js');
+// The data-share.js file is used to import "SuccssShared" variables.
+phantom.injectJs('selftests/data-share.js');
 
 /*
  * Succss.pages object is where you describe where and how screenshots are done.
  * The snippet below provides extensive examples, yours can be simpler though.
- * 
+ *
  * @see http://succss.ifzenelse.net/configuration#pages for more infos.
  */
 Succss.pages = {
   // url parameter + directory suffix.
   'installation': {
-    'url': SuccssDataCommon.url+'?page=installation&variation=0',
-    'directory':SuccssDataCommon.baseDirectory+'/installation',
+    'url': SuccssShared.url+'?page=installation&variation=0',
+    'directory':SuccssShared.baseDirectory+'/installation',
     captures: {
       'body':'body'
     },
   },
   'advanced-selectors': {
-    'url':SuccssDataCommon.url + '?&variation=10&bgColor=080',
-    'directory':SuccssDataCommon.baseDirectory+'/advanced-selectors',
+    'url':SuccssShared.url + '?&variation=10&bgColor=080',
+    'directory':SuccssShared.baseDirectory+'/advanced-selectors',
     captures: {
       'green-catch-phrase':'header > div > #dynamic-line',
       // 1a. User input: Click on orange square changes the background color,
@@ -77,8 +77,8 @@ Succss.pages = {
   },
   // 4. Showing minimum diff image width with a small capture (@see data-diff.js):
   'diffCanvas': {
-    'url':SuccssDataCommon.url + '?&variation=10&bgColor=080',
-    'directory':SuccssDataCommon.baseDirectory+'/diff-canvas',
+    'url':SuccssShared.url + '?&variation=10&bgColor=080',
+    'directory':SuccssShared.baseDirectory+'/diff-canvas',
     'captures': {
       'logoImg':{
         'selector': '#logo-image',
@@ -89,8 +89,8 @@ Succss.pages = {
     }
   },
   'hiddenElements': {
-    'url':SuccssDataCommon.url+'/usecases',
-    'directory':SuccssDataCommon.baseDirectory+'/hiddenElement',
+    'url':SuccssShared.url+'/usecases',
+    'directory':SuccssShared.baseDirectory+'/hiddenElement',
     'captures': {
       'navigation-menu': {
         selector: '#more-infos',
@@ -103,7 +103,7 @@ Succss.pages = {
 };
 
 /*
- * Succss.setFileName set your captures names for both adding and checking.
+ * Succss.setFileName sets your captures names for both adding and checking.
  * 
  * @param capture Object (available properties listed below):
  *  capture: name, selector, directory, callback
@@ -119,9 +119,9 @@ Succss.setFileName = function(capture) {
 
 /**
  * Succss.viewports
- * 
+ *
  * A list of viewports for taking screenshots.
- * 
+ *
  * @see http://succss.ifzenelse.net/configuration#viewports
  *
  */
@@ -149,11 +149,33 @@ Succss.viewports = {
  * @see http://succss.ifzenelse.net/customize#callback
  *
  */
-Succss.callback = function (capture) {
+Succss.afterCapture = function (capture) {
 
   if (capture.action == 'add') {
-    SuccssDataCommon.test.call(this, capture);
-    SuccssDataCommon.assertSuiteSuccess(capture.count);
+
+    // The callback has access to an object representing the capture after it's done.
+    var viewport = capture.viewport;
+
+    var expectedCapturePath = capture.page.directory + '/' + this.setFileName(capture);
+
+    if (expectedCapturePath != capture.filePath) {
+      this.catchErrors('Unexpected capture path (' + capture.filePath + '). Expected path is '+ expectedCapturePath);
+    }
+
+    casper.test.assertTruthy(capture.name, '- Captured "' + capture.file + '" file for ' + capture.selector + " selector");
+    casper.test.assertTruthy(this.fs.exists(expectedCapturePath), '- Capture file exists (' + expectedCapturePath + ')');
+    casper.test.assertTruthy(viewport, '- With viewport "' + viewport.name + '" having ' + viewport.width + " width and " + viewport.height + " height.");
+
+    casper.test.assertNotEquals(capture.filePath, SuccssShared.previousCaptureFile, 'The capture file path is different from previous capture.');
+    SuccssShared.previousCaptureFile = capture.filePath;
+
+    // slimerjs does not seem to support fs.size, at least on some browsers versions.
+    if (this.allOptions.engine != 'slimerjs') {
+
+      if(fs.size(capture.filePath) < 500) {
+        this.echo('The size of the generated image is less than 500 octets.', 'WARNING');
+      }
+    }
   }
 };
 
@@ -166,6 +188,9 @@ Succss.callback = function (capture) {
 Succss.options = {
   exitOnError:false,
   add: {
+    'pages':'diffCanvas'
+  },
+  check: {
     'pages':'diffCanvas'
   }
 }

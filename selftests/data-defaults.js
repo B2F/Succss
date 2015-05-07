@@ -8,8 +8,8 @@
  */
 
 // Include another javascript file from the command line working directory.
-// The data.class.js file is used to import "SuccssDataCommon" variables.
-phantom.injectJs('selftests/data.class.js');
+// The data-share.js file is used to import "SuccssShared" variables.
+phantom.injectJs('selftests/data-share.js');
 
 /*
  * Succss.pages object is where you describe where and how screenshots are done.
@@ -19,7 +19,7 @@ phantom.injectJs('selftests/data.class.js');
  */
 Succss.pages = {
   'defaults': {
-    url:SuccssDataCommon.url,
+    url:SuccssShared.url,
     // directory:'screenshots',
     // selector will be only 'body' if none specified
     // 'captures': {
@@ -28,8 +28,8 @@ Succss.pages = {
   },
   // Same as default, only directory differ.
   'home': {
-    url:SuccssDataCommon.url,
-    directory:SuccssDataCommon.baseDirectory,
+    url:SuccssShared.url,
+    directory:SuccssShared.baseDirectory,
     // Key:name Value:CSS selector.
     captures: {
       'body':'',
@@ -48,7 +48,7 @@ Succss.pages = {
  * @see http://succss.ifzenelse.net/customize#callback
  *
  */
-Succss.callback = function (capture) {
+Succss.afterCapture = function (capture) {
 
   if (capture.action == 'add') {
 
@@ -56,17 +56,15 @@ Succss.callback = function (capture) {
 
       case 'defaults':
         casper.test.assertEquals(capture.selector, 'body', 'Default selector is body');
-        casper.test.assertEquals(capture.page.directory, './screenshots', 'Default directory is ./screenshots');
+        casper.test.assertEquals(capture.page.directory, './succss-reports/screenshots', 'Default directory is ./screenshots');
         break;
 
       case 'home':
-        var defaultPath = './screenshots/defaults--body--default-viewport.png';
+        var defaultPath = './succss-reports/screenshots/defaults--body--default-viewport.png';
         if (fs.exists(defaultPath)) {
           casper.test.assertEquals(fs.size(capture.filePath), fs.size(defaultPath), 'Basic and default captures have the same size');
         }
         break;
     }
-
-    SuccssDataCommon.assertSuiteSuccess(capture.count);
   }
 }

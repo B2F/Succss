@@ -9,31 +9,31 @@
  *
  */
 
-phantom.injectJs('selftests/data.js');
+phantom.injectJs('selftests/data-diff.js');
 
 Succss.pages = {
   'advanced-selectors': {
-    'url':SuccssDataCommon.url + '?&variation=10&bgColor=080',
-    'directory':SuccssDataCommon.baseDirectory+'/advanced-selectors',
+    'url':SuccssShared.url + '?&variation=10&bgColor=080',
+    'directory':SuccssShared.baseDirectory+'/advanced-selectors',
     captures: {
       'header':''
     }
   },
   'configuration' : {
-    url:SuccssDataCommon.url + '?page=configuration',
+    url:SuccssShared.url + '?page=configuration',
     source:'advanced-selectors'
   },
   'customize' : {
-    url:SuccssDataCommon.url + '?page=customize&bgColor=123',
+    url:SuccssShared.url + '?page=customize&bgColor=123',
     source:'advanced-selectors'
   },
   'fork' : {
-    url:SuccssDataCommon.url + '?page=fork&bgColor=789',
+    url:SuccssShared.url + '?page=fork&bgColor=789',
     source:'advanced-selectors'
   }
 };
 
-Succss.callback = function(capture) {
+Succss.afterCallback = function(capture) {
   viewport = capture.viewport;
   casper.test.assertTruthy(capture.name, '- Captured "' + capture.file + '" file for ' + capture.selector + " selector");
   casper.test.assertTruthy(viewport, '- With viewport "' + viewport.name + '" having ' + viewport.width + " width and " + viewport.height + " height.");
@@ -62,33 +62,10 @@ Succss.viewports = {
  */
 Succss.options = {
   // Disabling default imagediff behavior (inverting the casper test).
-  'imagediff':false,
+  'imagediff':true,
   'diffQuality':100,
   'captures':'header',
   'viewports':'default-reduced',
   'compareToPage':'advanced-selectors',
   'compareToViewport':'mobile-landscape'
-}
-
-/*
- *
- * Overrides the default imagediff function, changing imgDiffPath and assertion.
- *
- * @see http://succss.ifzenelse.net/customize#diff
- *
- */
-Succss.diff = function(imgBase, imgCheck, capture) {
-
-    this.injectJs(capture.options.libpath + '/imagediff.js');
-
-    imgDiff = imagediff.diff(imgBase, imgCheck);
-    var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
-
-    if (!imagesMatch) {
-      var filePath = capture.filePath.replace(/^.*\//, './selftests/diff-screenshots/');
-      this.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
-    }
-
-    casper.test.assertFalse(imagesMatch, 'Capture is different to base screenshot (imagediff).');
-    SuccssDataCommon.assertSuiteSuccess(capture.count);
 }

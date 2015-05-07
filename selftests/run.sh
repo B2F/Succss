@@ -3,17 +3,14 @@ set -v
 
 date
 
-# add with configuration default values and  multiple filters and captures fake optionnal
+# add with configuration default values, multiple filters and captures fake optionnal
 succss add selftests/data-defaults.js --pages=defaults,home --captures=body,homebody,fake --viewports=default
 
 # check with default values and no filters
 succss check selftests/data-defaults.js
 
-# single filter, custom configuration and rmtree option
-succss add selftests/data.js --pages=advanced-selectors --rmtree
-
-# check with a filter, imagediff (default) and resemble (optional)
-succss check selftests/data.js --pages=advanced-selectors --resemble
+# single filter, custom configuration
+succss add selftests/data.js --pages=advanced-selectors
 
 # Writing small diff images with minimum width
 # Also, overrides default 'add' and 'check' options from the configuration file
@@ -21,7 +18,7 @@ succss add selftests/data.js
 succss check selftests/data-diff.js
 
 # with static images comparison
-succss check selftests/data.js --pages=diffCanvas --checkDir=selftests/static-images
+succss check selftests/data.js --checkDir=selftests/static-images
 
 # phantom base, phantom matches, slimer diff
 succss add selftests/data-diff.js --pages=installation
@@ -47,3 +44,6 @@ succss check selftests/data-compare.js
 # hidden capture property:
 succss add selftests/data.js --pages=hiddenElements --viewports=wide
 succss check selftests/data-diff.js --pages=hiddenElements --viewports=wide
+
+# imagediff lightness, stack, diffRGB & canvas setting
+succss check selftests/data-diff.js --lightness=255
