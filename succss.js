@@ -298,18 +298,22 @@ function Succss() {
    * Sets the filepath used as image reference.
    *
    * @param {Object} capture state
-   * @returns {String} base image filepath
    */
-  var getReferenceFilePath = function(capture) {
+  var setCaptureReferenceFilePath = function(capture) {
+    var pageReference = options.compareToPage || capture.page.name;
+    var viewportReference = options.compareToViewport || capture.viewport.name;
+    // Information used to keep references in reports:
+    capture.comparedTo = {
+      page: pageReference,
+      viewport: viewportReference
+    }
     // If compareTo{Page|Viewport} option is set, gets the filepath corresponding
     // to the capture index (page, capture, viewport):
     if (options.compareToViewport || options.compareToPage) {
-      var pageReference = options.compareToPage || capture.page.name;
-      var viewportReference = options.compareToViewport || capture.viewport.name;
-      return createCaptureState(pageReference, capture.name, viewportReference).filePath;
+      capture.basePath = createCaptureState(pageReference, viewportReference, capture.name).filePath;
     }
     else {
-      return capture.filePath;
+      capture.basePath = capture.filePath;
     }
   }
 
@@ -332,7 +336,7 @@ function Succss() {
   self.prepareScreenshot = function(capture) {
 
     // Sets the image reference path for searching image differences when 'succss check' is called:
-    capture.basePath = getReferenceFilePath(capture);
+    setCaptureReferenceFilePath(capture);
 
     // When 'succss check {config.js}' is called, screenshots images used for computing differences are either
     // written in '.succss-tmp' (the default checkDir value) or found in the path specified by --checkDir.
