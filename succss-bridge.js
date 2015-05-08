@@ -65,7 +65,8 @@ try {
         toleranceInPixels:'0',
         diffLightness:125,
         diffStack:false,
-        compareCaptures:true
+        compareCaptures:true,
+        report:true
       };
 
       // Injecting the succss.js script to create succss from a casper object.

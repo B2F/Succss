@@ -255,19 +255,11 @@ function Succss() {
     else {
       self.echo('Tests failed with ' + nbCaptured + '/' + SuccssRecords.planned.captures + ' captures.', 'ERROR');
     }
-//    if (Succss.options.report) {
-//    try {
-//      if (true) {
-//        self.injectJs(options.libpath + '/succss-reports/SuccssReporter.js');
-//        var succssReporter = new SuccssReporter(SuccssRecords);
-//        succssReporter.report();
-//        self.echo(options, 'dump');
-//      }
-//    }
-//    catch(e) {
-//      self.echo(e, 'dump');
-//    }
-//    }
+    if (options.report) {
+      self.injectJs(options.libpath + '/succss-reports/SuccssReporter.js');
+      var succssReporter = new SuccssReporter(SuccssRecords);
+      succssReporter.report();
+    }
     // cleanup:
     if (options.action == 'check' && !options.checkDir && !options.keepTmp) {
       fs.removeTree(checkDir);
@@ -302,7 +294,7 @@ function Succss() {
     }
     captureState.viewport = viewportsData[viewportName];
     captureState.options = options;
-    captureState.stats = SuccssRecords;
+    captureState.records = SuccssRecords;
     captureState.differences = [];
     captureState.id = captureState.page.name + '--' + captureState.viewport.name + '--' + captureState.name;
     // Available in the after capture callback:

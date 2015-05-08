@@ -88,11 +88,11 @@
           <th><input ng-model="search.viewports"></th>
           <th><input ng-model="search.captures"></th>        
         </tr>
-        <tr ng-repeat="report in filteredReports() | limitTo:reportsRowsNb | orderBy:'id':!reverseReports" ng-click="clickReport(report)" ng-mouseenter="hovered=true" ng-mouseleave="hovered=''" ng-class="{hovered:hovered, active:isActive(report)}" class="{{report.captures | status | lowercase}}">
-          <td>{{report.count.startTime}}</td>
-          <td>{{report.count.startTime | date:'d MMM yyyy H:mm'}}</td>
+        <tr ng-repeat="report in filteredReports() | limitTo:reportsRowsNb | orderBy:'id':!reverseReports" ng-click="clickReport(report)" ng-mouseenter="hovered=true" ng-mouseleave="hovered=''" ng-class="{hovered:hovered, active:isActiveReport(report)}" class="{{report | status | lowercase}}">
+          <td>{{report.records.startTime}}</td>
+          <td>{{report.records.startTime | date:'d MMM yyyy H:mm'}}</td>
           <td><a ng-href="{{report.options.dataFile}}" title="{{report.options.dataFile}}" target="_blank">{{report.options.dataFile | dataFileName}}</a></td>
-          <td>{{report.captures | status}}</td>
+          <td>{{report | status}}</td>
           <td>{{report.options.pages}}</td>
           <td>{{report.options.viewports}}</td>
           <td>{{report.options.captures}}</td>
@@ -106,11 +106,11 @@
       <div id="current-report-title"><span>Selected report: <strong>{{activeReport.options.dataFile | dataFileName}}</strong> - {{activeReport.records.startTime | date:'d MMM yyyy H:mm:ss'}}</span></div>
       <div id="current-report-description">
         <div id="current-report-summary">
-          <div>Status: <span class="{{activeReport.captures | status | lowercase}}">{{activeReport.captures | status | lowercase}}</span></div>
-          <div>Planned captures: {{activeReport.count.planned}}</div>
-          <div>Failures: {{activeReport.captures.failures.length}}</div>
-          <div>Success: {{activeReport.captures.success.length}}</div>
-          <div>Exec time: {{activeReport.count.startTime | date:''}}</div>
+          <div>Status: <span class="{{activeReport | status | lowercase}}">{{activeReport | status | lowercase}}</span></div>
+          <div>Planned captures: {{activeReport.records.planned}}</div>
+          <div>Failures: {{activeReport.records.failures.length}}</div>
+          <div>Success: {{activeReport.records.success.length}}</div>
+          <div>Exec time: {{activeReport.records.startTime | date:''}}</div>
         </div>
         <div id="current-report-options">
           <div>Options:</div>
@@ -221,8 +221,9 @@
       angular.module('succssReportsApp', [])
         .value('reports', succssReports)
         .filter('status', function() {
-          return function(captures) {
-            return captures.failures.length ? 'Failure' : 'Success';
+          return function(report) {
+            if (!report || !report.records || !report.records.captures || report.records.errors == 'undefined') return 'incomplete';
+            return report.records.errors && report.records.errors.length ? 'Failure' : 'Success';
           }
         })
         .filter('dataFileName', function() {

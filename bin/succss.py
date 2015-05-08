@@ -13,7 +13,9 @@ allArgs = requiredArgs[:]
 allArgs.append('--scriptpath=' + scriptpath)
 
 # this is used to get the lib/imagediff.js and lib/resemble.js files for diffing
-libpath = os.path.join(scriptpath, os.pardir) + '/lib'
+npmpath = os.path.join(scriptpath, os.pardir)
+libpath = npmpath + '/lib'
+allArgs.append('--npmpath=' + npmpath)
 allArgs.append('--libpath=' + libpath)
 
 #1. take first sys.argv argument and prepend --action to it, add the resulting string to allArgs list
