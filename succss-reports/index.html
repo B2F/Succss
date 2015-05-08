@@ -58,8 +58,10 @@
     <header>
       <h1 ng-click="scrollTop()" title="Scroll back top">Succss reports</h1>
       <div class="links">
-        <div><a href="#/check" ng-click="reload()" ng-class="{active:(router.getPageType() == 'check')}">Check</a></div>
-        <div><a href="#/references" ng-click="reload()" ng-class="{active:(router.getPageType() == 'references')}">References</a></div>
+        <div class="links-container">
+          <div><a href="#/check" ng-click="switchPage('check')" ng-class="{active:checkPageActive}">Check</a></div>
+          <div><a href="#/add" ng-click="switchPage('add')" ng-class="{active:referencesPageActive}">References</a></div>
+        </div>
       </div>
     </header>
 
@@ -95,12 +97,13 @@
           <td>{{report.options.viewports}}</td>
           <td>{{report.options.captures}}</td>
         </tr>
-      <div ng-show="{{!reports.length}}">No reports available (missing runs.json.inc). Succss automatically creates and updates a ./succss-reports/runs.json.inc file after each run.</div>
       </tbody>
     </table>
 
-    <div id="active-report" ng-show="router.getPageType() != 'references'">
-      <div id="current-report-title"><span>Selected report: <strong>{{activeReport.options.dataFile | dataFileName}}</strong> - {{activeReport.count.startTime | date:'d MMM yyyy H:mm:ss'}}</span></div>
+    <div ng-show="{{!reports.length}}">No reports available (missing runs.json.inc). Succss automatically creates and updates a ./succss-reports/runs.json.inc file after each run.</div>
+
+    <div id="active-report" ng-show="checkPageActive">
+      <div id="current-report-title"><span>Selected report: <strong>{{activeReport.options.dataFile | dataFileName}}</strong> - {{activeReport.records.startTime | date:'d MMM yyyy H:mm:ss'}}</span></div>
       <div id="current-report-description">
         <div id="current-report-summary">
           <div>Status: <span class="{{activeReport.captures | status | lowercase}}">{{activeReport.captures | status | lowercase}}</span></div>
@@ -139,6 +142,26 @@
       </div>
     </div>
 
+    <div id="active-reference-list" ng-show="referencesPageActive">
+      <table>
+        <thead>
+          <tr>
+            <th>Viewport</th><th>Page</th><th>Capture</th><th>Image</th><th>Show image</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="capture in activeReport.records.captures">
+            <td>{{capture.viewport.name}}</td>
+            <td>{{capture.page.name}}</td>
+            <td>{{capture.name}}</td>
+            <td><img ng-src="{{capture.filePath | inScreenshotsReferences}}"/></td>
+            <td><input type="checkbox" ng-checked="true"/></td>
+          </tr>
+        </tbody>
+      </table>
+      {{ activeReport }}
+    </div>
+
     <footer>
       <div>
         <a href="http://succss.ifzenelse.net" class="documentation-root" target="_blank">Online documentation: </a>
@@ -167,27 +190,31 @@
     <script type="text/javascript">
       var reportRouter = function(location, reports) {
         var self = {};
-        var path = location || '/check';
-        var components = path.split('/'); components.shift();
-        var pageType = ['check', 'references'].indexOf(components[0]) != -1 ? components[0] : 'check';
+        var defaultReport = { id: '0', options: { dataFile: 'No report found' }, captures: { errors: [] }};
         self.getReport = function(id) {
           for (var r in reports) {
-            if (reports[r].id == id && reports[r].options.action == 'check') return reports[r];
+            if (reports[r].id == id && reports[r].options.action == self.getPage()) return reports[r];
           }
           return false;
         }
         self.getMostRecentReport = function() {
-          return reports[0];
+          for (var i = 0; i < reports.length; i++) {
+            if (reports[i].options.action == self.getPage()) return reports[i];
+          }
+          return defaultReport;
         }
         self.getActiveReport = function() {
-          return self.getReport(components[1]) || self.getMostRecentReport();
+          return self.getReport(location.path().split('/').slice(2,3)) || self.getMostRecentReport();
         }
-        self.getPath = function() {
-          return pageType == 'check' ? pageType + '/' + self.getActiveReport().id : pageType;
+        self.setPath = function(settings) {
+          var page = settings && settings.page || self.getPage();
+          if (page != 'check' && page != 'add') page = 'check';
+          location.path(page);
+          var reportId = settings && settings.id || self.getActiveReport().id;
+          location.path(page + '/' + reportId);
         }
-        self.getPageType = function() { return pageType };
-        self.updateCheckPath = function(reportId) {
-          return pageType + '/' + reportId;
+         self.getPage = function() {
+          return location.path().split('/').slice(1,2);
         }
         return self;
       }
@@ -203,11 +230,18 @@
             return dataFilePath.replace(/^.*\//g, '');
           }
         })
+        .filter('inScreenshotsReferences', function() {
+          return function(path) {
+            return path.replace('succss-reports', '');
+          }
+        })
         .controller('ReportsListCtrl', function($scope, $filter, $location, $window, $anchorScroll, reports) {
-          $scope.router = reportRouter($location.path(), reports);
-          $location.path($scope.router.getPath());
-          $scope.reports = reports;
+          $scope.router = reportRouter($location, reports);
+          $scope.router.setPath();
           $scope.activeReport = $scope.router.getActiveReport();
+          $scope.referencesPageActive = $scope.checkPageActive = false;
+          $scope.router.getPage() == 'add' ? $scope.referencesPageActive = true : $scope.checkPageActive = true;
+          $scope.reports = reports;
           $scope.reverseReports = false;
           $scope.defaultRowLimit = 3;
           $scope.search = {
@@ -226,7 +260,7 @@
             if (isNaN($scope.rowLimit)) $scope.rowLimit = $scope.defaultRowLimit;
             for (var r in $scope.reports) {
               var pushReport = true;
-              if (($scope.reports[r].options.action != $scope.router.getPageType()) ||
+              if (($scope.reports[r].options.action != $scope.router.getPage()) ||
 //                  ($scope.reports[r].id > dateFilter.getTime() + 60001 && !isNaN(dateFilter)) ||
                   ($scope.search.status != 'Any' && $filter('status')($scope.reports[r].captures) !== $scope.search.status)) { pushReport = false; }
               if (pushReport) results.push($scope.reports[r]);
@@ -249,16 +283,26 @@
             $scope.rowLimit = $scope.rowLimit * -1;
           };
           $scope.clickReport = function(report) {
-            angular.forEach($scope.reports, function(value, key) {
-              $scope.reports[key].active = '';
-            });
             $scope.activeReport = report;
-            $location.path($scope.router.updateCheckPath(report.id));
+            $scope.router.setPath({id: report.id});
           };
-          $scope.isActive = function(report) {
+          $scope.isActiveReport = function(report) {
             return report.id == $scope.activeReport.id ? true : false ;
           }
-          $scope.reload = function() { $window.location.reload() }
+          $scope.isActivePage = function(type) {
+            return type == $scope.router.getPageType() ? true : false;
+          }
+          $scope.switchPage = function(page) {
+            if ($scope.router.getPage() != page) {
+              $scope.router.setPath({page:page});
+              $scope.activeReport = $scope.router.getActiveReport();
+              $scope.referencesPageActive = !$scope.referencesPageActive;
+              $scope.checkPageActive = !$scope.checkPageActive;
+            }
+            else {
+              $scope.router.setPath();
+            }
+          }
           $scope.scrollTop = function() { $anchorScroll(); }
         });
     </script>
