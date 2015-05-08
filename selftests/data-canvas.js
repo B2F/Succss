@@ -9,6 +9,7 @@
  *
  */
 
+// Includes another javascript file from the command line working directory.
 phantom.injectJs('selftests/data-diff.js');
 
 /**

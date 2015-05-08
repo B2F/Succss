@@ -18,6 +18,7 @@
  * 
  */
 
+// Includes another javascript file from the command line working directory.
 phantom.injectJs('selftests/data.js');
 
 // Replaces body's background-color #080 by #088

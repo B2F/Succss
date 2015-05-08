@@ -7,9 +7,7 @@
  * 
  */
 
-// Include another javascript file from the command line working directory.
-// The data-share.js file is used to import "SuccssShared" variables.
-phantom.injectJs('selftests/data-share.js');
+var baseUrl = 'succss.ifzenelse.net';
 
 /*
  * Succss.pages object is where you describe where and how screenshots are done.
@@ -19,7 +17,7 @@ phantom.injectJs('selftests/data-share.js');
  */
 Succss.pages = {
   'defaults': {
-    url:SuccssShared.url,
+    url:baseUrl,
     // directory:'screenshots',
     // selector will be only 'body' if none specified
     // 'captures': {
@@ -28,8 +26,7 @@ Succss.pages = {
   },
   // Same as default, only directory differ.
   'home': {
-    url:SuccssShared.url,
-    directory:SuccssShared.baseDirectory,
+    url:baseUrl,
     // Key:name Value:CSS selector.
     captures: {
       'body':'',
