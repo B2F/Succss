@@ -236,20 +236,15 @@
       }
       angular.module('succssReportsApp', [])
         .value('reports', succssReports)
-        .filter('status', function() {
-          return function(report) {
-            if (!report || !report.records || !report.records.captures || report.records.errors == 'undefined') return 'incomplete';
-            return report.records.errors && report.records.errors.length ? 'Failure' : 'Success';
-          }
-        })
         .filter('dataFileName', function() {
           return function(dataFilePath) {
             return dataFilePath.replace(/^.*\//g, '');
           }
         })
-        .filter('inScreenshotsReferences', function() {
+        .filter('screenshotPath', function() {
           return function(path) {
-            return path.replace('succss-reports', '');
+            if (path.indexOf('/') === 0) return path;
+            return '../' + path.replace('./', '');
           }
         })
         .controller('ReportsListCtrl', function($scope, $filter, $location, $window, $anchorScroll, reports) {
