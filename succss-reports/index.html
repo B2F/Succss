@@ -79,9 +79,9 @@
           <th><input ng-model="search.dataFile"></th>
           <th>
             <select ng-model="search.status">
-              <option>Any</option>
-              <option>Success</option>
-              <option>Failure</option>
+              <option value=''>Any</option>
+              <option value='success'>Success</option>
+              <option value='failure'>Failure</option>
             </select>
           </th>
           <th><input ng-model="search.pages"></th>
@@ -92,10 +92,10 @@
           <td>{{report.records.startTime}}</td>
           <td>{{report.records.startTime | date:'d MMM yyyy H:mm'}}</td>
           <td><a ng-href="{{report.options.dataFile}}" title="{{report.options.dataFile}}" target="_blank">{{report.options.dataFile | dataFileName}}</a></td>
-          <td>{{report | status}}</td>
-          <td>{{report.options.pages}}</td>
-          <td>{{report.options.viewports}}</td>
-          <td>{{report.options.captures}}</td>
+          <td>{{report.status}}</td>
+          <td>{{report.records.planned.pages}}</td>
+          <td>{{report.records.planned.viewports}}</td>
+          <td>{{report.records.planned.selectors}}</td>
         </tr>
       </tbody>
     </table>
@@ -103,14 +103,14 @@
     <div ng-show="{{!reports.length}}">No reports available (missing runs.json.inc). Succss automatically creates and updates a ./succss-reports/runs.json.inc file after each run.</div>
 
     <div id="active-report" ng-show="checkPageActive">
-      <div id="current-report-title"><span>Selected report: <strong>{{activeReport.options.dataFile | dataFileName}}</strong> - {{activeReport.records.startTime | date:'d MMM yyyy H:mm:ss'}}</span></div>
+      <div class="current-report-title"><a><span>Selected report: <strong>{{activeReport.options.dataFile | dataFileName}}</strong> - {{activeReport.records.startTime | date:'d MMM yyyy H:mm:ss'}}</span></a></div>
       <div id="current-report-description">
         <div id="current-report-summary">
-          <div>Status: <span class="{{activeReport | status | lowercase}}">{{activeReport | status | lowercase}}</span></div>
+          <div>Status: <span class="{{activeReport.status}}">{{activeReport.status}}</span></div>
           <div>Planned captures: {{activeReport.records.planned}}</div>
-          <div>Failures: {{activeReport.records.failures.length}}</div>
-          <div>Success: {{activeReport.records.success.length}}</div>
-          <div>Exec time: {{activeReport.records.startTime | date:''}}</div>
+          <div>Captures: {{Object.keys(activeReport.records.captures).length}}</div>
+          <div>Errors: {{activeReport.records.errors.length}} ({{activeReport.records.errors}}</div>
+          <div>Exec time: {{activeReport.records.execTime}}ms</div>
         </div>
         <div id="current-report-options">
           <div>Options:</div>
@@ -120,10 +120,10 @@
       <div id="current-report-differences" class="current-report-captures">
         <h3>Differences</h3>
         <span ng-hide="activeReport.captures.failures.length">No differences found.</span>
-        <div ng-repeat="failure in activeReport.captures.failures" class="difference">
-          <h4>--- {{failure.page.name}} ({{failure.page.url}}) -- {{failure.viewport.name}} ({{failure.viewport.width}}x{{failure.viewport.height}})</h4>
+        <div ng-repeat="capture in filteredDifferences()" class="difference">
+          <h4>--- {{failure.page.name}} ({{failure.page.url}}) --- {{failure.viewport.name}} ({{failure.viewport.width}}x{{failure.viewport.height}})</h4>
           <h5>{{failure.name}} ({{failure.selector}})</h5>
-          <strong>Compared to:</strong> 
+          <strong>Compared to:</strong>
           <strong>File reference:</strong> {{failure.basePath}}
           {Difftype}
           <a ng-href="../{{failure.imgDiff}}" target="_blank" title="../{{failure.imgDiff}}"><img ng-src="../{{failure.imgDiff}}"/></a>
@@ -131,31 +131,32 @@
       </div>
       <div id="current-report-matches" class="current-report-captures">
         <h3>Matches</h3>
-        <span ng-hide="activeReport.captures.success.length">No matches found.</span>
-        <div ng-repeat="success in activeReport.captures.success" class="difference">
-          <h4>--- {{success.page.name}} ({{success.page.url}}) -- {{success.viewport.name}} ({{success.viewport.width}}x{{success.viewport.height}})</h4>
-          <h5>{{success.name}} ({{success.selector}})</h5>
-          <strong>Compared to:</strong> 
-          <strong>File reference:</strong> {{success.basePath}}
-          <a ng-href="../{{success.basePath}}" target="_blank" title="../{{failure.imgDiff}}"><img ng-src="../{{success.basePath}}"/></a>
+        <span ng-hide="activeReport.captures.length">No matches found.</span>
+        <div ng-repeat="capture in filteredMatches()" class="difference">
+          <h4>--- {{capture.page.name}} ({{capture.page.url}}) --- {{capture.viewport.name}} ({{capture.viewport.width}}x{{capture.viewport.height}})</h4>
+          <div><strong>Selector: {{capture.name}} ({{capture.selector}})</strong></div>
+          <div><strong>Compared to: {{capture.comparedTo}}</strong></div>
+          <div><strong>Image reference:</strong></div>
+          <a ng-href="../{{capture.basePath}}" target="_blank" title="../{{capture.filePath}}"><img ng-src="../{{capture.basePath}}"/></a>
+          <hr/>
         </div>
       </div>
     </div>
 
     <div id="active-reference-list" ng-show="referencesPageActive">
+      <div class="current-report-title"><a><span>Selected report: <strong>{{activeReport.options.dataFile | dataFileName}}</strong> - {{activeReport.records.startTime | date:'d MMM yyyy H:mm:ss'}}</span></a></div>
       <table>
         <thead>
           <tr>
-            <th>Viewport</th><th>Page</th><th>Capture</th><th>Image</th><th>Show image</th>
+            <th>Page</th><th>Viewport</th><th>Capture</th><th class="image-reference">Image</th>
           </tr>
         </thead>
         <tbody>
           <tr ng-repeat="capture in activeReport.records.captures">
-            <td>{{capture.viewport.name}}</td>
-            <td>{{capture.page.name}}</td>
-            <td>{{capture.name}}</td>
-            <td><img ng-src="{{capture.filePath | inScreenshotsReferences}}"/></td>
-            <td><input type="checkbox" ng-checked="true"/></td>
+            <td><a ng-href="{{capture.page.url}}" title="{{capture.page.url}}" target="_blank">{{capture.page.name}}</a></td>
+            <td><div>"{{capture.viewport.name}}"</div><div>Size: {{capture.viewport.width}}x{{capture.viewport.height}}</div></td>
+            <td><div>"{{capture.name}}"</div><div>Selector: {{capture.selector}}</div></td>
+            <td class="image-reference"><a ng-href="{{capture.filePath | screenshotPath}}" target="_blank"><img ng-src="{{capture.filePath | screenshotPath}}"/></a></td>
           </tr>
         </tbody>
       </table>

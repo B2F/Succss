@@ -13,11 +13,11 @@
 
 exports.Succss = Succss;
 
-// @todo: rename to something else (this is not statistics)
 SuccssRecords = {
   planned: {
-    pages:0,
-    selectors:0,
+    pages:[],
+    viewports:[],
+    selectors:[],
     captures:0,
   },
   captures: {},
@@ -206,6 +206,10 @@ function Succss() {
       }
     });
     self.echo('Available viewports: ' + Object.keys(viewportsData).join(', '), 'INFO');
+
+    SuccssRecords.planned.pages = pages;
+    SuccssRecords.planned.viewports = viewports;
+
   }
   catch (e) {
     self.echo(e + '\n', 'ERROR');
@@ -485,11 +489,9 @@ function Succss() {
 
         self.echo('\nFound "' + p + '" page configuration.', 'INFO');
 
-        SuccssRecords.planned.pages++;
-
         casperInstance.each(data[p].captureKeys, function(casperInstance, c) {
 
-          SuccssRecords.planned.selectors++;
+          SuccssRecords.planned.selectors.push(c);
 
           casperInstance.each(viewports, function(casperInstance, v) {
 
@@ -755,7 +757,7 @@ function Succss() {
    * @param {String} error message
    */
   self.catchErrors = function(err) {
-    SuccssRecords.errors.push(err);
+    SuccssRecords.errors.push(JSON.stringify(err));
     self.echo(err, 'ERROR');
   }
 
