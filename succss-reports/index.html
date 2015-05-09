@@ -108,9 +108,9 @@
           </th>
           <th><input ng-model="search.pages"></th>
           <th><input ng-model="search.viewports"></th>
-          <th><input ng-model="search.captures"></th>        
+          <th><input ng-model="search.selectors"></th>
         </tr>
-        <tr ng-repeat="report in filteredReports() | limitTo:reportsRowsNb | orderBy:'id':!reverseReports" ng-click="clickReport(report)" ng-mouseenter="hovered=true" ng-mouseleave="hovered=''" ng-class="{hovered:hovered, active:isActiveReport(report)}" class="{{report | status | lowercase}}">
+        <tr ng-repeat="report in filteredReports() | orderBy:'id':!reverseReports" ng-click="clickReport(report)" ng-mouseenter="hovered=true" ng-mouseleave="hovered=''" ng-class="{hovered:hovered, active:isActiveReport(report)}" class="{{report.status}}">
           <td>{{report.records.startTime}}</td>
           <td>{{report.records.startTime | date:'d MMM yyyy H:mm'}}</td>
           <td><a ng-href="{{report.options.dataFile}}" title="{{report.options.dataFile}}" target="_blank">{{report.options.dataFile | dataFileName}}</a></td>
@@ -265,36 +265,44 @@
           $scope.search = {
             timestamp : '',
             dataFile : '/',
-            date: '<=   ' + $filter('date')(Date.now(), 'd MMM yyyy H:mm'),
-            status: 'Any',
+            date: '<= ' + $filter('date')(Date.now(), 'd MMM yyyy H:mm'),
+            status: '',
             pages:'',
             viewports:'',
             captures:'',
           };
           $scope.filteredReports = function() {
-            $scope.reportsRowsNb = !$scope.rowLimit ? $scope.defaultRowLimit : $scope.rowLimit;
+            var filteredReports = [];
+            var rowLimit = !$scope.rowLimit ? $scope.defaultRowLimit : $scope.rowLimit;
             var dateFilter = new Date($scope.search.date + ':');
-            var results = [];
             if (isNaN($scope.rowLimit)) $scope.rowLimit = $scope.defaultRowLimit;
-            for (var r in $scope.reports) {
-              var pushReport = true;
-              if (($scope.reports[r].options.action != $scope.router.getPage()) ||
-//                  ($scope.reports[r].id > dateFilter.getTime() + 60001 && !isNaN(dateFilter)) ||
-                  ($scope.search.status != 'Any' && $filter('status')($scope.reports[r].captures) !== $scope.search.status)) { pushReport = false; }
-              if (pushReport) results.push($scope.reports[r]);
-            }
-            var filters = {
-              count: {
+            var reportsFilters = {
+              status: $scope.search.status,
+              records: {
                 startTime:$scope.search.timestamp,
               },
               options: {
+                action:$scope.router.getAction(),
                 dataFile:$scope.search.dataFile,
                 pages:$scope.search.pages,
                 viewports:$scope.search.viewports,
-                captures:$scope.search.captures
+                captures:$scope.search.selectors
               }
             };
-            return $filter('filter')(results, filters);
+            filteredReports = $filter('filter')($scope.reports, reportsFilters);
+            filteredReports = $filter('limitTo')(filteredReports, rowLimit);
+            for (var r in filteredReports) {
+              var reportPages = filteredReports[r].records.planned.pages.join();
+              var reportViewports = filteredReports[r].records.planned.viewports.join();
+              var reportSelectors = filteredReports[r].records.planned.selectors.join();
+              if ((filteredReports[r].id > dateFilter.getTime() + 60001 && !isNaN(dateFilter)) ||
+                  ($scope.search.pages && reportPages.indexOf($scope.search.pages) == -1) ||
+                  ($scope.search.viewports && reportViewports.indexOf($scope.search.viewports) == -1) ||
+                  ($scope.search.selectors && reportSelectors.indexOf($scope.search.selectors) == -1) ) {
+                delete filteredReports[r];
+              }
+            }
+            return filteredReports;
           };
           $scope.reverseReportsOrder = function() {
             $scope.reverseReports = !$scope.reverseReports;
