@@ -210,13 +210,13 @@
         var defaultReport = { id: '0', options: { dataFile: 'No report found' }, captures: { errors: [] }};
         self.getReport = function(id) {
           for (var r in reports) {
-            if (reports[r].id == id && reports[r].options.action == self.getPage()) return reports[r];
+            if (reports[r].id == id && reports[r].options.action == self.getAction()) return reports[r];
           }
           return false;
         }
         self.getMostRecentReport = function() {
           for (var i = 0; i < reports.length; i++) {
-            if (reports[i].options.action == self.getPage()) return reports[i];
+            if (reports[i].options.action == self.getAction()) return reports[i];
           }
           return defaultReport;
         }
@@ -224,14 +224,13 @@
           return self.getReport(location.path().split('/').slice(2,3)) || self.getMostRecentReport();
         }
         self.setPath = function(settings) {
-          var page = settings && settings.page || self.getPage();
+          var page = settings && settings.page || self.getAction();
           if (page != 'check' && page != 'add') page = 'check';
-          location.path(page);
           var reportId = settings && settings.id || self.getActiveReport().id;
           location.path(page + '/' + reportId);
         }
-         self.getPage = function() {
-          return location.path().split('/').slice(1,2);
+        self.getAction = function() {
+          return location.path().split('/').slice(1,2).toString();
         }
         return self;
       }
@@ -258,7 +257,7 @@
           $scope.router.setPath();
           $scope.activeReport = $scope.router.getActiveReport();
           $scope.referencesPageActive = $scope.checkPageActive = false;
-          $scope.router.getPage() == 'add' ? $scope.referencesPageActive = true : $scope.checkPageActive = true;
+          $scope.router.getAction() == 'add' ? $scope.referencesPageActive = true : $scope.checkPageActive = true;
           $scope.reports = reports;
           $scope.reverseReports = false;
           $scope.defaultRowLimit = 3;
@@ -315,18 +314,12 @@
           $scope.isActiveReport = function(report) {
             return report.id == $scope.activeReport.id ? true : false ;
           }
-          $scope.isActivePage = function(type) {
-            return type == $scope.router.getPageType() ? true : false;
-          }
-          $scope.switchPage = function(page) {
-            if ($scope.router.getPage() != page) {
-              $scope.router.setPath({page:page});
+          $scope.switchPage = function(action) {
+            if ($scope.router.getAction() != action) {
+              $scope.router.setPath({page:action});
               $scope.activeReport = $scope.router.getActiveReport();
               $scope.referencesPageActive = !$scope.referencesPageActive;
               $scope.checkPageActive = !$scope.checkPageActive;
-            }
-            else {
-              $scope.router.setPath();
             }
           }
           $scope.scrollTop = function() { $anchorScroll(); }
