@@ -51,7 +51,7 @@
       div#current-report-options span { display: block; color: white; background-color: #307389; padding: 4px 5px; border-bottom: 1px dotted #214F5E; font-family: sans-serif; }
       div#active-report div.current-report-captures div.difference { border-left: 2px solid black; padding: 0 0 12px 7px; font-family: sans-serif; font-size:13px; }
       div#active-report div.current-report-captures h4 { font-size: 14px; margin: 0; }
-      div#current-report-differences div.difference a, td.image-reference a img { max-width:97%; max-height:300px; }
+      div.current-report-captures div.difference a img, td.image-reference a img { max-width:97%; max-height:300px; }
       div#active-reference-list table th:not(.image-reference) { width: 10%; }
       div#active-reference-list table td { text-align: center; vertical-align: top; font-size: 12px; }
       footer { height: 45px; bottom: 0; left: 0 }
@@ -141,20 +141,7 @@
       </div>
       <div id="current-report-differences" class="current-report-captures">
         <h3>Differences</h3>
-        <span ng-hide="activeReport.captures.failures.length">No differences found.</span>
-        <div ng-repeat="capture in filteredDifferences()" class="difference">
-          <h4>--- {{failure.page.name}} ({{failure.page.url}}) --- {{failure.viewport.name}} ({{failure.viewport.width}}x{{failure.viewport.height}})</h4>
-          <h5>{{failure.name}} ({{failure.selector}})</h5>
-          <strong>Compared to:</strong>
-          <strong>File reference:</strong> {{failure.basePath}}
-          {Difftype}
-          <a ng-href="../{{failure.imgDiff}}" target="_blank" title="../{{failure.imgDiff}}"><img ng-src="../{{failure.imgDiff}}"/></a>
-        </div>
-      </div>
-      <div id="current-report-matches" class="current-report-captures">
-        <h3>Matches</h3>
-        <span ng-hide="activeReport.captures.length">No matches found.</span>
-        <div ng-repeat="capture in filteredMatches()" class="difference">
+        <div ng-repeat="capture in activeReport.records.captures | captureHasDifferences:true as differences" class="difference">
           <h4>--- {{capture.page.name}} ({{capture.page.url}}) --- {{capture.viewport.name}} ({{capture.viewport.width}}x{{capture.viewport.height}})</h4>
           <div><strong>Selector: {{capture.name}} ({{capture.selector}})</strong></div>
           <div><strong>Compared to: {{capture.comparedTo}}</strong></div>
@@ -162,6 +149,19 @@
           <a ng-href="../{{capture.basePath}}" target="_blank" title="../{{capture.filePath}}"><img ng-src="../{{capture.basePath}}"/></a>
           <hr/>
         </div>
+        <span ng-if="differences.length == 0">No differences found.</span>
+      </div>
+      <div id="current-report-matches" class="current-report-captures">
+        <h3>Matches</h3>
+        <div ng-repeat="capture in activeReport.records.captures | captureHasDifferences:false as matches" class="difference">
+          <h4>--- {{capture.page.name}} ({{capture.page.url}}) --- {{capture.viewport.name}} ({{capture.viewport.width}}x{{capture.viewport.height}})</h4>
+          <div><strong>Selector: {{capture.name}} ({{capture.selector}})</strong></div>
+          <div><strong>Compared to: {{capture.comparedTo}}</strong></div>
+          <div><strong>Image reference:</strong></div>
+          <a ng-href="../{{capture.basePath}}" target="_blank" title="../{{capture.filePath}}"><img ng-src="../{{capture.basePath}}"/></a>
+          <hr/>
+        </div>
+        <span ng-if="matches.length == 0">No matches found.</span>
       </div>
     </div>
 
@@ -245,6 +245,15 @@
           return function(path) {
             if (path.indexOf('/') === 0) return path;
             return '../' + path.replace('./', '');
+          }
+        })
+        .filter('captureHasDifferences', function() {
+          return function(captures, hasDiff) {
+            filteredCaptures = [];
+            angular.forEach(captures, function(capture, key) {
+              if (capture.differences.length && hasDiff || !hasDiff && !capture.differences.length) filteredCaptures.push(capture);
+            });
+            return filteredCaptures;
           }
         })
         .controller('ReportsListCtrl', function($scope, $filter, $location, $window, $anchorScroll, reports) {
