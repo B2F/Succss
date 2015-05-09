@@ -10,42 +10,51 @@
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:700" rel="stylesheet" type="text/css">
     <style type="text/css">
       body { position:relative; background-color: #EEEFF0; top: 70px; font-family: Roboto; margin-bottom: 70px; }
+      .page-load-error { color: #F00; font-size: 1.3em; margin: 3%;}
       header { top: 0; left: 0; color: #F5F5C4; }
-      footer { bottom: 0; left: 0 }
       header, footer { position: fixed; height:65px; width:100%; background-color: #1C424F; z-index: 1000; font-family: Open Sans; }
       header h1 { position: relative; left: 11px; bottom: 36px; font-size: 47px; width: 350px; z-index:1; cursor:pointer; }
-      header div.links { position: absolute; width: 622px; border-bottom: 2px solid #F5F5C4; bottom: 1px;}
-      header div.links div { position:relative; left: 403px; text-align: center; background-color:#EBEAE1; border-radius: 2px 2px 0 0; display: inline-block; }
-      header div.links div a { text-decoration: none; text-align: center; color: #3A3A3A; font-size: 13px; display:block; width: 100px; padding: 4px; }
-      header div.links div a.active { font-size: 16px; color: black; }
+      header div.links { position: absolute; padding-left: 371px; border-bottom: 2px solid #F5F5C4; bottom: 1px;}
+      header div.links div div { position:relative; text-align: center; background-color:#EBEAE1; border-radius: 2px 2px 0 0; display: inline-block; }
+      header div.links div div a { text-decoration: none; text-align: center; color: #3A3A3A; font-size: 13px; display:block; width: 100px; padding: 4px; }
+      header div.links div div a.active { font-size: 16px; color: black; }
       #rowLimit { padding: 0 0 10px 0; }
       #rowLimit input { position: relative; width: 44px; bottom: 1px; margin-left: 3px; z-index:0; }
-      table { font-family: sans-serif; border-spacing: 0px; width: 98%; }
-      table thead { line-height: 1.8; background-color: #FFE; font-size: 15px; }
+      table { font-family: sans-serif; margin-top: 10px; border-spacing: 0px; width: 98%; table-layout: fixed; overflow: hidden; }
+      table thead { line-height: 2.3; background-color: #FFE; font-size: 12px; }
       table thead th { border-bottom: 1px solid #777; }
-      table tbody { cursor: pointer; }
+      table thead .search.timestamp { width: 125px; position:relative; }
+      table thead .search.timestamp button { position: absolute; right: 0; }
+      table thead .search.date { width: 115px; }
+      table thead .search.config { width: 125px; }
+      table thead .search.status { width: 67px; }
+      table tbody { cursor: pointer; font-size: 11px; }
       table tbody tr:first-child { background-color: #FFFFCF; }
+      table tbody tr input, table tbody tr select { width: 95%; margin-right: 1%; font-size: 10px; }
+      table tbody tr button { width: 25px; }
       table th, td { padding: 5px 7px ; border-bottom: 1px solid #EEEFF0; border-right: 1px dotted #EEEFF0; }
-      table tr { text-align: left; }
+      table tr { text-align: left; line-height: 1.5; }
       table tr.success { background-color: #C7FFC8; }
       table tr.failure { background-color: #FF9CB5; }
-      table tr.hovered { background-color: #FCFFC7; }
-      table tr.success.active td { border-bottom: 1px solid #090; border-top: 1px solid #0A0; }
-      table tr.failure.active td { border-bottom: 1px solid #900; border-top: 1px solid #A00; }
-      div#current-report-title { margin: 15px 0; }
-      div#current-report-title span, h3 { font-size: 20px; padding-bottom: 5px; border-bottom: 1px solid black; display: inline-block; }
+      table tr.success.active { background-color: #B2F1B2; font-weight: bold; }
+      table tr.failure.active { background-color: #F78FAB; font-weight: bold; }
+      table tr.success.hovered, table tr.failure.hovered { background-color: #FCFFC7; }
+      div.current-report-title { margin: 15px 0; }
+      div.current-report-title span, h3 { font-size: 20px; padding-bottom: 5px; border-bottom: 1px solid black; display: inline-block; }
       div#current-report-description > div { display: inline-block; height: 136px; overflow:auto; margin-top: 5px; }
       div#current-report-summary { font-size: 18px; }
       div#current-report-summary span.success { color: #0C0; font-family: sans-serif; font-weight:bold; }
       div#current-report-summary span.failure { color: #C00; font-family: sans-serif; font-weight:bold; }
       div#current-report-options { margin-left: 30px; }
       div#current-report-options div { color: white; background-color: #214F5E; padding: 3px 0 5px 6px; }
-      div#active-report div.current-report-captures { width: 50%; float: left; margin-bottom: 43px; }
+      div#active-report div.current-report-captures { width: 50%; float: left; margin-bottom: 71px; }
       div#current-report-options span { display: block; color: white; background-color: #307389; padding: 4px 5px; border-bottom: 1px dotted #214F5E; font-family: sans-serif; }
       div#active-report div.current-report-captures div.difference { border-left: 2px solid black; padding: 0 0 12px 7px; font-family: sans-serif; font-size:13px; }
       div#active-report div.current-report-captures h4 { font-size: 14px; margin: 0; }
-      div#active-report div.current-report-captures img, div#current-report-differences div.difference a { max-width:97%; display: block; }
-      footer { height: 45px; }
+      div#current-report-differences div.difference a, td.image-reference a img { max-width:97%; max-height:300px; }
+      div#active-reference-list table th:not(.image-reference) { width: 10%; }
+      div#active-reference-list table td { text-align: center; vertical-align: top; font-size: 12px; }
+      footer { height: 45px; bottom: 0; left: 0 }
       footer a { color:white; text-decoration:none; font-size: 13px; display: inline-block; padding: 11px 0; }
       footer a.documentation-root { color: #F5F5C4; font-size: 17px ; text-decoration: underline; padding-left: 12px; padding-right: 6px; }
       footer img.footer-logo { transition: all 1s ease-in-out; transition-timing-function: cubic-bezier(42,0,.58,1); }
@@ -55,6 +64,13 @@
     </style>
   </head>
   <body ng-controller="ReportsListCtrl">
+
+    <div ng-show="false" class="page-load-error">
+      Succss reporting functionality requires Angularjs 1.3.14. Either type the following in your working succss directory:
+      <pre>npm install angular@1.3.14</pre>
+      Or get network access to https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angulars.min.js.
+    </div>
+
     <header>
       <h1 ng-click="scrollTop()" title="Scroll back top">Succss reports</h1>
       <div class="links">
@@ -70,11 +86,17 @@
 
     <table>
       <thead>
-        <th>Timestamp</th><th>Date</th><th>Config file</th><th>Status</th><th>--pages</th><th>--viewports</th><th>--captures</th>
+        <th class="search timestamp">Timestamp <button ng-click="reverseReportsOrder()" title="Reverse order by date">R</button></th>
+        <th class="search date">Date</th>
+        <th class="search config">Config file</th>
+        <th class="search status">Status</th>
+        <th class="search pages">--pages</th>
+        <th class="search viewports">--viewports</th>
+        <th class="search captures">--captures</th>
       </thead>
       <tbody>
         <tr>
-          <th><input ng-model="search.timestamp"><button ng-click="reverseReportsOrder()">Reverse</button></th>
+          <th><input ng-model="search.timestamp"></th>
           <th><input ng-model="search.date"></th>
           <th><input ng-model="search.dataFile"></th>
           <th>
@@ -173,12 +195,6 @@
       </div>
       <img class="footer-logo" src="http://succss.ifzenelse.net/img/arc-logo.png"/>
     </footer>
-
-    <div ng-show="false">
-      Succss reporting functionality requires Angularjs 1.3.14. Either type the following in your working succss directory:
-      <pre>npm install angular@1.3.14</pre>
-      Or get network access to https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angulars.min.js.
-    </div>
 
     <script type="text/javascript">
       if (typeof angular === 'undefined') {
