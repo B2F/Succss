@@ -286,21 +286,17 @@ function Succss() {
     if (typeof viewportsData[viewportName] !== 'object') self.catchErrors('Viewport ' + viewportName + ' is missing from your configuration file. You can\'t compareToViewport without it. Available viewports: ' + Object.keys(viewportsData).join(', '));
     if (typeof data[pageName].captures[captureIndex] != 'object') throw('Capture "' + captureIndex + '" is missing from your configuration page named "' + pageName +'"/ Your captures must be present on both sides when compareToPage is used.');
     // Available in setFileName:
-    var captureState = {};
-    for (var prop in data[pageName].captures[captureIndex]) {
-      captureState[prop] = data[pageName].captures[captureIndex][prop];
+    var captureState = {
+      page: {},
+      records: {},
+      viewport: viewportsData[viewportName],
+      options: options,
+      differences: []
     };
-    captureState.page = {};
-    for (var prop in data[pageName]) {
-      if (prop != 'captures') {
-        captureState.page[prop] = data[pageName][prop];
-      }
-    }
-    captureState.viewport = viewportsData[viewportName];
-    captureState.options = options;
-    captureState.records = SuccssRecords;
-    captureState.differences = [];
-    captureState.id = captureState.page.name + '--' + captureState.viewport.name + '--' + captureState.name;
+    SuccssBasicCopy(captureState, data[pageName].captures[captureIndex]);
+    SuccssBasicCopy(captureState.page, data[pageName]);
+    SuccssBasicCopy(captureState.records, SuccssRecords);
+    captureState.id = captureState.page.name + '--' + captureState.viewport.name + '--' + captureState.name,
     // Available in the after capture callback:
     captureState.file = self.setFileName(captureState);
     captureState.filePath = captureState.page.directory.replace(/\/$/, '') + '/' + captureState.file;
@@ -356,7 +352,7 @@ function Succss() {
     // written in '.succss-tmp' (the default checkDir value) or found in the path specified by --checkDir.
     // In case of slimerCheck, PhantomJs will capture updates in '.succss-tmp' with the 'add' action.
     if (capture.options.action == 'check'  || options.slimerCheck) {
-      capture.filePath = cleanPreprendPath(checkDir, capture.page.directory+'/'+capture.file);
+      capture.filePath = SuccssCleanPreprendPath(checkDir, capture.page.directory+'/'+capture.file);
       capture.filePath = capture.filePath.replace(/\.\//, '');
     }
 
@@ -781,12 +777,26 @@ function Succss() {
 }
 
 /**
+ * Copy properties of object b into object a, avoiding cyclic references.
+ *
+ * @param {type} a source object
+ * @param {type} b target object
+ */
+function SuccssBasicCopy(a, b) {
+  for (var prop in b) {
+    if (prop != 'captures') {
+      a[prop] = b[prop];
+    }
+  }
+}
+
+/**
  * Prepend a filepath, removes double slashes and "current directory" dots.
  *
  * @param {String} path used as a prefix
  * @param {String} dir used as a suffix
  * @returns {String} the resulting filepath
  */
-function cleanPreprendPath(prefix, suffix) {
+function SuccssCleanPreprendPath(prefix, suffix) {
   return prefix.replace(/\/$/, '') + '/' + suffix.replace(/^(\.\/|\/)/, '');
 }
