@@ -294,40 +294,36 @@
           };
           $scope.filteredReports = function() {
             var filteredReports = [];
-            var rowLimit = !$scope.rowLimit ? $scope.defaultRowLimit : $scope.rowLimit;
             var dateFilter = new Date($scope.search.date + ':');
-            if (isNaN($scope.rowLimit)) $scope.rowLimit = $scope.defaultRowLimit;
+            var rowLimit = !$scope.rowLimit ? $scope.defaultRowLimit : $scope.rowLimit;
             var reportsFilters = {
               status: $scope.search.status,
               records: {
                 startTime:$scope.search.timestamp,
+                planned: {
+                  pages: $scope.search.pages,
+                  viewports: $scope.search.viewports,
+                  selectors: $scope.search.selectors || ''
+                }
               },
               options: {
                 action:$scope.router.getAction(),
                 dataFile:$scope.search.dataFile,
-                pages:$scope.search.pages,
-                viewports:$scope.search.viewports,
-                captures:$scope.search.selectors
               }
             };
-            filteredReports = $filter('filter')($scope.reports, reportsFilters);
-            filteredReports = $filter('limitTo')(filteredReports, rowLimit);
-            for (var r in filteredReports) {
-              var reportPages = filteredReports[r].records.planned.pages.join();
-              var reportViewports = filteredReports[r].records.planned.viewports.join();
-              var reportSelectors = filteredReports[r].records.planned.selectors.join();
-              if ((filteredReports[r].id > dateFilter.getTime() + 60001 && !isNaN(dateFilter)) ||
-                  ($scope.search.pages && reportPages.indexOf($scope.search.pages) == -1) ||
-                  ($scope.search.viewports && reportViewports.indexOf($scope.search.viewports) == -1) ||
-                  ($scope.search.selectors && reportSelectors.indexOf($scope.search.selectors) == -1) ) {
-                delete filteredReports[r];
+            if (isNaN($scope.rowLimit)) $scope.rowLimit = $scope.defaultRowLimit;
+            for (var r in $scope.reports) {
+              if ($scope.reports[r].id < dateFilter.getTime() + 60001 || isNaN(dateFilter)) {
+                filteredReports.push($scope.reports[r]);
               }
             }
+            filteredReports = $filter('filter')(filteredReports, reportsFilters);
+            filteredReports = $filter('limitTo')(filteredReports, rowLimit);
             return filteredReports;
           };
           $scope.reverseReportsOrder = function() {
             $scope.reverseReports = !$scope.reverseReports;
-            $scope.rowLimit = $scope.rowLimit * -1;
+            $scope.rowLimit = $scope.rowLimit && $scope.rowLimit * -1;
           };
           $scope.clickReport = function(report) {
             $scope.activeReport = report;
