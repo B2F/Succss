@@ -234,6 +234,7 @@ function Succss() {
    * Handles completed captures.
    */
   casperInstance.on('capture.complete', function(succeed, capture, message) {
+    // Capture keys can be overrided when the capture.complete event is emitted.
     SuccssRecords.captures[capture.id] = capture;
     try {
       casperInstance.test.assertTrue(succeed, message);
@@ -249,15 +250,16 @@ function Succss() {
   casperInstance.on('run.complete', function(data) {
     var now = new Date();
     SuccssRecords.execTime = now.getTime() - SuccssRecords.startTime;
-    var nbCaptured = Object.keys(SuccssRecords.captures).length;
+    var capturedNb = Object.keys(SuccssRecords.captures).length;
+    var expectedCapturedNb = SuccssRecords.planned.captures;
     if (SuccssRecords.errors.length) {
       self.echo('Tests failed with ' + SuccssRecords.errors.length + ' errors.', 'ERROR');
     }
-    else if (nbCaptured == SuccssRecords.planned.captures) {
-      self.echo('[SUCCSS] ' + nbCaptured + '/' + SuccssRecords.planned.captures + ' captures tests pass! ', 'GREEN_BAR');
+    else if (capturedNb == expectedCapturedNb) {
+      self.echo('[SUCCSS] ' + capturedNb + '/' + expectedCapturedNb + ' captures tests pass! ', 'GREEN_BAR');
     }
     else {
-      self.echo('Tests failed with ' + nbCaptured + '/' + SuccssRecords.planned.captures + ' captures.', 'ERROR');
+      self.catchErrors('All captures were not correctly taken (' + expectedCapturedNb + ' planned, ' + capturedNb + ' done).');
     }
     if (options.report) {
       self.injectJs(options.libpath + '/succss-reports/SuccssReporter.js');
