@@ -126,21 +126,26 @@
 
     <div ng-show="{{!reports.length}}">No reports available (missing runs.json.inc). Succss automatically creates and updates a ./succss-reports/runs.json.inc file after each run.</div>
 
-    <div id="active-report" ng-show="checkPageActive">
-      <div class="current-report-title"><a><span>Selected report: <strong>{{activeReport.options.dataFile | dataFileName}}</strong> - {{activeReport.records.startTime | date:'d MMM yyyy H:mm:ss'}}</span></a></div>
-      <div id="current-report-description">
-        <div id="current-report-summary">
-          <div>Status: <span class="{{activeReport.status}}">{{activeReport.status}}</span></div>
-          <div>Planned captures: {{activeReport.records.planned}}</div>
-          <div>Captures: {{Object.keys(activeReport.records.captures).length}}</div>
-          <div>Errors: {{activeReport.records.errors.length}} ({{activeReport.records.errors}}</div>
-          <div>Exec time: {{activeReport.records.execTime}}ms</div>
-        </div>
-        <div id="current-report-options">
-          <div>Options:</div>
-          <span ng-repeat="(key, option) in activeReport.options">--{{key}}: {{option}}<br/></span>
-        </div>
+    <div class="current-report-title"><span ng-click="focusOnCurrent()" title="Focus reports table on this.">
+        Selected report: <strong>{{activeReport.options.dataFile | dataFileName}}</strong> - {{activeReport.records.startTime | date:'d MMM yyyy H:mm:ss'}}
+    </span></div>
+
+    <div id="current-report-description">
+      <div id="current-report-summary">
+        <div>Status: <span class="{{activeReport.status}}">{{activeReport.status}}</span></div>
+        <div>Planned captures: {{activeReport.records.planned.captures}}</div>
+        <div>Captures taken: {{matches.length+differences.length}}</div>
+        <div>Exec time: {{activeReport.records.execTime}}ms</div>
+        <div>Errors: {{activeReport.records.errors.length}}</div>
+        <div class="report-error" ng-repeat="error in (activeReport.records.errors | errorsString) track by $index">{{$index+1}}: {{error}}</div>
       </div>
+      <div id="current-report-options">
+        <h4>Options:</h4>
+        <div class="options-list"><span ng-repeat="(key, option) in activeReport.options">--{{key}}: {{option}}<br/></span></div>
+      </div>
+    </div>
+
+    <div id="active-check-report" class="active-report" ng-show="checkPageActive">
       <div id="current-report-differences" class="current-report-captures">
         <h3>Differences</h3>
         <div ng-repeat="capture in activeReport.records.captures | captureHasDifferences:true as differences" class="difference">
@@ -256,6 +261,16 @@
               if (capture.differences.length && hasDiff || !hasDiff && !capture.differences.length) filteredCaptures.push(capture);
             });
             return filteredCaptures;
+          }
+        })
+        .filter('errorsString', function() {
+          return function(errors) {
+            var formattedErrors = [];
+            angular.forEach(errors, function(error, key) {
+              error = JSON.parse(error);
+              error.message ? formattedErrors.push(error.message) : formattedErrors.push(error);
+            })
+            return formattedErrors;
           }
         })
         .controller('ReportsListCtrl', function($scope, $filter, $location, $window, $anchorScroll, reports) {
