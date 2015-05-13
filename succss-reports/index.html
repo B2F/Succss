@@ -99,8 +99,8 @@
       <tbody>
         <tr>
           <th><input ng-model="search.timestamp"></th>
-          <th><input ng-model="search.date"></th>
-          <th><input ng-model="search.dataFile"></th>
+          <th><input ng-model="search.date" placeholder="{{ '<= ' + (now | date:'d MMM yyyy H:mm') }}"></th>
+          <th><input ng-model="search.dataFile" placeholder="/"></th>
           <th>
             <select ng-model="search.status">
               <option value=''>Any</option>
@@ -264,13 +264,14 @@
           $scope.activeReport = $scope.router.getActiveReport();
           $scope.referencesPageActive = $scope.checkPageActive = false;
           $scope.router.getAction() == 'add' ? $scope.referencesPageActive = true : $scope.checkPageActive = true;
+          $scope.now = new Date().getTime();
           $scope.reports = reports;
           $scope.reverseReports = false;
           $scope.defaultRowLimit = 3;
           $scope.search = {
             timestamp : '',
-            dataFile : '/',
-            date: '<= ' + $filter('date')(Date.now(), 'd MMM yyyy H:mm'),
+            dataFile : '',
+            date: '',
             status: '',
             pages:'',
             viewports:'',
