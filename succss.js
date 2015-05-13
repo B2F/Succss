@@ -624,7 +624,7 @@ function Succss() {
       var filePath = './succss-reports/imagediff/' + self.defaultDiffDirName(capture);
       var imgDiff = imagediff.diff(imgBase, imgCheck, imagediffOptions);
       self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
-      capture.differences.push({imagediff: filePath});
+      capture.differences.push({type: 'imagediff', file: filePath});
     }
     self.afterDiff(imagesMatch, capture, 'imagediff');
   }
@@ -651,7 +651,7 @@ function Succss() {
           if (!imagesMatch) {
             var filePath = './succss-reports/resemble/' + self.defaultDiffDirName(capture);
             self.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
-            capture.differences.push({resemble: filePath});
+            capture.differences.push({type: 'resemble', file: filePath});
           }
           self.afterDiff(imagesMatch, capture, 'resemble');
         }
