@@ -172,24 +172,25 @@
       </div>
     </div>
 
-    <div id="active-reference-list" ng-show="referencesPageActive">
-      <div class="current-report-title"><a><span>Selected report: <strong>{{activeReport.options.dataFile | dataFileName}}</strong> - {{activeReport.records.startTime | date:'d MMM yyyy H:mm:ss'}}</span></a></div>
+    <div id="active-reference-list" class="active-report" ng-show="referencesPageActive">
       <table>
         <thead>
           <tr>
-            <th>Page</th><th>Viewport</th><th>Capture</th><th class="image-reference">Image</th>
+            <th>Page <button ng-click="reorderReferencesList('page.name')" title="Sort by page name">S</button></th>
+            <th>Viewport <button ng-click="reorderReferencesList('viewport.width')" title="Sort by viewport width">S</button></th>
+            <th>Capture <button ng-click="reorderReferencesList('name')" title="Sort by capture name">S</button></th>
+            <th class="image-reference">Image</th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="capture in activeReport.records.captures">
+          <tr ng-repeat="capture in activeReport.records.captures | orderByCapturesProps:refOrder">
             <td><a ng-href="{{capture.page.url}}" title="{{capture.page.url}}" target="_blank">{{capture.page.name}}</a></td>
-            <td><div>"{{capture.viewport.name}}"</div><div>Size: {{capture.viewport.width}}x{{capture.viewport.height}}</div></td>
-            <td><div>"{{capture.name}}"</div><div>Selector: {{capture.selector}}</div></td>
+            <td><div>"{{capture.viewport.name}}"</div><div class="details">Size: {{capture.viewport.width}}x{{capture.viewport.height}}</div></td>
+            <td><div>"{{capture.name}}"</div><div class="details">Selector: {{capture.selector}}</div></td>
             <td class="image-reference"><a ng-href="{{capture.filePath | screenshotPath}}" target="_blank"><img ng-src="{{capture.filePath | screenshotPath}}"/></a></td>
           </tr>
         </tbody>
       </table>
-      {{ activeReport }}
     </div>
 
     <footer>
@@ -273,6 +274,15 @@
             return formattedErrors;
           }
         })
+        .filter('orderByCapturesProps', function($filter) {
+          return function(captures, refOrder) {
+            capturesArray = [];
+            angular.forEach(captures, function(capture, id) {
+              capturesArray.push(capture);
+            });
+            return $filter('orderBy')(capturesArray, refOrder);
+          }
+        })
         .controller('ReportsListCtrl', function($scope, $filter, $location, $window, $anchorScroll, reports) {
           $scope.router = reportRouter($location, reports);
           $scope.router.setPath();
@@ -282,7 +292,8 @@
           $scope.now = new Date().getTime();
           $scope.reports = reports;
           $scope.reverseReports = false;
-          $scope.defaultRowLimit = 3;
+          $scope.defaultRowLimit = 4;
+          $scope.refOrder = 'name';
           $scope.search = {
             timestamp : '',
             dataFile : '',
@@ -339,6 +350,9 @@
               $scope.referencesPageActive = !$scope.referencesPageActive;
               $scope.checkPageActive = !$scope.checkPageActive;
             }
+          }
+          $scope.reorderReferencesList = function(value) {
+            $scope.refOrder = $scope.refOrder.indexOf(value) == 0 ? '-' + $scope.refOrder : value;
           }
           $scope.scrollTop = function() { $anchorScroll(); }
         });
