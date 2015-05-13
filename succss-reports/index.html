@@ -88,7 +88,7 @@
 
     <table id="report-list">
       <thead>
-        <th class="search timestamp">Timestamp <button ng-click="reverseReportsOrder()" title="Reverse order by date">R</button></th>
+        <th class="search timestamp">Timestamp <button ng-click="search.timestamp=''" title="Delete timestamp filter">D</button><button ng-click="reverseReportsOrder()" title="Reverse reports order">R</button></th>
         <th class="search date">Date</th>
         <th class="search config">Config file</th>
         <th class="search status">Status</th>
@@ -350,6 +350,10 @@
               $scope.referencesPageActive = !$scope.referencesPageActive;
               $scope.checkPageActive = !$scope.checkPageActive;
             }
+          }
+          $scope.focusOnCurrent = function() {
+            $scope.rowLimit = $scope.search.date = $scope.search.status = $scope.search.dataFile = $scope.search.viewports = $scope.search.pages = $scope.search.selectors = '';
+            $scope.search.timestamp = $scope.activeReport.id.toString().slice(0, 9);
           }
           $scope.reorderReferencesList = function(value) {
             $scope.refOrder = $scope.refOrder.indexOf(value) == 0 ? '-' + $scope.refOrder : value;
