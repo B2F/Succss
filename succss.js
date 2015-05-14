@@ -81,9 +81,6 @@ function Succss() {
 
     // Directory path used as reference prefix when checking for differences.
     var checkDir = options.checkDir || '.succss-tmp';
-    if (options.checkDir && !fs.isDirectory(checkDir)) {
-      throw "[SucCSS] Reference directory not found. Check your --checkDir option.";
-    }
 
     // Processes the --pages option: restricts the pages keys object to it.
     if (options.pages != undefined && options.pages !== true) {

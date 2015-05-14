@@ -19,6 +19,7 @@ phantom.injectJs('selftests/data-diff.js');
  * @see http://succss.ifzenelse.net/commandline#options
  */
 Succss.options = {
+  'viewports':'mobile-landscape',
   // Disabling default imagediff behavior (inverting the casper test).
   'imagediff':true,
   'diff':false,
@@ -75,5 +76,6 @@ Succss.afterDiff = function(succeed, capture, diffType) {
   if (!referencePath) throw('data-canvas.js must be run with either --imagediffDefaults, --imagediffLightness, --imagediffCustom or --resembleSettings.');
   this.casper.test.assertEquals(fs.size(currentCapturePath), fs.size(referencePath), 'The diff screenshot is correct.');
   var message = 'Capture is different to base screenshot (' + diffType + ').';
+  capture.basePath = referencePath;
   this.casper.emit('capture.complete', !succeed, capture, message);
 }
