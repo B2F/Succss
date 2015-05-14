@@ -259,8 +259,8 @@ function Succss() {
       self.catchErrors('All captures were not correctly taken (' + expectedCapturedNb + ' planned, ' + capturedNb + ' done).');
     }
     if (options.report) {
-      self.injectJs(options.libpath + '/succss-reports/SuccssReporter.js');
-      var succssReporter = new SuccssReporter(SuccssRecords);
+      var succssReporterLibPath = options.libpath + '/succss-reports/SuccssReporter.js';
+      var succssReporter = require(succssReporterLibPath).init(SuccssRecords, self);
       succssReporter.report();
     }
     // cleanup:
