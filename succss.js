@@ -309,19 +309,27 @@ function Succss() {
    * @param {Object} capture state
    */
   var setCaptureReferenceFilePath = function(capture) {
+
     var pageReference = options.compareToPage || capture.page.name;
     var viewportReference = options.compareToViewport || capture.viewport.name;
-    // Information used to keep references in reports:
-    capture.comparedTo = {
-      page: pageReference,
-      viewport: viewportReference
-    }
     // If compareTo{Page|Viewport} option is set, gets the filepath corresponding
     // to the capture index (page, capture, viewport):
     if (options.compareToViewport || options.compareToPage) {
       capture.basePath = createCaptureState(pageReference, viewportReference, capture.name).filePath;
+      // Information used to keep references in reports:
+      capture.comparedTo = {
+        page: {
+          'name': data[pageReference].name,
+          'url': data[pageReference].url
+        },
+        viewport: {
+          'name': viewportsData[viewportReference].name,
+          'size': viewportsData[viewportReference].width + 'x' + viewportsData[viewportReference].height
+        }
+      }
     }
     else {
+      capture.comparedTo = false;
       capture.basePath = capture.filePath;
     }
   }

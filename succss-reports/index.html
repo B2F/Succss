@@ -49,8 +49,11 @@
       div#current-report-description > div#current-report-options h4 { margin: 0; color: white; background-color: #214F5E; padding: 3px 0 5px 6px; }
       div#current-report-description > div#current-report-options div.options-list { line-height: 1.3; overflow-y: auto; height: 115px; display: block; color: white; background-color: #307389; padding: 4px 5px; border-bottom: 1px dotted #214F5E; font-family: sans-serif; }
       div#active-check-report div.current-report-captures { width: 50%; float: left; margin: 7px 0 71px 0; }
-      div#active-check-report div.current-report-captures div.difference { border-left: 2px solid black; padding: 0 0 12px 7px; font-family: sans-serif; font-size:13px; }
-      div#active-check-report div.current-report-captures h4 { font-size: 14px; margin: 0; }
+      div#active-check-report div.current-report-captures div.difference { border-left: 2px solid black; border-bottom: 1px dotted black; padding: 0 0 12px 7px; font-family: sans-serif; font-size:13px; }
+      div#active-check-report div.current-report-captures div.difference > div { margin-bottom: 10px; }
+      div#active-check-report div.current-report-captures h4 { position: relative; right: 11px; line-height: 27px; font-size: 14px; margin: 0; padding: 11px; }
+      div#active-check-report div.current-report-captures .pvc-buttons { position:relative; left: 1px; }
+      div#active-check-report div.current-report-captures .no-captures { display: block; }
       div.active-report { margin: 24px 0; }
       div.current-report-captures div.difference a img, td.image-reference a img { max-width: 97%; max-height: 300px; }
       div#active-reference-list table th:not(image-reference) { width: 11%; }
@@ -148,27 +151,39 @@
     <div id="active-check-report" class="active-report" ng-show="checkPageActive">
       <div id="current-report-differences" class="current-report-captures">
         <h3>Differences</h3>
-        <div ng-repeat="capture in activeReport.records.captures | captureHasDifferences:true as differences" class="difference">
-          <h4>--- {{capture.page.name}} ({{capture.page.url}}) --- {{capture.viewport.name}} ({{capture.viewport.width}}x{{capture.viewport.height}})</h4>
-          <div><strong>Selector: {{capture.name}} ({{capture.selector}})</strong></div>
-          <div><strong>Compared to: {{capture.comparedTo}}</strong></div>
-          <div><strong>Image reference:</strong></div>
-          <a ng-href="../{{capture.basePath}}" target="_blank" title="../{{capture.filePath}}"><img ng-src="../{{capture.basePath}}"/></a>
-          <hr/>
+        <span class="pvc-buttons">
+          <button ng-click="reorderReferencesList('page.name', 'diffOrder')" title="Sort by page name">P</button>
+          <button ng-click="reorderReferencesList('viewport.width', 'diffOrder')" title="Sort by viewport width">V</button>
+          <button ng-click="reorderReferencesList('name', 'diffOrder')" title="Sort by capture name">C</button>
+        </span>
+        <div ng-repeat="capture in activeReport.records.captures | captureHasDifferences:true  | orderByCapturesProps:diffOrder as differences" class="difference">
+          <h4>{{capture.name}} ({{capture.selector}})</h4>
+          <div>On page <a ng-href="{{capture.page.url}}" target="_blank">{{capture.page.name}}</a> in {{capture.viewport.width}}x{{capture.viewport.height}} ({{capture.viewport.name}})</div>
+          <div ng-show="capture.comparedTo">Compared to <a href="{{capture.comparedTo.page.url}}" target="_blank">{{capture.comparedTo.page.name}}</a> in {{capture.comparedTo.viewport.name}} viewport ({{capture.comparedTo.viewport.size}})</div>
+          <div>Differences:</div>
+          <ul>
+            <li ng-repeat="difference in capture.differences">
+              <span>{{difference.type}}</span>
+              <a ng-href="../{{difference.file}}" target="_blank" title="../{{difference.file}}"><img ng-src="../{{difference.file}}"/></a>
+            </li>
+          </ul>
         </div>
-        <span ng-if="differences.length == 0">No differences found.</span>
+        <span ng-if="differences.length == 0" class="no-captures">No differences found.</span>
       </div>
       <div id="current-report-matches" class="current-report-captures">
         <h3>Matches</h3>
-        <div ng-repeat="capture in activeReport.records.captures | captureHasDifferences:false as matches" class="difference">
-          <h4>--- {{capture.page.name}} ({{capture.page.url}}) --- {{capture.viewport.name}} ({{capture.viewport.width}}x{{capture.viewport.height}})</h4>
-          <div><strong>Selector: {{capture.name}} ({{capture.selector}})</strong></div>
-          <div><strong>Compared to: {{capture.comparedTo}}</strong></div>
-          <div><strong>Image reference:</strong></div>
+        <span class="pvc-buttons">
+          <button ng-click="reorderReferencesList('page.name', 'matchOrder')" title="Sort by page name">P</button>
+          <button ng-click="reorderReferencesList('viewport.width', 'matchOrder')" title="Sort by viewport width">V</button>
+          <button ng-click="reorderReferencesList('name', 'matchOrder')" title="Sort by capture name">C</button>
+        </span>
+        <div ng-repeat="capture in activeReport.records.captures | captureHasDifferences:false | orderByCapturesProps:matchOrder as matches" class="difference">
+          <h4>{{capture.name}} ({{capture.selector}})</h4>
+          <div>On page <a ng-href="{{capture.page.url}}" target="_blank">{{capture.page.name}}</a> in {{capture.viewport.width}}x{{capture.viewport.height}} ({{capture.viewport.name}})</div>
+          <div ng-show="capture.comparedTo">Compared to <a href="{{capture.comparedTo.page.url}}" target="_blank">{{capture.comparedTo.page.name}}</a> in {{capture.comparedTo.viewport.size}} ({{capture.comparedTo.viewport.name}})</div>
           <a ng-href="../{{capture.basePath}}" target="_blank" title="../{{capture.filePath}}"><img ng-src="../{{capture.basePath}}"/></a>
-          <hr/>
         </div>
-        <span ng-if="matches.length == 0">No matches found.</span>
+        <span ng-if="matches.length == 0" class="no-captures">No matches found.</span>
       </div>
     </div>
 
@@ -176,9 +191,9 @@
       <table>
         <thead>
           <tr>
-            <th>Page <button ng-click="reorderReferencesList('page.name')" title="Sort by page name">S</button></th>
-            <th>Viewport <button ng-click="reorderReferencesList('viewport.width')" title="Sort by viewport width">S</button></th>
-            <th>Capture <button ng-click="reorderReferencesList('name')" title="Sort by capture name">S</button></th>
+            <th>Page <button ng-click="reorderReferencesList('page.name', 'refOrder')" title="Reverse by page name">R</button></th>
+            <th>Viewport <button ng-click="reorderReferencesList('viewport.width', 'refOrder')" title="Reverse by viewport width">R</button></th>
+            <th>Capture <button ng-click="reorderReferencesList('name', 'refOrder')" title="Reverse by capture name">R</button></th>
             <th class="image-reference">Image</th>
           </tr>
         </thead>
@@ -293,7 +308,7 @@
           $scope.reports = reports;
           $scope.reverseReports = false;
           $scope.defaultRowLimit = 4;
-          $scope.refOrder = 'name';
+          $scope.refOrder = $scope.matchOrder = $scope.diffOrder = 'name';
           $scope.search = {
             timestamp : '',
             dataFile : '',
@@ -355,8 +370,9 @@
             $scope.rowLimit = $scope.search.date = $scope.search.status = $scope.search.dataFile = $scope.search.viewports = $scope.search.pages = $scope.search.selectors = '';
             $scope.search.timestamp = $scope.activeReport.id.toString().slice(0, 9);
           }
-          $scope.reorderReferencesList = function(value) {
-            $scope.refOrder = $scope.refOrder.indexOf(value) == 0 ? '-' + $scope.refOrder : value;
+          $scope.reorderReferencesList = function(value, model) {
+            $scope[model] = $scope[model].indexOf(value) === 0 || $scope[model].indexOf(value) === -1 ? '-' + value : value;
+            console.log($scope.matchOrder);
           }
           $scope.scrollTop = function() { $anchorScroll(); }
         });
