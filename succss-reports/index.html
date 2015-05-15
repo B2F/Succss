@@ -120,9 +120,9 @@
           <td>{{report.records.startTime | date:'d MMM yyyy H:mm'}}</td>
           <td><a ng-href="{{report.options.dataFile}}" title="{{report.options.dataFile}}" target="_blank">{{report.options.dataFile | dataFileName}}</a></td>
           <td>{{report.status}}</td>
-          <td>{{report.records.planned.pages}}</td>
-          <td>{{report.records.planned.viewports}}</td>
-          <td>{{report.records.planned.selectors}}</td>
+          <td>{{report.records.planned.pages | unique}}</td>
+          <td>{{report.records.planned.viewports | unique}}</td>
+          <td>{{report.records.planned.selectors | unique}}</td>
         </tr>
       </tbody>
     </table>
@@ -296,6 +296,15 @@
               capturesArray.push(capture);
             });
             return $filter('orderBy')(capturesArray, refOrder);
+          }
+        })
+        .filter('unique', function() {
+          return function(list) {
+            filteredList = [];
+            angular.forEach(list, function(item, key) {
+              if (filteredList.indexOf(item) === -1) filteredList.push(item);
+            });
+            return filteredList;
           }
         })
         .controller('ReportsListCtrl', function($scope, $filter, $location, $window, $anchorScroll, reports) {
