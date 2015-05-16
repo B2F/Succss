@@ -115,11 +115,11 @@
           <th><input ng-model="search.viewports"></th>
           <th><input ng-model="search.selectors"></th>
         </tr>
-        <tr ng-repeat="report in filteredReports() | orderBy:'id':!reverseReports" ng-click="clickReport(report)" ng-mouseenter="hovered=true" ng-mouseleave="hovered=''" ng-class="{hovered:hovered, active:isActiveReport(report)}" class="{{report.status}}">
+        <tr ng-repeat="report in filteredReports() | orderBy:'id':!reverseReports" ng-click="clickReport(report)" ng-mouseenter="hovered=true" ng-mouseleave="hovered=''" ng-class="{hovered:hovered, active:isActiveReport(report)}" class="{{report.records | status}}">
           <td>{{report.records.startTime}}</td>
           <td>{{report.records.startTime | date:'d MMM yyyy H:mm'}}</td>
           <td><a ng-href="{{report.options.dataFile}}" title="{{report.options.dataFile}}" target="_blank">{{report.options.dataFile | dataFileName}}</a></td>
-          <td>{{report.status}}</td>
+          <td>{{report.records | status}}</td>
           <td>{{report.records.planned.pages | unique}}</td>
           <td>{{report.records.planned.viewports | unique}}</td>
           <td>{{report.records.planned.selectors | unique}}</td>
@@ -135,7 +135,7 @@
 
     <div id="current-report-description">
       <div id="current-report-summary">
-        <div>Status: <span class="{{activeReport.status}}">{{activeReport.status}}</span></div>
+        <div>Status: <span class="{{activeReport.records | status}}">{{activeReport.records | status}}</span></div>
         <div>Planned captures: {{activeReport.records.planned.captures}}</div>
         <div>Captures taken: {{matches.length+differences.length}}</div>
         <div>Exec time: {{activeReport.records.execTime}}ms</div>
@@ -305,6 +305,13 @@
               if (filteredList.indexOf(item) === -1) filteredList.push(item);
             });
             return filteredList;
+          }
+        })
+        .filter('status', function() {
+          return function(records) {
+            console.log(records.exitcode);
+            if (!records || typeof records.exitcode === 'undefined') return 'incomplete';
+            return records.exitcode === 0 ? 'success' : 'failure';
           }
         })
         .controller('ReportsListCtrl', function($scope, $filter, $location, $window, $anchorScroll, reports) {
