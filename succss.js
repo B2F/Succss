@@ -24,7 +24,8 @@ SuccssRecords = {
   errors: [],
   startTime:0,
   startDate:null,
-  execTime:0
+  execTime:0,
+  exitcode:0
 };
 
 function Succss() {
@@ -49,11 +50,10 @@ function Succss() {
         mouse = self.mouse,
         colorizer = self.colorizer;
 
-    self.echo('|-> ' + options.action + ' from file: ' + options.dataFile, 'INFO_BAR');
+    self.echo(options.action.charAt(0).toUpperCase() + options.action.slice(1) + 'ing ' + options.dataFile, 'INFO_BAR');
 
-    if ((typeof self.getAllOptions == 'function')) {
-      var logMsg = '[SucCSS] Options: ' + self.getAllOptions();
-      self.casper.log(logMsg, 'info');
+    if ((typeof self.getAllOptions == 'function') && options.verbose) {
+      self.echo('[SucCSS] Options: ' + self.getAllOptions(), 'info');
     }
 
     if (!self.pages) {
@@ -202,7 +202,9 @@ function Succss() {
         throw "[SucCSS] The viewport height and width must be set with numbers.";
       }
     });
-    self.echo('Available viewports: ' + Object.keys(viewportsData).join(', '), 'INFO');
+    if (options.verbose) {
+      self.echo('Available viewports: ' + Object.keys(viewportsData).join(', '), 'INFO');
+    }
 
     SuccssRecords.planned.pages = pages;
     SuccssRecords.planned.viewports = viewports;
@@ -267,6 +269,7 @@ function Succss() {
     if (options.action == 'check' && !options.checkDir && !options.keepTmp) {
       fs.removeTree(checkDir);
     }
+    console.log('succss run completed: ' + SuccssRecords.exitcode);
   });
 
   /**
@@ -490,7 +493,9 @@ function Succss() {
 
       casperInstance.each(pages, function(casperInstance, p) {
 
-        self.echo('\nFound "' + p + '" page configuration.', 'INFO');
+        if (options.verbose) {
+          self.echo('\nFound "' + p + '" page configuration.', 'INFO');
+        }
 
         casperInstance.each(data[p].captureKeys, function(casperInstance, c) {
 
@@ -506,10 +511,11 @@ function Succss() {
 
                 var capture = createCaptureState(p, v, c);
 
-                self.echo('\nCapturing "' + capture.page.name + '" ' + capture.name + ' screenshot with ' + v + ' viewport:', 'INFO');
-                self.echo('Selector is: "' + capture.selector + '"', 'PARAMETER');
-                self.echo('> Opening ' + capture.page.url, 'PARAMETER');
-
+                if (options.verbose) {
+                  self.echo('\nCapturing ' + capture.name + ' on page ' + capture.page.name + ', with ' + v + ' viewport:', 'INFO');
+                  self.echo('Selector is: "' + capture.selector + '"', 'PARAMETER');
+                  self.echo('> Opening ' + capture.page.url, 'PARAMETER');
+                }
                 casperInstance.viewport(capture.viewport.width, capture.viewport.height);
 
                 // Throw on Client (4xx) or Server (5xx) errors.
@@ -760,6 +766,7 @@ function Succss() {
    * @param {String} error message
    */
   self.catchErrors = function(err) {
+    SuccssRecords.exitcode = 1;
     SuccssRecords.errors.push(JSON.stringify(err));
     self.echo(err, 'ERROR');
   }
