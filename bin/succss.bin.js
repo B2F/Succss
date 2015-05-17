@@ -78,11 +78,13 @@ var firstDataLine = true;
 
 casper.stdout.on('data', function(buf) {
 
-  var processStopString = /succss run completed: (\d)/g,
+  var processStopString = /exiting succss: (\d)\n/g,
       exit = processStopString.exec(buf.toString());
 
-  // Retrieve the exit code:
   if (exit) {
+    // Displays data strings received with exit string, if any:
+    console.log(buf.toString().replace(exit[0], ''));
+    // Retrieve and prints the exit code:
     process.exit(exit[1]);
   }
   else {

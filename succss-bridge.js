@@ -20,6 +20,9 @@ try {
       console.log(Succss.colorizer.colorize(msg, type));
     }
   }
+  Succss.exit = function(code) {
+    console.log('exiting succss: ' + code);
+  }
 
   // Setting Succss.cliOptions.engine for reference:
   try {
@@ -127,5 +130,5 @@ catch(e) {
   Succss.echo(e, 'COMMENT');
   Succss.echo('Wrong succss arguments. Type succss help for infos.');
   Succss.echo('See succss.ifzenelse.net for more infos.');
-  casper.exit();
+  casper.exit(1);
 }

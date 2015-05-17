@@ -1,6 +1,6 @@
 /**
  * 
- * Succss module.
+ * Succss module (depends on succss-bridge.js).
  *
  * The MIT License (MIT)
  * Copyright (c) 2015 ifzenelse.net
@@ -212,7 +212,7 @@ function Succss() {
   }
   catch (e) {
     self.echo(e + '\n', 'ERROR');
-    casperInstance.exit();
+    self.exit(1);
   }
 
   /**
@@ -269,7 +269,7 @@ function Succss() {
     if (options.action == 'check' && !options.checkDir && !options.keepTmp) {
       fs.removeTree(checkDir);
     }
-    console.log('succss run completed: ' + SuccssRecords.exitcode);
+    self.exit(SuccssRecords.exitcode);
   });
 
   /**
