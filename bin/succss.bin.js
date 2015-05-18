@@ -20,8 +20,6 @@ var scriptPath = __dirname,
     action,
     child;
 
-console.log(cliArgsArgv);
-
 var SuccssCLI = require(npmPath + '/lib/succss/SuccssCliArgs');
 cliArgs = SuccssCLI.argvToObject(cliArgsArgv);
 
@@ -40,33 +38,29 @@ if (!cliArgs.action || !cliArgs.configFilePath || availableActions.indexOf(cliAr
 }
 else {
 
-  var configFilePath = cliArgs.configFilePath;
-  if (configFilePath) {
-
-    if (configFilePath.charAt(0) !== '/') {
-      configFilePath = process.cwd() + '/' + configFilePath;
-    }
-
-    if (!fs.existsSync(configFilePath)) {
-      console.log('Configuration file is missing ' + configFilePath);
-      process.exit(1);
-    }
-    try {
-      var customConfig = require(configFilePath) || false;
-    }
-    catch (e) {
-      console.log('Your configuration file is invalid:\n' + e);
-      process.exit(1);
-    }
-    if (typeof customConfig.options === 'object') {
-      fileArgs = customConfig.options;
-    }
-    else if (typeof customConfig.pages !== 'object') {
-      console.log('Your configuration file needs to declare at least exports.pages.');
-      process.exit(1);
-    }
-    allArgs = SuccssCLI.merge(cliArgs, fileArgs);
+  if (cliArgs.configFilePath.charAt(0) !== '/') {
+    cliArgs.configFilePath = process.cwd() + '/' + cliArgs.configFilePath;
   }
+
+  if (!fs.existsSync(cliArgs.configFilePath)) {
+    console.log('Configuration file is missing ' + cliArgs.configFilePath);
+    process.exit(1);
+  }
+  try {
+    var customConfig = require(cliArgs.configFilePath) || false;
+  }
+  catch (e) {
+    console.log('Your configuration file is invalid:\n' + e);
+    process.exit(1);
+  }
+  if (typeof customConfig.options === 'object') {
+    fileArgs = customConfig.options;
+  }
+  if (typeof customConfig.pages !== 'object') {
+    console.log('Your configuration file needs to declare at least exports.pages.');
+    process.exit(1);
+  }
+  allArgs = SuccssCLI.merge(cliArgs, fileArgs);
 
   if (allArgs.report && allArgs.report === 'false') report = false;
 
@@ -100,42 +94,52 @@ else {
         }
       }
       allArgsArgv = SuccssCLI.objectToArgv(allArgs);
-      allArgsArgv.unshift('test', npmPath + '/lib/succss-casper.js');
+      allArgsArgv.unshift('test', npmPath + '/drivers/succss-casper.js');
       break;
   }
+
+// verbose
+//  s.getAllOptions = function() {
+//    var allOptions = '';
+//    for (var i in Succss.allOptions) {
+//      allOptions += '--' + i + '=' + Succss.allOptions[i] + ', ';
+//    }
+//    allOptions = allOptions.slice(0, -2);
+//    return allOptions;
+//  }
 
   casper = child_process.spawn(allArgs.driver, allArgsArgv);
 }
 
 var firstDataLine = true;
 
-//casper.stdout.on('data', function(buf) {
-//
-//  var processStopString = /exiting succss: (\d)\n/g,
-//      exit = processStopString.exec(buf.toString());
-//
-//  if (exit) {
-//    // Displays data strings received with exit string, if any:
-//    console.log(buf.toString().replace(exit[0], ''));
-//    // Retrieve and prints the exit code:
-//    process.exit(exit[1]);
-//  }
-//  else {
-//    // Removes Casperjs "Test file" line:
-//    if (firstDataLine) {
-//      firstDataLine = false;
-//    }
-//    else {
-//      console.log(buf.toString().split(/(\r?\n)/g).slice(0, -2).join(''));
-//    }
-//  }
-//})
-//
-//casper.stderr.on('data', function(data) {
-//  console.log('Error: ' + data);
-//})
-//
-//casper.on('exit', function (code) {
-//    console.log('Casperjs exited prematurely before succss finished.');
-//    process.exit(1);
-//});
+casper.stdout.on('data', function(buf) {
+
+  var processStopString = /exiting succss: (\d)\n/g,
+      exit = processStopString.exec(buf.toString());
+
+  if (exit) {
+    // Displays data strings received with exit string, if any:
+    console.log(buf.toString().replace(exit[0], ''));
+    // Retrieve and prints the exit code:
+    process.exit(exit[1]);
+  }
+  else {
+    // Removes Casperjs "Test file" line:
+    if (firstDataLine) {
+      firstDataLine = false;
+    }
+    else {
+      console.log(buf.toString().split(/(\r?\n)/g).slice(0, -2).join(''));
+    }
+  }
+})
+
+casper.stderr.on('data', function(data) {
+  console.log('Error: ' + data);
+})
+
+casper.on('exit', function (code) {
+    console.log('Casperjs exited prematurely before succss finished.');
+    process.exit(1);
+});
