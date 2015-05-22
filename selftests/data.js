@@ -17,12 +17,12 @@ SuccssShared.baseDirectory = './succss-reports/screenshots';
 SuccssShared.previousCaptureFile = '';
 
 /*
- * Succss.pages object is where you describe where and how screenshots are done.
+ * exports.pages object is where you describe where and how screenshots are done.
  * The snippet below provides extensive examples, yours can be simpler though.
  *
  * @see http://succss.ifzenelse.net/configuration#pages for more infos.
  */
-Succss.pages = {
+exports.pages = {
   // url parameter + directory suffix.
   'installation': {
     'url': SuccssShared.url+'?page=installation&variation=0',
@@ -103,12 +103,12 @@ Succss.pages = {
       }
     }
   },
-  // Should not be run unless explicitly. Used to verify that Succss.options.[check|add] was used by default.
+  // Should not be run unless explicitly. Used to verify that exports.options.[check|add] was used by default.
   'doesNotRun' : { url: 'willFail' }
 };
 
 /*
- * Succss.setFileName sets your captures names for both adding and checking.
+ * exports.setFileName sets your captures names for both adding and checking.
  * 
  * @param capture Object (available properties listed below):
  *  capture: name, selector, directory, callback
@@ -118,19 +118,19 @@ Succss.pages = {
  *  
  *  @see http://succss.ifzenelse.net/configuration#filename
  */
-Succss.setFileName = function(capture) {
+exports.setFileName = function(capture) {
   return capture.page.name + '-' + capture.name + '-' + capture.viewport.width + 'x' + capture.viewport.height + '.png';
 };
 
 /**
- * Succss.viewports
+ * exports.viewports
  *
  * A list of viewports for taking screenshots.
  *
  * @see http://succss.ifzenelse.net/configuration#viewports
  *
  */
-Succss.viewports = {
+exports.viewports = {
  'wide':
   {
     'width':1920,
@@ -147,14 +147,14 @@ Succss.viewports = {
  * Optional:
  * You can use a callback function after each capture is done.
  *
- * @param capture Object: same as in Succss.setFileName plus the following:
+ * @param capture Object: same as in exports.setFileName plus the following:
  * capture.file, capture.filePath, capture.action ('add' or 'check').
  *
  * @see selftests/data.class.js file
  * @see http://succss.ifzenelse.net/customize#callback
  *
  */
-Succss.afterCapture = function (capture) {
+exports.afterCapture = function (capture) {
 
   if (capture.action == 'add') {
 
@@ -175,7 +175,7 @@ Succss.afterCapture = function (capture) {
     SuccssShared.previousCaptureFile = capture.filePath;
 
     // slimerjs does not seem to support fs.size, at least on some browsers versions.
-    if (this.allOptions.engine != 'slimerjs') {
+    if (this.options.engine != 'slimerjs') {
 
       if(fs.size(capture.filePath) < 500) {
         this.echo('The size of the generated image is less than 500 octets.', 'WARNING');
@@ -185,12 +185,12 @@ Succss.afterCapture = function (capture) {
 };
 
 /**
- * Succss.options can take "default" options you would normally pass to the 
+ * exports.options can take "default" options you would normally pass to the 
  * command line. Command line options take precedence.
  * 
  * @see http://succss.ifzenelse.net/commandline#options
  */
-Succss.options = {
+exports.options = {
   exitOnError:false,
   add: {
     'pages':'diffCanvas'

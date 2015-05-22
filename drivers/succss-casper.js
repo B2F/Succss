@@ -1,6 +1,34 @@
 
 var succss = require(casper.cli.options.npmpath + '/lib/succss/Succss').create(casper.cli.options);
 
+  /**
+   * Handles "window.callPhantom" messages from casper.evaluate functions.
+   */
+  casper.on('remote.callback', function(data) {
+    succss.echo(data);
+  });
+
+  /**
+   * Handles completed captures.
+   */
+  casper.on('capture.complete', function(succeed, capture, message) {
+    succss.completeCapture(succeed, capture, message);
+    console.log(message);
+//    try {
+////      casper.test.assertTrue(succeed, message);
+//    }
+//    catch(e) {
+//      succss.catchErrors(e);
+//    }
+  });
+
+  /**
+   * Handles completed CasperJs run events, when succss command has finished.
+   */
+  casper.on('run.complete', function(data) {
+    succss.completeRun();
+  });
+
 /**
  * Prepares a screenshot, then calls the after capture callback if it exists.
  * In case the "checkDir" option is used or during SlimerJs checking phase, screenshots capture will not occur.
@@ -15,29 +43,30 @@ var succss = require(casper.cli.options.npmpath + '/lib/succss/Succss').create(c
 succss.prepareScreenshot = function(capture) {
 
   // Sets the image reference path for searching image differences when 'succss check' is called:
-  setCaptureReferenceFilePath(capture);
+  this.setCaptureReferenceFilePath(capture);
 
   // When 'succss check {config.js}' is called, screenshots images used for computing differences are either
   // written in '.succss-tmp' (the default checkDir value) or found in the path specified by --checkDir.
   // In case of slimerCheck, PhantomJs will capture updates in '.succss-tmp' with the 'add' action.
-  if (capture.options.action == 'check'  || options.slimerCheck) {
-    capture.filePath = SuccssCleanPreprendPath(checkDir, capture.page.directory+'/'+capture.file);
+  if (capture.options.action == 'check'  || succss.options.slimerCheck) {
+    var rootScreenDir = succss.options.checkDir || succss.options.tmpDir;
+    capture.filePath = SuccssCleanPreprendPath(rootScreenDir, capture.page.directory+'/'+capture.file);
     capture.filePath = capture.filePath.replace(/\.\//, '');
   }
 
   // @see above SlimerJS engine notes.
-  var slimerIsCheckingPhantomCaptures = (capture.options.action == 'check' && options.slimerCheck);
+  var slimerIsCheckingPhantomCaptures = (capture.options.action == 'check' && succss.options.slimerCheck);
 
   // Screenshot taking happens with 'add' and normal 'check',
   // it doesn't take place with --checkDir or SlimerJs checks.
-  if (!options.checkDir && !slimerIsCheckingPhantomCaptures) {
+  if (!succss.options.checkDir && !slimerIsCheckingPhantomCaptures) {
     succss.takeScreenshot(capture);
   }
 
   casper.then(function() {
 
     casper.emit('capture.complete',
-                       fs.exists(capture.filePath),
+                       succss.fs.exists(capture.filePath),
                        capture,
                        'Captured ' + capture.name + ' screenshot under ' + capture.filePath);
   });
@@ -130,19 +159,19 @@ succss.parseData = function(command) {
 
       casper.each(succss.pages[p].captureKeys, function(casper, c) {
 
-        casper.each(succss.viewports, function(casper, v) {
+        casper.each(succss.records.planned.viewports, function(casper, v) {
 
           casper.thenOpen(succss.pages[p].url, function(){
-console.log('DEBUG:capturing');
+
             try {
 
-              var capture = createCaptureState(p, v, c);
+              var capture = succss.createCaptureState(p, v, c);
 
-              if (options.verbose) {
+//              if (succss.options.verbose) {
                 succss.echo('\nCapturing ' + capture.name + ' on page ' + capture.page.name + ', with ' + v + ' viewport:', 'INFO');
                 succss.echo('Selector is: "' + capture.selector + '"', 'PARAMETER');
                 succss.echo('> Opening ' + capture.page.url, 'PARAMETER');
-              }
+//              }
               casper.viewport(capture.viewport.width, capture.viewport.height);
 
               // Throw on Client (4xx) or Server (5xx) errors.
@@ -165,6 +194,7 @@ console.log('DEBUG:capturing');
         });
       });
     });
+//  });
   }).run();
 }
 
@@ -183,7 +213,7 @@ succss.takeScreenshot = function(captureState) {
         // Siblings are before functions made available in other before functions,
         // see http://succss.ifzenelse.net/configuration#before.
         var siblings = {};
-        var pageCaptures = data[captureState.page.name].captures;
+        var pageCaptures = s.pages[captureState.page.name].captures;
         for (var c in pageCaptures) {
           if (c != captureState.name && pageCaptures[c].before) {
             siblings[c] = pageCaptures[c].before.bind(casper, siblings);
@@ -229,7 +259,7 @@ succss.takeScreenshot = function(captureState) {
   });
 }
 
-succss.run();
+succss.init().run();
 //    // Setting Succss.cliOptions.engine for reference:
 //    try {
 //      slimer;
