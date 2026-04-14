@@ -7,7 +7,7 @@
  *
  * @Author B2F
  *
- * @see succss.ifzenelse.net
+ * @see https://succss.readthedocs.io
  *
  */
 
@@ -51,7 +51,7 @@ function Succss() {
     }
 
     if (!self.pages) {
-      throw "[SucCSS] Succss.pages instance missing. See succss.ifzenelse.net";
+      throw "[SucCSS] Succss.pages instance missing. See https://succss.readthedocs.io";
     }
     var data = self.pages;
 
@@ -496,7 +496,7 @@ function Succss() {
         // Processing before capture callbacks:
         if (captureState.before) {
           // Siblings are before functions made available in other before functions,
-          // see http://succss.ifzenelse.net/configuration#before.
+          // see https://succss.readthedocs.io/en/latest/configuration/#before.
           var siblings = {};
           var pageCaptures = data[captureState.page.name].captures;
           for (var c in pageCaptures) {

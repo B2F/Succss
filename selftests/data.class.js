@@ -7,7 +7,7 @@
 var SuccssDataCommon = {};
 
 // Protocol prefix is optional.
-SuccssDataCommon.url = 'succss.ifzenelse.net';
+SuccssDataCommon.url = 'https://succss.readthedocs.io/en/latest/';
 
 // Base screenshots path can be absolute or relative like below:
 SuccssDataCommon.baseDirectory = './screenshots';

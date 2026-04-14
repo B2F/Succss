@@ -8,7 +8,7 @@
 
 Succss.pages = {
   'goodPage': {
-    'url': 'succss.ifzenelse.net',
+    'url': 'https://succss.readthedocs.io/en/latest/',
   }
 }
 
