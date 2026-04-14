@@ -11,7 +11,7 @@ location ~/commandline {
 }
 
 location ~/usecases {
-  return 301 index.html?page=usecases&variation=5000&breakage=10000&speed=400&ygap=0&bgColor=793&headline=4&tweakImg=true;
+  return 301 index.html?page=usecases&variation=5000&breakage=10000&speed=400&ygap=0&bgColor=793&headline=4;
 }
 
 location ~/why {

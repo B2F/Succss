@@ -317,8 +317,7 @@ aside#colors div.color-square.odd {
   }
   header img#click-here {
     width:161px;
-    right: 58px;
-    top: 46px;
+    top: 0px;
     position: relative;
   }
   aside#colors {

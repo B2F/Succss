@@ -66,10 +66,6 @@ var nextHeaderColor = null;
 var currentBgColor = null;
 
 window.onload = function() {
-  if (params.tweakImg) {
-    var tweakImg = document.getElementById('click-here'); 
-    tweakImg.src="img/tweak-it.png";
-  }
   var i=0;
   for (var c in colors) {
     i++;
@@ -107,11 +103,6 @@ window.onload = function() {
   whyLink.addEventListener('click', function(e) {
     // Bring back the original "jiggle" easter egg.
     e.preventDefault();
-
-    // Keep the old "tweak" behavior, but avoid reloading.
-    params.tweakImg = true;
-    var tweakImg = document.getElementById('click-here');
-    if (tweakImg) tweakImg.src = 'img/tweak-it.png';
 
     jiggleClick();
 
@@ -292,11 +283,10 @@ function setDefaultState() {
 }
 
 function getParams() {
-  params.tweakImg ? tweakImgParam = "&tweakImg=true" : tweakImgParam = '';
   styles = window.getComputedStyle(document.body);
   rgb = decodeURIComponent(styles.backgroundColor.replace(/[#rgba()]/g, '')).split(', ');
   hex = ((1 << 24) + (parseInt(rgb[0]) << 16) + (parseInt(rgb[1]) << 8) + parseInt(rgb[2])).toString(16).slice(1);
-  return "?&page="+params.page+"&variation="+variation+"&breakage="+breakage+"&speed="+speed+"&ygap="+yGap+"&bgColor="+hex+"&headline="+currentHeadline+tweakImgParam;
+  return "?&page="+params.page+"&variation="+variation+"&breakage="+breakage+"&speed="+speed+"&ygap="+yGap+"&bgColor="+hex+"&headline="+currentHeadline;
 }
 
 function setTwitterShare() {
