@@ -1,7 +1,7 @@
 /**
  * @file
  * This file is used by "npm test" to selftest the succss package.
- * Selftests are made from http://succss.ifzenelse.net documentation website.
+ * Selftests are made from https://succss.readthedocs.io documentation website.
  * 
  * This file, once ran with the 'succss check' command, will creates diff files
  * against base screenshots from "succss add selftests/data.js" and put them in
@@ -49,7 +49,7 @@ Succss.callback = function(capture) {
  * Succss.options can take "default" options you would normally pass to the 
  * command line. Command line options take precedence.
  * 
- * @see http://succss.ifzenelse.net/commandline#options
+ * @see https://succss.readthedocs.io/en/latest/commandline/#options
  */
 Succss.options = {
   // Disabling default imagediff behavior (inverting the casper test).
@@ -65,7 +65,7 @@ Succss.options = {
  * 
  * Overrides the default imagediff function, changing imgDiffPath and assertion.
  * 
- * @see http://succss.ifzenelse.net/customize#diff
+ * @see https://succss.readthedocs.io/en/latest/customize/#diff
  *
  */
 Succss.diff = function(imgBase, imgCheck, capture) {

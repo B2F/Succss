@@ -47,7 +47,7 @@ try {
       Succss.echo('--captures: filter captures by selectors.', 'PARAMETER');
       Succss.echo('--viewports: filter captures by viewports.', 'PARAMETER');
       Succss.echo('--rmtree: erase the base directory recusively before capture.', 'PARAMETER');
-      Succss.echo('@see http://succss.ifzenelse.net', 'INFO_BAR');
+      Succss.echo('@see https://succss.readthedocs.io', 'INFO_BAR');
       casper.exit();
       break;
 
@@ -123,6 +123,6 @@ try {
 catch(e) {
   Succss.echo(e, 'COMMENT');
   Succss.echo('Wrong succss arguments. Type succss help for infos.');
-  Succss.echo('See succss.ifzenelse.net for more infos.');
+  Succss.echo('See https://succss.readthedocs.io for more infos.');
   casper.exit();
 }

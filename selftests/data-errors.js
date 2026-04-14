@@ -8,13 +8,13 @@
 
 Succss.pages = {
   'goodPage': {
-    'url': 'succss.ifzenelse.net',
+    'url': 'https://succss.readthedocs.io/en/latest/',
   },
   'badUrl': {
     'url': 'sucs.ifzenelse.net',
   },
   'badSelector': {
-    'url': 'succss.ifzenelse.net',
+    'url': 'https://succss.readthedocs.io/en/latest/',
     'captures': {
       'fakeElement':'',
     }

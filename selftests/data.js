@@ -1,7 +1,7 @@
 /**
  * @file
  * This file is used by "npm test" to selftest the succss package.
- * Selftests are made from http://succss.ifzenelse.net documentation website.
+ * Selftests are made from https://succss.readthedocs.io documentation website.
  * 
  * @see selftests/run.sh, selftests/test.sh
  * 
@@ -15,7 +15,7 @@ phantom.injectJs('selftests/data.class.js');
  * Succss.pages object is where you describe where and how screenshots are done.
  * The snippet below provides extensive examples, yours can be simpler though.
  * 
- * @see http://succss.ifzenelse.net/configuration#pages for more infos.
+ * @see https://succss.readthedocs.io/en/latest/configuration/#pages for more infos.
  */
 Succss.pages = {
   // url parameter + directory suffix.
@@ -111,7 +111,7 @@ Succss.pages = {
  *  capture.viewport: name, width, height
  *  capture.options (command line options): pages, captures, viewports
  *  
- *  @see http://succss.ifzenelse.net/configuration#filename
+ *  @see https://succss.readthedocs.io/en/latest/configuration/#filename
  */
 Succss.setFileName = function(capture) {
   return capture.page.name + '-' + capture.name + '-' + capture.viewport.width + 'x' + capture.viewport.height + '.png';
@@ -122,7 +122,7 @@ Succss.setFileName = function(capture) {
  * 
  * A list of viewports for taking screenshots.
  * 
- * @see http://succss.ifzenelse.net/configuration#viewports
+ * @see https://succss.readthedocs.io/en/latest/configuration/#viewports
  *
  */
 Succss.viewports = {
@@ -146,7 +146,7 @@ Succss.viewports = {
  * capture.file, capture.filePath, capture.action ('add' or 'check').
  *
  * @see selftests/data.class.js file
- * @see http://succss.ifzenelse.net/customize#callback
+ * @see https://succss.readthedocs.io/en/latest/customize/#callback
  *
  */
 Succss.callback = function (capture) {
@@ -161,7 +161,7 @@ Succss.callback = function (capture) {
  * Succss.options can take "default" options you would normally pass to the 
  * command line. Command line options take precedence.
  * 
- * @see http://succss.ifzenelse.net/commandline#options
+ * @see https://succss.readthedocs.io/en/latest/commandline/#options
  */
 Succss.options = {
   exitOnError:false,
