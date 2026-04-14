@@ -1,0 +1,349 @@
+article {
+  margin-top:8px;
+}
+
+body {
+  color:white;
+  font-family: 'Roboto', sans-serif;
+  margin:5px 0 0 21px;
+  padding-bottom:70px;
+  width:100%;
+  height:100%;
+}
+
+body, footer {
+  background-color:#56CCF2;
+}
+
+a#fork-on-github,
+header img#click-here,
+div#core div#more-infos {
+  display:none;
+}
+
+a {
+  text-decoration:none;  
+}
+
+header,
+div#core,
+footer {
+  width:92%;
+  position:relative;
+}
+
+header #header-text {
+  font-size:0.9em;
+}
+
+pre, .headline, .tips, article ul li {
+  font-size:19px;
+}
+
+span#more-infos-headline {
+  font-size:23px;
+}
+
+header span#logo {
+  font-size:91px;
+  color: #FFC;
+  font-family: Open Sans ;
+}
+
+header #logo-image {
+  margin-left:12px;
+  vertical-align:middle;
+}
+
+header #logo-image.header-square {
+  bottom: 50px;
+  position: relative;
+  width:50px;
+  height:50px;
+  display:inline-block;
+  opacity:0.9;
+  background-color:#FFC;
+  border:2px solid rgba(0,0,0,0.6);
+  border-radius:4px;
+  cursor:pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+}
+
+header #logo-image.header-square:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 rgba(0,0,0,0.35);
+  opacity:1;
+}
+
+header #github-links {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px 12px;
+  margin-top:9px;
+  align-items: anchor-center;
+  gap: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+header #github-links a.github-link {
+  display:inline-flex;
+  align-items:center;
+  font-size:16px;
+  font-family: Open Sans;
+  color:#FFF;
+  border-radius:4px;
+  padding:4px 8px;
+  background-color:rgba(0,0,0,0.25);
+  border:1px solid rgba(255,255,255,0.35);
+}
+
+header #github-links a.github-link:hover {
+  background-color:rgba(0,0,0,0.33);
+  border-color:rgba(255,255,255,0.55);
+}
+
+header #github-links iframe.github-btn {
+  display:inline-block;
+  vertical-align:middle;
+  border-radius:4px;
+  width: 136px;
+}
+
+footer#supporters {
+  padding-bottom:70px;
+}
+
+div#core {
+  display:inline-block;
+  margin: 27px 0;
+  border-top:1px solid white;
+}
+
+div#core article h1 {
+  font-size: 30px;
+}
+
+h2, h3 {
+  font-size: 21px;
+  border-bottom: 1px solid #123;
+  margin-top: 15px;
+  padding-top: 17px;
+  padding-bottom: 7px;
+  margin-bottom: 17px;
+}
+
+div#core article h2 a {
+  color: white;
+  text-decoration: underline;
+}
+
+div#core article ul {
+  font-size:21px;
+}
+
+div#core article span.headline a,
+div#core article ul a {
+  color:#100;
+  border-radius:3px;
+  padding:0 3px;
+  background-color:rgba(255,255,204,0.7);
+}
+
+div#core article ul a {
+  background-color:rgba(150,255,255,0.7);
+}
+
+div#core article ul li {
+  margin:4px;
+}
+
+div#core span.headline {
+  padding:7px 0px;
+  display:block;
+}
+
+div#core div,
+div#core pre {
+  padding:7px;
+  border:3px solid black;
+  border-radius:4px;
+}
+
+div#core pre {
+  background-color:#254061;
+  margin:17px 0;
+  overflow:auto;
+}
+
+div#core pre.code {
+  padding:23px;
+}
+
+div#core pre.code .line-highlight {
+  height:20px;
+  border:1px solid #123;
+  background:none repeat scroll 0% 0% rgba(123, 255, 123, 0.1);
+}
+div#core pre.code .line-highlight:before {
+  content:none;
+}
+
+div#core div.tips {
+  background:rgba(204, 204, 204, 0.7) url("../img/infos.png") no-repeat 99.9% 1px;
+  margin:17px 0;
+  font-size:17px;
+  color:black;
+  padding-right:33px;
+}
+
+div#core div.tips a {
+  color:black;
+  font-weight:bold;
+  text-decoration:underline;
+}
+
+div#core #more-infos,
+div#core #more-infos div#more-infos-links {
+  border:none;
+}
+
+div#core span#more-infos-headline {
+  border-bottom:1px solid white;
+  font-weight:bold;
+}
+
+footer a {
+  font-weight:bold;
+}
+
+footer .headline a {
+  color:white;
+  text-decoration:underline;
+}
+
+footer ul a {
+  color:#FFE;
+  font-family: Open Sans;
+}
+
+footer ul img {
+  width:386px;
+  margin: 18px 0 7px 0;
+}
+
+footer ul li {
+  list-style-type: none;
+}
+
+footer ul,
+footer span {
+  display:block;
+}
+
+div#core div#more-infos-links a {
+  display:block;
+  color:#FFF;
+  font-size:23px;
+  margin-bottom:7px;
+}
+
+div#core div#more-infos-links {
+  margin-top:17px;
+}
+
+aside#colors {
+  width:95%;
+  display:inline-block;
+  position:relative;
+  clear:both;
+}
+
+aside#colors * {
+  position:relative;
+  display:block;
+  margin:auto;  
+}
+
+aside#colors div.color-square {
+  width:50px;
+  height:50px;  
+  opacity:0.8;
+}
+
+aside#colors a#why-link {
+  width:12px;
+  height:32px;
+  left:10px;
+  padding:3px;
+  color:black;
+  font-size:25px;
+  font-weight:bold;
+  border-right:44px solid transparent;
+  border-left:42px solid transparent;
+  border-bottom:54px solid rgba(204, 204, 204, 0.8);
+}
+
+header img#logo-image,
+aside#colors div.color-square.even, 
+aside#colors div.color-square.odd {
+  cursor:pointer;
+}
+
+@media (min-width: 597px) {
+  header img#click-here {
+    display:inline;
+    width:121px;
+  }
+  a#fork-on-github {
+    position:relative;
+    display:inline;
+    z-index:1000;
+  }
+}
+
+@media (min-width: 680px) {
+  header #header-text {
+    font-size:20px;
+  }
+}
+
+@media (min-width: 960px) {
+  header,
+  div#core,
+  footer {
+    width:70%;
+  }
+  header img#click-here {
+    width:161px;
+    right: 58px;
+    top: 46px;
+    position: relative;
+  }
+  aside#colors {
+    width:28%;
+    position:absolute;
+  }
+}
+
+@media (min-width: 1280px) and (min-height: 433px) {
+  div#core div#more-infos {
+    display:block;
+    position:fixed;
+    right:2%;
+    top:2%;
+    z-index:100;
+    width:23%;
+    padding:19px 21px;
+  }
+  div#more-infos span.headline, div#more-infos div {
+    padding:9px;
+  }
+}
+
+@media (min-width: 1366px) {
+  header #header-text {
+    font-size:27px;
+  }
+}

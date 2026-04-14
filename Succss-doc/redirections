@@ -1,0 +1,27 @@
+location ~/installation {
+  return 301 index.html?page=installation&variation=30&breakage=50&speed=1400&ygap=-55&bgColor=777&headline=5;
+}
+
+location ~/configuration {
+  return 301 index.html?page=configuration&variation=7&breakage=50&speed=5000&ygap=110&bgColor=189&headline=2;
+}
+
+location ~/commandline {
+  return 301 index.html?page=commandline&variation=0&breakage=50&speed=100&ygap=-15&bgColor=369&headline=7;
+}
+
+location ~/usecases {
+  return 301 index.html?page=usecases&variation=5000&breakage=10000&speed=400&ygap=0&bgColor=793&headline=4&tweakImg=true;
+}
+
+location ~/why {
+  return 301 index.html?page=why&variation=10&breakage=100&speed=180&bgColor=088&headline=3;
+}
+
+location ~/fork {
+  return 301 index.html?page=fork&variation=10&breakage=50&speed=150&ygap=-60&bgColor=f08&headline=6;
+}
+
+location ~/home {
+  return 301 index.html?headline=1;
+}

@@ -1,0 +1,29 @@
+header a#twitter-button {
+  display:inline-block;
+  position:relative;
+  float:right;
+  bottom:-27px;
+  right:-3px;
+  height:21px;
+  background-color:#fff;
+  border:1px solid #888;
+  border-bottom:none;
+  border-radius:3px;
+  padding:3px 3px 0 0;
+  width:75px;
+}
+header a#twitter-button i {
+  background: #fff url(https://g.twimg.com/dev/documentation/image/Twitter_logo_blue_16.png) 5px 1px no-repeat;
+  width:20px;
+  height:16px;
+  display:inline-block;
+  position:relative;
+  left:2px;
+}
+header a#twitter-button span {
+  position:relative;
+  color:black;
+  font-size:15px;
+  left:6px;
+  bottom:2px;
+}

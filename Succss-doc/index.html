@@ -1,0 +1,752 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>SUCCSS: the CSS regression testing tool</title>
+  <meta name="description" content="SUCCSS is a CSS regression testing tool, easy to install and quick to use, yet very flexible and powerful. It can be used to compare rendering with different viewport sizes, automate design validations and in some case, even to search for rendering differences between the Webkit and Gecko engines. Looking for CSS regression testing ? Read on.">
+  <meta name="author" content="SitePoint">
+
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="text/javascript" src="js/color-squares.js"></script>
+  <!-- twitter.css removed (no twitter button) -->
+
+  <script type="text/javascript" src="js/prism.js"></script>
+  <link rel="stylesheet" href="css/prism.css">
+
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:700' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body>
+
+  <header>
+    <a href="./" title="home"><span id="logo">SUCCSS</span></a>
+    <div id="logo-image" class="color-square header-square" title="Click to tweak the page"></div>
+    <img width="161" id="click-here" src="img/click-here.png"/>
+    <div id="github-links">
+      <iframe
+        class="github-btn"
+        src="https://ghbtns.com/github-btn.html?user=B2F&repo=Succss&type=star&count=true&size=large"
+        title="GitHub Star"
+        frameborder="0"
+        scrolling="0"
+        width="160"
+        height="30"></iframe>
+      <a class="github-link" href="https://github.com/B2F/Succss" target="_blank" rel="noreferrer">github.com/B2F/Succss</a>
+      <iframe
+        class="github-btn"
+        src="https://ghbtns.com/github-btn.html?user=B2F&repo=Succss&type=fork&count=true&size=large"
+        title="GitHub Fork"
+        frameborder="0"
+        scrolling="0"
+        width="160"
+        height="30"></iframe>
+      <a class="github-link" href="https://github.com/B2F/Succss-doc" target="_blank" rel="noreferrer">github.com/B2F/Succss-doc</a>
+    </div>
+    <div id="header-text">
+      <span id="static-line">Succss! Easy to install, easy to use CSS regression testing tool.<br/></span>
+      <span id="dynamic-line">Turn your <strong>C</strong>ascading <strong>S</strong>tlye<strong>S</strong>heets into <strong>success</strong>ful design integrations.</span>
+    </div>
+  </header>
+
+  <div id="core">
+
+    <article id="home">
+
+      <h2>Grab it:</h2>
+      <pre>npm install -g succss</pre>
+      <div class="tips">Succss rely on <a href="http://phantomjs.org/" target="_blank">PhantomJS</a> and <a href="http://casperjs.org/" target="_blank">CasperJS</a> dependencies, automatically resolved by <a href="https://www.npmjs.com/" target="_blank">npm</a>. Follow <a href="installation/">this guide</a> if you have trouble with npm.</div>
+
+      <h2>Describe your website CSS:</h2>
+      <pre class="code" style="height:470px;"><code class="language-javascript">// data.js
+Succss.pages = {
+  'home': {
+    url:'succss.readthedocs.io',
+    directory:'screenshots/dir',
+    // captures: { 'name' : 'CSS selector' }
+    captures: {
+      // leave an empty value if selector == name
+      'header':'',
+      'dynamic-text':'body #header-text > #static-line + span',
+    },
+  },
+  'another-page': { 
+    ... 
+  }
+};
+
+Succss.viewports = {
+  // './screenshots/dir/home--header--1366x768.png' file
+  // './screenshots/dir/home--dynamic-text--1366x768.png' file
+  'default': {
+    width: 1366,
+    height: 768
+  },
+  // './screenshots/dir/home--header--640x480.png' file
+  // './screenshots/dir/home--dynamic-text--640x480.png' file
+  'mobile-landscape': {
+    width: 640,
+    height: 480
+  },
+  ...
+}</code></pre>
+
+      <div class="tips">Succss can do more, such as interactions with the browser before capture.
+        Later, you can also read <a href="configuration/">advanced Configuration</a>.</div>
+
+      <h2>Take reference screenshots:</h2>
+      <pre><code>succss add data.js</code></pre>
+      <div class="tips">For advanced usage, the succss command has several options such as pages, captures and viewports <a href="commandline/#filters">filters</a>.</div>
+
+      <h2>Compare reference screenshots to updates:</h2>
+      <pre><code>succss check data.js</code></pre>
+      <div class="tips">Succss is bundled with imagediff (default) and ResembleJS for comparisons. Captures validations can be fully <a href="customize/">customized</a>.</div>
+
+      <h2>See differences or success:</h2>
+      <pre><img src="img/screenshots/imagediff.jpeg"/></pre>
+      <div class="tips">This image extracted from selftests displays how differences are highlighted by <a href="https://github.com/HumbleSoftware/js-imagediff" target="_blank">Imagediff</a>. Take a look at <a href="fork/">Succss source code</a> if you know javascript.</div>
+
+    </article>
+
+    <article id="installation">
+
+      <h1>Installation Troubleshooting</h1>
+
+      <h2>Requirements</h2>
+      <span class="headline">There is only two simple requirements to get Succss and to run it.</span>
+      <ul>
+        <li>1. how to get Succss ? <strong><a href="https://www.npmjs.com/">npm</a></strong> </li>
+        <li>2. how to run it ? <strong><a href="https://www.python.org/">python</a></strong></li>
+      </ul>
+      <div class="tips">You could checkout the Succss git repository, symlink it's binary to your system and have CasperJS installed separately, but well... who would do that ?</div>
+
+      <h2>npm</h2>
+      <span class="headline">Npmjs is a neat package manager for nodejs and other javascript tools and libraries. </span>
+      <span class="headline">Most Linux distributions have a prepackaged npm binary. Follow <a href="https://github.com/nodesource/distributions">these instructions</a> if you need help.</span>
+      <span class="headline">On Mac OSX, do:</span>
+      <pre>brew install node</pre>
+      <span class="headline">Do not forget the important part (run it as root):</span>
+      <pre>npm -g install succss</pre>
+      <div class="tips">Actually, if you are a developer, you can checkout the most recent succss branch and symlink it with the "npm link" command.</div>
+
+      <h2>Python</h2>
+      <span class="headline">Python is bundled with Mac OSX and a lot of Linux distributions too. To verify if it is already installed, open your favorite shell and type this:</span>
+      <pre>python --version</pre>
+      <div class="tips">Succss has been tested with python versions 2.7.8 and 3.4.1, it should work with anything in between.</div>
+
+      <h2>Windows</h2>
+      <span class="headline">Argh... Windows. I used to play video games on Windows, I mean, I still do from time to time. Anyway, Windows is not officially supported but theoretically it could work.</span>
+      <span class="headline">First, try to get <a href="http://nodejs.org/download/">npm</a> (from nodejs), <a href="https://www.python.org/downloads/windows/">python</a> and <a href="http://casperjs.readthedocs.org/en/latest/installation.html#casperjs-on-windows">casperjs</a> working on Windows, then Succss, you may have it !</span>
+    </article>
+
+    <article id="configuration">
+
+      <h1 id="advanced">Advanced Configuration</h1>
+
+      <span class="headline">From the example on the frontpage, you should already know that the succss <a href="commandline/">commandline</a> tool takes <strong>one javascript</strong> file as argument for capturing base screenshots and checking updates for differences with base.</span>
+      <pre class="code"><code class="language-javascript">// From data.js (name it what you want)
+/* Mandatory */
+Succss.pages = {...}
+/* Optionnally: */
+Succss.viewports = {...}
+Succss.setFileName = function(capture) {...}
+Succss.callback = function(capture) {...}
+Succss.diff = function(imgBase, imgCheck, capture){...}</code></pre>
+      <div class="tips">Succss will read the static properties and methods you provide. The callback and diff hook functions are part of the <a href="customize/">custom validation</a> facility.</div>
+      
+      <h2 id="pages">Succss.pages</h2>
+      <span class="headline">Succss main configuration is simple: keyed objects representing webpages with captures as 'name' : 'selector'.</span>
+
+      <pre class="code"><code class="language-javascript">Succss.pages = {
+  'homepage': {
+    url:'succss.readthedocs.io/en/latest/configuration/?bgColor=673',
+    directory:'relative/screenshots/',
+    captures: {
+      'home':'body',
+      'header':'',
+      'name-it':'div > #iam a.css #selector'
+    }
+  }
+}
+</code></pre>
+      <div class="tips">Be careful not to write reserved ($ & + , / : ; = ? @) or unsafe (" < > # % { } | \ ^ ~ [ ] `) characters in your captures names, unless you write a custom <a href="configuration/#filename">setFileName</a> function to get around these.</div>
+      <div class="tips">Beware that taking body screenshots is mostly a bad practice: while it's quick to do, it is innefficient and error prone... Which is good to note in this guide.</div>
+
+      <ul>
+        <li><strong>url</strong>: Protocol is optionnaly specified, default is "http://" . The website for which you will take screenshots.</li>
+        <li><strong>directory</strong>: The directory where screenshots will be stored, it can be absolute or relative to your current console path.</li>
+        <li id="captures"><strong>captures</strong>: If the selector value is not specified, the name will be used ('header' : '' selector is header, that's how DRY it is)</li>
+      </ul>
+
+      <h2 id="before">Before Capture</h2>
+
+      <span class="headline">You may need to automate user interactions <strong>before</strong> capture. Then, you will have to write an object as the capture key's value, this is where is placed the before function.</span>
+      <span class="headline">This way, you can use any suite of action supported by CasperJS, notably <a href="http://docs.casperjs.org/en/latest/modules/casper.html#click">click</a>, <a href="http://docs.casperjs.org/en/latest/modules/casper.html#fill">fill</a> and <a href="http://casperjs.readthedocs.org/en/latest/modules/casper.html#wait">wait</a>.</span>
+
+      <pre class="code"><code class="language-javascript">// Example from selftests/data.js (<a href="fork/">@see source code</a>)
+Succss.pages = {
+...
+    captures: {
+      'header': {
+        // Selectors can have a hook callback "before" capture.
+        'before': function() {
+          this.click('#logo-image');
+          console.log('... Waiting for color squares reinitialization');
+          this.wait(900, function() {
+            console.log('Done!');
+          });
+        }
+      },</code></pre>
+      <div class="tips">The 'header' key above is actually the capture's name. The selector, while not explicitly set, is deducted from the name. See below for another example with a selector set.</div>
+      <div class="tips"><a href="fork/">Under the hood</a>, capture 'before' function is made with the awesome "call" javascript method, passing the live casper browser instance to your custom capture function. Have a look at the source, it's clean !</div>
+
+      <span class="headline">We can interact further than user input by modifying the DOM. When your interaction alters the Document Object Model, you need to wrap your code inside a casper evaluate() function.</span>
+      <pre class="code"><code class="language-javascript">// Example from selftests/data.js (<a href="fork/">@see source</a>)
+Succss.pages = {
+...
+    captures: {
+      'header-mod': {
+        'selector': 'header',
+        before: function() {
+          this.evaluate(function() {
+            var header = document.getElementsByTagName('header');
+            var clickImage = document.getElementById('click-here');
+            header[0].removeChild(clickImage);
+          });
+        }</code></pre>
+      <div class="tips">The evaluate function acts on behalf of the browser's javascript, whereas the code outside is user input.</div>
+      <div class="tips">You can't call console.log from an evaluate function. Nonetheless, you can call the "window.callPhantom()" function with either a string, or {dump:object} (which in turn will call <a href="customize/#tools">utils.dump</a> on your object).</div>
+
+      <span class="headline">If you want to reuse "before" steps on the same page, you can use the first parameter passed to the before function:</span>
+      <pre class="code"><code class="language-javascript">        before: function(before) {
+          before.header();
+          before['header-mod']();
+        }</code></pre>
+      <div class="tips">The reused before method name will be one of a previous capture on the same page. Be careful not to loop callbacks with this...</div>
+
+      <h2 id="hide">Hide elements</h2>
+
+      <span class="headline">Depending on your content, frequently updated elements or overlapping areas may interfer with your testing. The 'hidden' capture property is used to manage updated content and moving elements issues.</span>
+
+      <pre class="code" data-line="11"><code class="language-javascript">// Example from selftests/data.js (<a href="fork/">@see source</a>)
+Succss.pages = {
+...
+    captures: {
+      'hiddenElements': {
+        'url':SuccssDataCommon.url +'/usecases',
+        ...
+        'captures': {
+          'navigation-menu': {
+            selector: '#more-infos',
+            hidden: '#colors div, #colors a'
+          }
+        }
+      }
+    }
+...</code></pre>
+      <div class="tips">Succss will pass the 'hidden' value to the document.querySelectorAll function, then applying 'hidden' to matching elements style.visibility.</div>
+
+      <h2 id="viewports">Succss.viewports</h2>
+      <span class="headline">Any number of viewports objects with height and width properties, keyed by viewport names of your choice.</span>
+      <pre class="code"><code class="language-javascript">Succss.viewports = {
+ 'wide':
+  {
+    'width':1920,
+    'height':1200
+  },
+  'mobile-landscape':
+  {
+    'width':640,
+    'height':480
+  }
+}</code></pre>
+      <div class="tips">Pages and captures can be filtered, likewise viewports have their <a href="commandline/#filters"> --viewports option</a>. If you don't filter viewports, captures will be made for the whole list.</div>
+
+      <h2 id="filename">Succss.setFileName</h2>
+      <span class="headline">You can choose the logic behind file naming done by a configuration file, just override the Succss.setFileName function.</span>
+      <pre class="code"><code class="language-javascript">Succss.setFileName = function(capture) {
+  // Will output something along these lines: "homepage--header--viewportname.png"
+  return capture.page.name + '--' + capture.name + '--' + capture.viewport.name + '.png';
+};
+</code></pre>
+      <span class="headline">Following properties are available through the capture Object parameter:</span>
+      <ul>
+        <li><strong>capture</strong>: name, selector, directory, callback</li>
+        <li><strong>capture.page</strong>: name, url, directory</li>
+        <li><strong>capture.viewport</strong>: name, width, height</li>
+        <li><strong>capture.options</strong>: any <a href="commandline/#options">Succss.options</a> or one given to the commandline</li>
+        <li><strong>capture.count</strong>: planned, remaining, failures, startTime</li>
+      </ul>
+      <div class="tips">Properties of capture.count, namely planned and remaining captures number, current failures number and the execution start timestamp are part of the <a href="customize/#capture">custom validation</a> facility.</div>
+
+      <h2 id="default">Default configuration options</h2>
+      <span class="headline">Above, we have seen how to take advantage of Succss advanced configuration, it doesn't mean you have to !</span>
+      <span class="headline">The following small, yet useful code snippet, outputs full pages screenshots.</span>
+      <pre class="code"><code class="language-javascript">// "condensed-conf.js"
+Succss.pages = {
+  // Will output: './screenshots/home--body--1366x768.png'
+  'home': { url:'succss.readthedocs.io' },
+  // Will output: './screenshots/home--body--1366x768.png'
+  'configuration': { url:'succss.readthedocs.io/en/latest/configuration/?bgColor=088' }
+...
+}</code></pre>
+      <div class="tips">Obviously, webpage url is mandatory while the directory and selector default to "./screenshots" and "body" respectively. Note that default viewport is 1366x768.</div>
+
+      <span class="headline">From the previous snippet, the following default configuration is assumed:</span>
+      <pre class="code"><code class="language-javascript">Succss.pages = {
+  'home': {
+    url:'succss.readthedocs.io',
+    directory:'./screenshots',
+    captures: { 'body':'' }
+  },
+  'configuration': {
+    url:'succss.readthedocs.io/en/latest/configuration/?bgColor=088',
+    directory:'./screenshots',
+    captures: { 'body':'' }
+  }
+}
+
+Succss.viewports = {
+ 'default': { 'width':1366,'height':768 }
+}
+
+Succss.setFileName = function(capture) {
+  return captureState.page.name + '--' + captureState.name + '--' + captureState.viewport.width + 'x' + captureState.viewport.height + '.png';
+}</code></pre>
+
+      <h2 id="variables">Variables</h2>
+      <span class="headline">DRY (Do not Repeat Yourself). You can avoid repetition with variables.</span>
+      <span class="headline">e.g.</span>
+      <pre class="code"><code class="language-javascript">var baseUrl = 'succss.readthedocs.io';
+
+Succss.pages = {
+  'home': { url:baseUrl },
+  'page1': { url:baseUrl + '/installation' },
+  'page2': { url:baseUrl + '/configuration' },
+  'pageN': { url:baseUrl + '/customize' }
+}</code></pre>
+      <div class="tips">Reminder: the Succss configuration is a javascript file.</div>
+
+      <h2 id="source">The source property</h2>
+      <span class="headline">The way Javascript assign objects is by reference. It means modifications done on a copied object will get reflected on the original object.</span>
+      <span class="headline">To work around this, Succss.pages offers a 'source' attribute to extend another page's properties. For instance:</span>
+      <pre class="code" data-line="12"><code class="language-javascript">Succss.pages = {
+  'installation': {
+    'url': SuccssDataCommon.url+'/installation',
+    'directory':SuccssDataCommon.baseDirectory+'/installation',
+    captures: {
+      'header':''
+    },
+  },
+  'configuration': {
+    'url': SuccssDataCommon.url+'/configuration',
+    'directory':SuccssDataCommon.baseDirectory+'/configuration',
+    'source': 'installation'
+  }
+}
+</code></pre>
+      <div class="tips">The 'configuration' page above will change the url and directory but keeps the installation 'captures' properties. You could also share the same directory on both.</div>
+      <div class="tips"><strong>SuccssDataCommon</strong> is a set of convenient values and functions used for Succss internal testing. Check the <a href="fork/">selftests/data.class.js</a> from the source.</div>
+
+      <h2>Conclusion</h2>
+      <span class="headline">Succss configuration is really flexible and powerful, yet simple.</br>
+      If you want more examples, skip to <a href="fork/">the source</a> to read the configuration files inside the selftests/ directory.</span>
+
+    </article>
+
+    <article id="commandline">
+
+      <h1>Succss From The CLI (Command Line Interface)</h1>
+
+      <span class="headline">Succss binary is a python script, it will launch casperjs with the <strong>succss-bridge.js</strong> test file. Then, command-line options are read 
+        and your javascript configuration file is parsed by the <strong>succss.js</strong> PhantomJS module containing the core Succss logic.</span>
+      <span class="headline">Read more below for the really interesting stuff.</span>
+
+      <h2 id="add">Add references</h2>
+      <span class="headline">First you will need to write a javascript <a href="configuration/">configuration file</a>, describing pages and selectors on which you want to do the regression testing.</span>
+      <pre>succss add your-conf.js</pre>
+      <div class="tips">Your reference screenshots will be used for searching differences in updates.</div>
+
+      <h2 id="check">Check updates</h2>
+      <span class="headline">After local code updates or by continuous integration, you can launch the check command on a configuration file for which reference screenshots have been taken.</span>
+      <pre>succss check your-file.js</pre>
+      <div class="tips">You may have a configuration file for adding and another for checking, if both have compatible pages and captures. Just one file is good for most cases.</div>
+
+      <h2 id="filters">Filters</h2>
+      <span class="headline"><a href="configuration/#pages">Pages</a>, <a href="configuration/#captures">captures</a> and <a href="configuration/#viewports">viewports</a> from the configuration file can be filtered for any succss run.</span>
+      <pre>succss add your-conf.js --pages=p1,p2,p3 --captures=c1,c2 --viewports=v1</pre>
+      <div class="tips">Filters are applicable on the <strong>check</strong> command as well.</div>
+
+      <h2 id="compareto">Compare to single page and/or viewport</h2>
+      <span class="headline">It is possible to compare multiple pages and/or viewports to one page and/or viewport. It is especially useful to test for regressions across viewports with similar rendering or for decorators patterns used to display similar elements across pages.</span>
+      <span class="headline">The following example will do four checks: p2-v1,p2-v2,p3-v1,p3-v2 against the p1-v3 configuration.</span>
+      <pre>succss check your-conf.js --pages=p2,p3 --compareToPage=p1 --viewports=v1,v2 --compareToViewport=v3</pre>
+      <div class="tips">Note that your pages captures must be similar to those in the compared to page and added beforehand (p1-v3 in the above). You can quickly duplicate captures with the <a href="configuration/#source">source</a> property.</div>
+
+      <h2 id="engine">Engine</h2>
+      <span class="headline">The default browser engine is the PhantomJS headless browser, which is using Webkit (the chrome and safari engine). To render pages with Gecko, first you must have <a href="http://slimerjs.org/">SlimerJS</a> installed on your computer, then run:</span>
+      <pre>succss add your-conf.js --engine=slimerjs</pre>
+      <pre>succss check your-conf.js --engine=slimerjs</pre>
+      <span class="headline">Unlike PhantomJS, SlimerJS is not a headless browser (new desktop windows are created to take screenshots). It will sometimes be more accurate when it comes to display ressources loaded on AJAX requests as well as fonts.</span>
+      <div class="tips">The <a href="http://slimerjs.org/download.html#lightweight">lightweight</a> version of SlimerJS can take advantage of your installed Firefox binary.</div>
+      <span class="headline"><u>Warning</u>: With the slimerjs engine, you can't use commandline options containing '=s' (including filters). When working with filters, a quick workaround is to use the ',' prefix, otherwise this is the error message you will likely see:</span>
+      <pre>[Exception... "Component returned failure code: 0x80520006 (NS_ERROR_FILE_TARGET_DOES_NOT_EXIST) [nsIFile.isFile]"  nsresult: "0x80520006 (NS_ERROR_FILE_TARGET_DOES_NOT_EXIST)"  location: "JS frame :: resource://slimerjs/addon-sdk/toolkit/loader.js -> resource://slimerjs/addon-sdk/sdk/io/file.js :: isFile :: line 116"  data: no]</pre>
+      <div class="tips">Run 'succss check --pages=,special --engine=slimerjs' instead of 'succss check --pages=special --engine=slimerjs'.</div>
+
+      <h2 id="diffing">Diffing methods</h2>
+      <span class="headline">The default diff image is made with <a href="https://github.com/HumbleSoftware/js-imagediff">js-imagediff</a>.</span>
+      <span class="headline">You are not limited to just imagediff, or even a single diff method for one succss check run. A ResembleJS implementation is bundled with succss, to enable it, just do:</span>
+      <pre>succss check your-conf.js --resemble</pre>
+      <div class="tips">The above will use both ResembleJS and Imagediff, each method will output its own diff image in ./resemble and ./imagediff, respectively.</div>
+
+      <span class="headline">To disable imagediff, you would do:</span>
+      <pre>succss check your-conf.js --imagediff=false --resemble</pre>
+      <div class="tips">In practice, the prefered way to set the diffing method is with the <a href="commandline/#options">Succss.options</a> object (more on that below).</div>
+
+      <h2 id="casperjs">Additionnal casperjs options</h2>
+      <span class="headline">CasperJs <a href="http://casperjs.readthedocs.org/en/latest/modules/casper.html#index-1">options</a> are comaptible with Succss, from the commandline or in the <a href="commandline/#options">Succss.options</a> object.</span>
+      <span class="headline">For instance, <a href="http://casperjs.readthedocs.org/en/latest/modules/casper.html#exitonerror">exitOnError</a> and <a href="http://casperjs.readthedocs.org/en/latest/modules/casper.html#waittimeout">waitTimeout</a> are very useful, commonly used options you may need.</span>
+      <pre>succss check your-conf.js --exitOnError=false</pre>
+      <pre>succss add your-conf.js --waitTimeout=10000</pre>
+      <span class="headline">Single string value options are well suited for the commandline, otherwise (for objects like <a href="http://casperjs.readthedocs.org/en/latest/modules/casper.html#pagesettings">pageSettings</a> and <a href="http://casperjs.readthedocs.org/en/latest/modules/casper.html#clientscripts">clientScripts</a>) you can override default options from Succss.options object in the configuration file.</span>
+      <div class="tips">When an option is given with no value, true is assumed (see --resemble above).</div>
+
+      <h2 id="options">Succss.options</h2>
+      <span class="headline">Commandline options can be avoided by setting "default" options (commandline options take precedence) via the Succss.options object. Beware that the <strong>--engine</strong> option can not be set in Succss.options.</span>
+      <span class="headline">Your default options may look like this:</span>
+      <pre class="code"><code class="language-javascript">// your-conf.js
+...
+Succss.options = {
+  'resemble':true,
+  'imagediff':false,
+  'diffQuality':100,
+  'exitOnError':false,
+  'pages':'installation,advanced-selectors',
+  'pageSettings': {
+    'loadImages':false,
+    'userName':'login',
+    'password':'*xYz*123'
+  }
+}</code></pre>
+      <div class="tips">The username and password from the pageSettings option are used for htaccess authentication.</div>
+
+      <span class="headline">Succss default options are:</span>
+      <pre class="code"><code class="language-javascript">// This is actually Succss.allOptions, but you won't have to bother with allOptions.
+Succss.options = {
+  imgType:'png',
+  imgQuality:'80',
+  diff:true,
+  imagediff:true,
+  resemble:false,
+  diffQuality:'80',
+  tolerancePixels:'0',
+  diffLightness:100
+};</code></pre>
+      <div class="tips">When the diff option is set to true, Succss will search for the user's custom <a href="customize/#diff">Succss.diff</a> function.</div>
+      <div class="tips">This snippet is extracted from succss-bridge.js</div>
+
+      <h2 id="settings">Screenshots settings</h2>
+      <span class="headline">Captures file type and compression can be set with the following settings:</span>
+      <ul>
+        <li><strong>imgType</strong>: either jpeg or png. Default is 'png'</li>
+        <li><strong>imgQuality</strong>: a number between 0 (worst) and 100 (best, heavier). Default is 80.</li>
+      </ul>
+      <span class="headline">Diffing also has its settings:</span>
+      <ul>
+        <li><strong>diffQuality</strong>: a number between 0 (worst) and 100 (best, heavier). Default is 80.</li>
+        <li><strong>tolerancePixels</strong>: the tolerance pixels for the imagediff algorithm.</li>
+        <li><strong>diffLightness</strong>: the added color value (lightness) in imagediff differences, up to 255. Default is 100.</li>
+      </ul>
+      <div class="tips">To tweak ResembleJS settings, you need to implement your own Succss diff function. It's not that hard, you may read the related <a href="customize/#resemble">documentation</a>.</div>
+
+      <h2 id="checkdir">Check against static files</h2>
+      <span class="headline">You can choose not to check against live screenshots updates, but to use a custom location that mirrors the reference directory tree. Just use the checkDir option.</span>
+      <pre>succss check your-conf.js --checkDir=custom-path</pre>
+      <div class="tips">Keep in mind that the checkDir directory tree needs to match directories specified in your-conf.js</div>
+
+      <h2>The LogLevel and verbose options</h2>
+      <span class="headline">Casperjs <a href="http://casperjs.readthedocs.org/en/latest/logging.html">verbose and logLevel</a> options provides the ability to display additionnal messages in the console.</span>
+      <pre>succss check your-conf.js --verbose --logLevel=info</pre>
+      <pre>[info] [phantom] [SucCSS] Options: --imgType=png, --imgQuality=80, --diff=true, --imagediff=false, --resemble=false, --diffQuality=100, --tolerancePixels=0, --exitOnError=false, --pages=installation, --casper-path=/lib/node_modules/casperjs, --cli=true, --dataFile=/home/zen/Projets/Informatique/OpenSource/github/Succss/selftests/data-diff.js, --verbose=true, --logLevel=info, --do=check, --engine=phantomjs</pre>
+      <div class="tips">The info log level displays the complete list of currently used options. Available levels, ordered by verbosity, are debug, info, warning and error.</div>
+
+      <h2>The list command</h2>
+      <span class="headline">Run "succss list" to list all available pages, it will launch a dry run, opening pages for each captures.</span>
+      <pre>succss list your-conf.js</pre>
+      <div class="tips">Use the list command if want to see what's in a configuration file and if its captures are valid. This can be used with --pages and --captures filters.</div>
+
+    </article>
+
+    <article id="usecases">
+
+      <h1>Typical use cases</h1>
+
+      <h2>CSS Regression testing</h2>
+      <span class="headline">First and foremost, Succss is a CSS Regression testing tool. It will detect and highlight differences between reference and screenshots update taken from web pages and CSS selectors you specify.</span>
+      <span class="headline">You can run succss either manually, or automatically with Jenkins, Travis and the like.</span>
+      <span class="headline">Expect one of the following messages at the end of a "succss check" run:</span>
+      <pre>Tests failed with ' + SuccssCount.failures + ' errors.</pre>
+      <pre>[SUCCSS] All captures (' + SuccssCount.planned + ') tests pass!</pre>
+      <div class="tips">SuccssCount is used internally to count planned/remaining captures, failures and start time. It is available in the capture object passed as an argument to <a>setFileName</a> and <a>validation</a> functions.</div>
+
+      <h2>Visual validation</h2>
+      <span class="headline">Screenshots from your website are written in the directory you choose (<a href="configuration/#default">default</a> is ./screenshots). You can open these images manually and detect obvious anomally just by visualizing them, especially to quickly check up viewports rendering on a wide range of resolutions (there is also an automated way for this, read more below).</span>
+
+      <h2>Pages and Viewports comparison</h2>
+      <span class="headline">You can compare a set of pages and viewports against one page and/or viewport reference, use the --compareToPage and --compareToViewport options respectively. See the <a href="commandline/#compareto">related example</a>.</span>
+
+      <h2>Webkit / Gecko comparison</h2>
+      <span class="headline">The <a href="commandline/#engine">--engine=slimerjs</a> commandline option gives the ability to run a Gecko (Firefox) browser to take captures, instead of the default PhantomJS engine which is a webkit headless browser. Specify different engines for "succss add" and "succss check" to compare the results. Beware that PhantomJS engine is somewhat limited when it comes to load fonts and/or images on AJAX requests.</span>
+
+      <h2>History versionning</h2>
+      <span class="headline">Plain and simple. With a version management system like Git, keep records of your website design and integration changes through time.</span>
+
+      <h2>Automated design validation</h2>
+      <span class="headline">Succss has a <strong>--checkDir</strong> option for you to choose the <a href="commandline/#checkdir">base screenshots directory</a>. At a project start, you can set it to a directory with the design images of pages body or CSS selectors.</span>
+      <div class="tips">Adjust diff precision with the <a href="commandline/#settings">tolerancePixels</a> option for imagediff, or with a <a href="customize/#resemble">custom</a> ResembleJS diff function.</div>
+
+
+    </article>
+
+    <article id="why">
+      |------- ------------------------------------------------------------------------------------<br/>
+      |------- &nbsp;&nbsp;&nbsp;Written by B2F, on 16 January 2015.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br/>
+      |------- ------------------------------------------------------------------------------------<br/>
+
+      <h1>Why another CSS regression testing tool ?</h1>
+
+      <span class="headline">At the time of writing, there is three other tools I know of: PhantomCSS, BackstopJS and CSS Critics (MIT licenses).</span>
+
+      <h2>Why Succss over <a href="https://github.com/Huddle/PhantomCSS">PhantomCSS</a> ?</h2>
+      <span class="headline">To sum up: Easier to learn, faster to deploy, yet as flexible.</span>
+      <span class="headline">PhantomCSS is a code library on top of PhantomJS, CasperJS, ResembleJS. It takes a classic casperjs test file and run, providing a phantomcss object to it. Mostly these methods:</span>
+      <pre class="code">phantomcss.init({//...})<code class="language-javascript"></code></pre>
+      <div class="tips">PhantomCSS "constructor" taking an object as parameter to choose directories, file names, resemblejs properties and such.</div>
+      <pre class="code">phantomcss.screenshot<code class="language-javascript"></code></pre>
+      <div class="tips">PhantomCSS method for taking screenshots (phantomcss.screenshot("#CSS .selector", screenshotName))</div>
+      <pre class="code"><code>phantomcss.compareAll('exclude.test');
+phantomcss.compareMatched('include.test', 'exclude.test')
+phantomcss.compareMatched( new RegExp('include.test'), new RegExp('exclude.test'));
+
+/* Compare image diffs generated in this test run only */
+phantomcss.compareSession();
+
+/* Explicitly define what files you want to compare*/
+phantomcss.compareExplicit(['/dialog.diff.png', '/header.diff.png']);
+
+/* Get a list of image diffs generated in this test run */
+phantomcss.getCreatedDiffFiles();
+
+/* Compare any two images, and wait for the results to complete */
+phantomcss.compareFiles(baseFile, diffFile);
+phantomcss.waitForTests();</code></pre>
+      <div class="tips">Methods for comparing screenshots.</div>
+      <span class="headline">Before starting PhantomCSS, one must know how to use casperjs (mind your learning curve), and then choose his/her complete workflow made of potentially asynchronous calls for opening webpages (for beginners, it can quickly become a mess, difficult to read and debug). </span>
+      <span class="headline">PhantomCSS is a casperjs module. CasperJS beeing a web scraping, functionnal testing tool, it makes sense. However, Succss is a tool built *on top* of casperjs, thus abstracting it to the user for the most part.</span>
+      <span class="headline">With PhantomCSS, starting almost from scratch ("Compare the images when and how you want" - from its github page), you may duplicate code for each of your captures (add phantomcss.screenshot calls to casperjs requests, you will likely get a verbose source) across test suites if any. You will write different files for captures and diffing, unless you add processing logic on top of it - that is why I went my own route for Succss.</span>
+      <span class="headline">Also when diffing with Succss, you can not only use ResembleJS but also ImageDiff (the default), or <a href="customize/#diff">anything else</a> you come up with. Conclusion: Succss has all the complex logic and underliying code done for you, and you will still be able to do advanced interactions by writing callbacks <a href="configuration/#before">before</a> captures.</span>
+      <span class="headline">It's worth to mention that the company supporting both PhantomCSS and <strong>ResembleJS</strong> research and development is <a href="http://www.huddle.com/home/">Huddle</a>. Credits to them for pioneering the CSS Regression tools.</span>
+     
+      <h2>Why Succss over <a href="https://garris.github.io/BackstopJS">BackstopJS</a> ?</h2>
+      <span class="headline">First, I started Succss development shortly before BackstopJS came out, so I may not have done it if it came out sooner.</span>
+    <span class="headline">BackstopJS rely heavily on Gulp and its commandline, now what is gulp ?</span>
+    <span class="headline">If you don't know what it is or don't want to get yet something else 
+    for just that one specific task (CSS regression testing), that may be annoying.</span>
+    <span class="headline">At the time of writing, BackstopJS uses json files (syntactically rigid) as its data configuration,
+      whereas Succss uses javascript files. The later can take advantage of variables (<a href="configuration/#variables">for DRY sake</a>) 
+    and give you access to callbacks before and <a href="customize/#callback">after</a> taking screenshots (either captures from adding references or checking updates).</span>
+    <span class="headline">Also, BackstopJS has a per project Bower library (Gulp and Casperjs dependencies are not resolved with Bower), whereas Succss is a npm global. I wouldn't call it quick to get if you never used Bower and Gulp before.</span>
+    <span class="headline">BackstopJS make it clear that it is "basically a wrapper around the very fabulous Resemble.js", therefore not compatible with <a href="commandline#diffing">imagediff</a> .</span>
+
+    <h2>Why Succss over <a href="https://github.com/cburgmer/csscritic">CSS Critic</a> ?</h2>
+    <span class="headline">It seems that there is a lot of CSS Regression testing tools getting released these days !</span>
+    <span class="headline">I don't know much about CSS Critic, I read about it lately on the imagediff users list.</span>
+    <span class="headline">Among other limitations listed on the CSS Critic's github page, I can tell that it uses a mandatory "RegressionRunner.html" file runnable with firefox only.</span>
+
+    <h2>Succss is complete, with a smooth learning curve.</h2>
+    <span class="headline">Succss is a complete CSS regression testing tool having
+    its own executable rather than something else ("casperjs test", "gulp"),
+    it's easy to learn, easy to install and fast to use. If you're into CSS regression testing,
+give it a try !</span>
+    </article>
+
+    <article id="customize">
+
+     <h1>Custom validations</h1>
+
+     <h2 id="callback">After capture (Succss.callback)</h2>
+     <span class="headline">Beyond checking if base and update screenshots match, you can add custom assertions after each capture is taken. The optionnal Succss.callback hook function in your configuration file serve this purpose.</span>
+     <span class="headline">In the following example, an error is thrown if captures updates match images references, unless a custom --good option is passed to the script (notice capture.options.good):</span>
+     <pre class="code" data-line="7"><code class="language-javascript">// This function will be called after each screenshot is taken.
+Succss.callback = function(capture) {
+
+  // The other available action is 'add'
+  if (capture.action == 'check') {
+
+    if (!capture.options.good) {
+      casper.test.assertTruthy(fs.exists(capture.filePath), 'The updated capture was taken (' + capture.filePath + ').');
+      casper.test.assertNotEquals(fs.size(capture.filePath), fs.size(capture.basePath), 'Base and update are different in size.');
+    }
+  }
+}</code></pre>
+    <div class="tips">The code snippet above is actually inspired from succss source, where image differences are triggered (<a href="https://github.com/B2F/Succss/blob/master/selftests/data-diff.js">@see selftests/data-diff.js</a>).</div>
+    <div class="tips">The <a href="customize/#capture">capture</a> parameter, casper.test and fs <a href="customize/#tools">objects</a> are all explained below.</div>
+    <span class="headline">To deactivate the above custom assertions, you would do:</span>
+    <pre>succss check your-conf.js --good</pre>
+
+    <h2 id="diff">Custom diff (Succss.diff)</h2>
+    <span class="headline">In the previous <a href="customize/#callback">Succss.callback</a> example, we actually inverted the default checking behavior: it fails if no difference is found. While Succss.callback is used to add assertions, it doesn't change nor remove assertions from the diff method.</span>
+    <span class="headline">The <strong>Succss.diff</strong> function is hooked later than Succss.callback, only when "succss check" run. Particularly, base and updated html images, as well as the full capture object are loaded as parameters.</span>
+    <span class="headline">Following the preceding Succss.callback example, here is a Succss.diff function written to change the diffing assertion.</span>
+    <pre class="code" data-line="6,16"><code class="language-javascript">/*
+ * Adds a diff function, replicating Succss's imagediff function but changing path and assertion.
+ */
+Succss.diff = function(imgBase, imgCheck, capture) {
+
+    phantom.injectJs(capture.options.libpath + '/imagediff.js');
+
+    imgDiff = imagediff.diff(imgBase, imgCheck);
+    var imagesMatch = imagediff.equal(imgBase, imgCheck, capture.options.tolerancePixels);
+
+    if (!imagesMatch) {
+      var filePath = capture.filePath.replace('.succss-tmp/', './selftests/diff-screenshots/');
+      this.writeImgDiff(imgDiff, imgBase, imgCheck, filePath);
+    }
+
+    casper.test.assertFalse(imagesMatch, 'Capture is different to base screenshot (imagediff).');
+}</code></pre>
+    <div class="tips">The path for <strong>phantom.injectJs</strong> is relative to your console directory. You can get the path to succss bundled libraries with <strong>capture.options.libpath</strong>, thus you will always be able to load resemble.js and imagediff.js from your npm installation (libpath parent is your succss npm directory in node_modules).</div>
+    <div class="tips">The default imagediff (actually this.imagediff function below) behavior will still run, unless you set the imagediff option to false from <a href="commandline/#diffing">commandline</a> or <a href="commandline/#options">Succss.options</a>.</div>
+ 
+    <span class="headline">Here, "this" is a reference to the succss.js module's object. It has the three following methods of interest:</span>
+    <ul>
+      <li><strong>this.writeImgDiff(imgDiff, imgBase, imgCheck, filePath)</strong>: the writeImgDiff function creates a <a href="home/#differences">HTML canvas</a> with the three html images arguments provided and write the resulting file to the filePath location.</li>
+      <li><strong>this.imagediff(imgBase, imgUpdate, capture)</strong>: calls the <a href="https://github.com/B2F/Succss/blob/master/succss.js#L546">bundled imagediff</a> implementation (do not confound Succss this.imagediff and the above imagediff.diff function from imagediff.js).</li>
+      <li><strong>this.resemble(imgBase, imgUpdate, capture)</strong>: calls the <a href="https://github.com/B2F/Succss/blob/master/succss.js#L568">bundled resemble</a> implementation.</li>
+    </ul>
+    <span class="headline">Hint: both this.imagediff and this.resemble call this.writeImgDiff internally (<a href="https://github.com/B2F/Succss/blob/master/succss.js#L602">@see succss.js</a>).</span>
+    <span class="headline" id="resemble">The next Succss.diff example is extending <a href="https://github.com/Huddle/Resemble.js">ResembleJS</a> default settings:</span>
+    <pre class="code" data-line="16"><code class="language-javascript">Succss.diff = function(imgBase, imgCheck, capture) {
+
+    this.injectJs(capture.options.libpath + '/resemble.js');
+
+    resemble.outputSettings({
+      errorColor: {
+        red: 255,
+        green: 0,
+        blue: 255
+      },
+      errorType: 'movement',
+      transparency: 0.3,
+      largeImageThreshold: 1200
+    });
+
+    this.resemble(imgBase, imgCheck, capture);
+
+};</code></pre>
+    <div class="tips">The <strong>this.injectJs</strong> method is actually a wrapper around <a href="http://phantomjs.org/api/phantom/method/inject-js.html">phantom.injectJs</a>, use it if you need to load files only once. For instance, this.resemble's this.injectJs call for resemble.js will not erase your resemble.outputSettings.</div>
+
+      <h2 id="capture">The capture parameter</h2>
+      <span class="headline">The capture object is similar to the one available in <a href="configuration/#filename">Succss.setFileName</a>:</span>
+      <ul>
+        <li><strong>capture</strong>: name, selector, directory, callback</li>
+        <li><strong>capture.page</strong>: name, url, directory</li>
+        <li><strong>capture.viewport</strong>: name, width, height</li>
+        <li><strong>capture.options</strong>: any <a href="commandline/#options">Succss.options</a> or one given to the commandline</li>
+        <li><strong>capture.count</strong>: planned, remaining, failures, startTime</li>
+      </ul>
+      <div class="tips">capture.count properties are especially useful when errors are thrown. Also, SuccssDataCommon.assertSuiteSuccess from <a href="https://github.com/B2F/Succss/blob/master/selftests/data.class.js#L39">selftests/data.class.js</a> is a good example.</div>
+      <span class="headline">With these extra parameters:</span>
+      <ul>
+        <li><strong>capture.file</strong>: the filename from Succss.setFileName</li>
+        <li><strong>capture.basePath</strong>: the path of base screenshot (the one created with "succss add")</li>
+        <li><strong>capture.filePath</strong>: the path of the current screenshot capture (same as basePath on a "succss add" run).</li>
+        <li><strong>capture.action</strong>: the current succss command, either 'add' or 'check'.</li>
+      </ul>
+      <div class="tips">Filename and succss command are not set when Succss.setFileName is called, hence the unavailability of the extras parameters.</div>
+      <span class="headline">It is possible to use the capture parameter object in the same fashion as a custom commandline option, such as the --good example above.</span>
+      <pre class="code" data-line="5"><code class="language-javascript">Succss.pages = {
+  'capture-property-example-page': {
+    'url':'succss.readthedocs.io',
+...
+    'good':true
+  }
+}</code></pre>
+      <div class="tips">This example adds the capture.page.good property and set it to true.</div>
+      <pre class="code" data-line="3"><code class="language-javascript">Succss.callback = function(capture) {
+...
+    if (!capture.page.good) {
+      casper.test.assertTruthy(fs.exists(capture.filePath), 'The updated capture was taken (' + capture.filePath + ').');
+      casper.test.assertNotEquals(fs.size(capture.filePath), fs.size(capture.basePath), 'Base and update are different in size.');
+    }</code></pre>
+      <div class="tips">Custom properties added to a page 'captures' key will be made directly available on the capture object. You can add properties to viewports as well (capture.viewport).</div>
+
+      <h2 id="tools">Available objects</h2>
+      <span class="headline">To take advantage of PhantomJS and CasperJS modules available in Succss, take a look at their documentations:</span>
+      <ul>
+        <li><strong>phantom</strong>: the <a href="http://phantomjs.org/api/phantom/">phantom Object</a> from PhantomJS</li>
+        <li><strong>fs</strong>: the <a href="http://phantomjs.org/api/fs/">File System Module</a> from PhantomJS</li>
+        <li><strong>colorizer</strong>: the <a href="http://casperjs.readthedocs.org/en/latest/modules/colorizer.html">colorizer module</a> from CasperJS</li>
+        <li><strong>utils</strong>: the <a href="http://casperjs.readthedocs.org/en/latest/modules/utils.html">utils module</a> from CasperJS</li>
+        <li><strong>casper.test</strong>: the <a href="http://casperjs.readthedocs.org/en/latest/modules/tester.html">tester module</a> from CasperJS</li>
+      </ul>
+      <div class="tips">You can use Succss this.echo(message, type) shortcut to print console logs with the CasperJS colorizer module.</div>
+
+      <h2 id="reuse">Custom validations reuse</h2>
+      <span class="headline">As seen above, you can reuse your own validation logic across configuration files. To include javascript files anywhere, do the following:</span>
+      <pre class="code"><code class="language-javascript">phantom.injectJs('selftests/data.class.js');</code></pre>
+      <div class="tips">The selftests/data.class.js file is a set of common functions and values used across Succss selftests. It is found in Succss directory (capture.options.libpath's parent)</div>
+       <div class="tips">The javascript file injection can be used to factor any part of a configuration file, not only the validation process but also for <a href="configuration/#source">sourcing</a> Succss pages from another file.</div>
+
+    </article>
+
+    <article id="fork">
+
+      <h1>Fork Succss on Github !</h1>
+      <iframe src="http://ghbtns.com/github-btn.html?user=mdo&repo=github-buttons&type=fork&size=large"
+  allowtransparency="false" frameborder="0" scrolling="0" width="95" height="30"></iframe>
+      <iframe src="http://ghbtns.com/github-btn.html?user=mdo&repo=github-buttons&type=watch&size=large"
+  allowtransparency="false" frameborder="0" scrolling="0" width="95" height="30"></iframe>
+
+    <span class="headline">Succss commandline tool:</span>
+    <ul>
+      <li><a href="https://github.com/B2F/Succss" style="background-color:transparent;font-weight:bold;color:white;">https://github.com/B2F/Succss</a></li>
+    </ul>
+    <span class="headline">This website:</span>
+    <ul>
+      <li><a href="https://github.com/B2F/Succss-doc" style="background-color:transparent;font-weight:bold;color:white;">https://github.com/B2F/Succss-doc</a></li>
+    </ul>
+
+    </article>
+
+    <div id="more-infos">
+      <span class="headline" id="more-infos-headline">Discover a new way to <br/>test websites, automagically.</span>
+      <div id="more-infos-links">
+        <a href="usecases/">.) Typical Use Cases</a>
+        <a href="configuration/">.) Configuration</a>
+        <a href="commandline/">.) CLI Options</a>
+        <a href="customize/">.) Custom Validations</a>
+        <a href="why/">.) Why Succss ?</a>
+        <a href="fork/">.) Succss at its Source !</a>
+        <a href="installation/">.) Troubleshooting</a>
+        <a href="./">--- Home Page</a>
+      </div>
+    </div>
+
+  </div>
+
+  <aside id="colors"></aside>
+
+  <footer id="supporters">
+    <h3>Support this</h3>
+    <span class="headline">Succss CSS regression testing tool is free and Open Source (MIT License). If you use the tool, like the documentation or this website, you can show your support by spreading the news, contributing to the source and helping with the issue queue.</span>
+    <span class="headline"><a href="https://github.com/B2F/Succss-doc" target="_blank" rel="noreferrer">Documentation source: github.com/B2F/Succss-doc</a></span>
+  </footer>
+</body>
+</html>
